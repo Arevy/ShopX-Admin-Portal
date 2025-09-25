@@ -1,0 +1,143 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  padding: 2rem 1.5rem;
+  border-right: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(14px);
+}
+
+.sidebarContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+}
+
+.brandMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.brandIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.8);
+}
+
+.brandTitle {
+  margin: 0.75rem 0 0;
+  font-size: 1.45rem;
+}
+
+.brandSubtitle {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 120ms ease, transform 120ms ease, color 120ms ease;
+}
+
+.navLinkActive {
+  color: #fff;
+  background: var(--accent);
+  transform: scale(1.01);
+}
+
+.navEmoji {
+  font-size: 1.1rem;
+}
+
+.endpointCard {
+  margin-top: auto;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.endpointLabel {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.endpointValue {
+  margin: 0.35rem 0 0;
+  font-family: monospace;
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.contentArea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.headerMeta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.headerTitle {
+  margin: 0.35rem 0 0;
+}
+
+.headerBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badgeOnline {
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}

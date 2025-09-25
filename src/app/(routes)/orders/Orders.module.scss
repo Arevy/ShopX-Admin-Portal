@@ -1,0 +1,63 @@
+.container {
+  display: grid;
+  gap: 1.6rem;
+}
+
+.panel {
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.statusSelect {
+  min-width: 160px;
+}
+
+.idInput {
+  width: 220px;
+}
+
+.primaryButton {
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.filterSummary {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.statusDropdown {
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: inherit;
+}
+
+.feedbackPositive {
+  color: #bbf7d0;
+}
+
+.feedbackNegative {
+  color: #fecaca;
+}

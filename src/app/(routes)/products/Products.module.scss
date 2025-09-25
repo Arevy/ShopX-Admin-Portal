@@ -1,0 +1,111 @@
+.container {
+  display: grid;
+  gap: 1.6rem;
+}
+
+.panel {
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.primaryButton {
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.primaryButton:disabled {
+  background: rgba(37, 99, 235, 0.5);
+  cursor: not-allowed;
+}
+
+.filterSummary {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editButton {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  background: transparent;
+  color: #bfdbfe;
+}
+
+.dangerButton {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: transparent;
+  color: #fecaca;
+}
+
+.formGrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
+
+.formFooter {
+  align-self: end;
+}
+
+.sectionHeading {
+  margin: 0;
+}
+
+.sectionSubheading {
+  margin: 0.35rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.secondaryButton {
+  padding: 0.7rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.feedbackPositive {
+  color: #bbf7d0;
+}
+
+.feedbackNegative {
+  color: #fecaca;
+}

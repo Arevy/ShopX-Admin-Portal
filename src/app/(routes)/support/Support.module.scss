@@ -1,0 +1,134 @@
+.container {
+  display: grid;
+  gap: 1.6rem;
+}
+
+.panel {
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.lookupForm {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.lookupInput {
+  width: 260px;
+}
+
+.primaryButton {
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.secondaryButton {
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.gridLayout {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.sectionHeading {
+  margin: 0;
+}
+
+.identityCard {
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.identityFacts {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.badgeSummary {
+  width: fit-content;
+}
+
+.dataCard {
+  padding: 1.2rem;
+}
+
+.columnsGrid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.listReset {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.badgeList {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.badgePill {
+  width: fit-content;
+}
+
+.addressItem,
+.cartItem,
+.reviewItem {
+  padding: 0.8rem;
+}
+
+.cartItemContent {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cartTotal {
+  width: fit-content;
+  margin-top: 0.4rem;
+}
+
+.reviewMeta {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.reviewText {
+  margin-top: 0.4rem;
+  color: var(--text-secondary);
+}
+
+.reviewTimestamp {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.emptyState {
+  color: var(--text-secondary);
+}

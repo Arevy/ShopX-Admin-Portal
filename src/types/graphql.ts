@@ -1,0 +1,156 @@
+import { Category, CustomerProfile, Order, Product, User, UserRole } from '@/types/domain'
+
+export interface CustomerSupportProductsVariables {
+  limit?: number
+  offset?: number
+  name?: string
+  categoryId?: string
+}
+
+export interface CustomerSupportProductsResponse {
+  customerSupport: {
+    products: Product[]
+    categories: Category[]
+  }
+}
+
+export interface CustomerSupportOrdersVariables {
+  userId?: string
+  status?: string
+  limit?: number
+  offset?: number
+}
+
+export interface CustomerSupportOrdersResponse {
+  customerSupport: {
+    orders: Order[]
+  }
+}
+
+export interface CustomerSupportOrderDetailVariables {
+  orderId: string
+}
+
+export interface CustomerSupportOrderDetailResponse {
+  customerSupport: {
+    order: Order | null
+  }
+}
+
+export interface CustomerSupportUsersVariables {
+  email?: string
+  role?: UserRole
+}
+
+export interface CustomerSupportUsersResponse {
+  customerSupport: {
+    users: User[]
+  }
+}
+
+export interface CustomerSupportOverviewVariables {
+  productLimit?: number
+  orderLimit?: number
+}
+
+export interface CustomerSupportOverviewResponse {
+  customerSupport: {
+    products: Array<Pick<Product, 'id' | 'name' | 'price'>>
+    orders: Array<Pick<Order, 'id' | 'userId' | 'total' | 'status' | 'createdAt'>>
+    users: Array<Pick<User, 'id' | 'role'>>
+    reviews: Array<{ id: string; rating: number }>
+  }
+}
+
+export interface CustomerSupportCustomerProfileVariables {
+  userId: string
+}
+
+export interface CustomerSupportCustomerProfileResponse {
+  customerSupport: CustomerProfile
+}
+
+export interface CustomerSupportCreateProductVariables {
+  name: string
+  price: number
+  description?: string
+  categoryId: string
+}
+
+export interface CustomerSupportCreateProductResponse {
+  customerSupport: {
+    addProduct: Product
+  }
+}
+
+export interface CustomerSupportUpdateProductVariables {
+  id: string
+  name?: string
+  price?: number
+  description?: string
+  categoryId?: string
+}
+
+export interface CustomerSupportUpdateProductResponse {
+  customerSupport: {
+    updateProduct: Product
+  }
+}
+
+export interface CustomerSupportDeleteProductVariables {
+  id: string
+}
+
+export interface CustomerSupportDeleteProductResponse {
+  customerSupport: {
+    deleteProduct: boolean
+  }
+}
+
+export interface CustomerSupportCreateUserVariables {
+  email: string
+  password: string
+  name?: string
+  role: UserRole
+}
+
+export interface CustomerSupportCreateUserResponse {
+  customerSupport: {
+    createUser: User
+  }
+}
+
+export interface CustomerSupportUpdateUserVariables {
+  id: string
+  email?: string
+  name?: string
+  role?: UserRole
+  password?: string
+}
+
+export interface CustomerSupportUpdateUserResponse {
+  customerSupport: {
+    updateUser: User
+  }
+}
+
+export interface CustomerSupportDeleteUserVariables {
+  id: string
+}
+
+export interface CustomerSupportDeleteUserResponse {
+  customerSupport: {
+    deleteUser: boolean
+  }
+}
+
+export interface CustomerSupportUpdateOrderStatusVariables {
+  orderId: string
+  status: string
+}
+
+export interface CustomerSupportUpdateOrderStatusResponse {
+  customerSupport: {
+    updateOrderStatus: boolean
+  }
+}
