@@ -1,4 +1,5 @@
 import { GraphQLClient, ClientError } from 'graphql-request'
+import type { Variables } from 'graphql-request'
 
 import type { QueryFactory } from '@/common/queries/utils/QueryFactory'
 import type { GraphQLResponse, GraphQLResponseError } from '@/common/queries/utils/GraphQLResponse'
@@ -24,25 +25,40 @@ export class ApiService {
     this.client.setHeaders(headers)
   }
 
-  async executeGraphQL<R, V>(
+  async executeGraphQL<R, V extends object | undefined = Record<string, unknown>>(
     queryFactory: QueryFactory<R, V>,
     variables?: V,
   ): Promise<GraphQLResponse<R>> {
     let processedVariables = variables
 
     if (processedVariables && queryFactory.preProcess) {
-      processedVariables = await queryFactory.preProcess(this.rootContext, processedVariables)
+      const normalizedVariables = await queryFactory.preProcess(
+        this.rootContext,
+        processedVariables as NonNullable<V>,
+      )
+      processedVariables = normalizedVariables as V
     }
     if (processedVariables && queryFactory.preProcessClient) {
-      processedVariables = await queryFactory.preProcessClient(this.rootContext, processedVariables)
+      const normalizedVariables = await queryFactory.preProcessClient(
+        this.rootContext,
+        processedVariables as NonNullable<V>,
+      )
+      processedVariables = normalizedVariables as V
     }
 
     try {
-      const data = await this.client.request<R>(queryFactory.queryString, processedVariables as any)
+      const requestVariables = (processedVariables ?? undefined) as Variables | undefined
+      const data = requestVariables
+        ? await this.client.request<R>(queryFactory.queryString, requestVariables)
+        : await this.client.request<R>(queryFactory.queryString)
       let response: GraphQLResponse<R> = { data }
 
-      if (queryFactory.postProcess) {
-        response = await queryFactory.postProcess(this.rootContext, response, processedVariables as V)
+      if (processedVariables && queryFactory.postProcess) {
+        response = await queryFactory.postProcess(
+          this.rootContext,
+          response,
+          processedVariables as NonNullable<V>,
+        )
       }
 
       if (queryFactory.postProcessClient) {
@@ -70,8 +86,12 @@ export class ApiService {
           throw error
         }
 
-        if (queryFactory.postProcess) {
-          return queryFactory.postProcess(this.rootContext, response, processedVariables as V)
+        if (processedVariables && queryFactory.postProcess) {
+          return queryFactory.postProcess(
+            this.rootContext,
+            response,
+            processedVariables as NonNullable<V>,
+          )
         }
 
         return response

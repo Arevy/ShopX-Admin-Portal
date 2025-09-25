@@ -30,7 +30,8 @@ admin-portal/
 │   │   │   ├── orders/      # Order list + inline status workflows
 │   │   │   ├── products/    # Catalog CRUD controls
 │   │   │   ├── support/     # Deep customer lookup workspace
-│   │   │   └── users/       # Support agent + customer provisioning
+│   │   │   ├── users/       # Support agent + customer provisioning
+│   │   │   └── cms/         # New WYSIWYG editor for the public pages
 │   │   └── layout.tsx       # Root layout wiring global providers
 │   ├── common/              # infrastructure (queries, services, stores)
 │   │   ├── queries/         # QueryFactory definitions for every GraphQL call
@@ -51,6 +52,7 @@ admin-portal/
 - `RootContext` (`src/common/stores/RootContext.ts`) instantiates the ApiService and the domain MobX stores, architecture for shared services + store orchestration.
 - UI code talks to stores through hooks (`src/hooks`) that call `useStores`, which exposes the `rootContext` (matching the `MobXProviderContext` ).
 - Styles continue to live in SCSS modules with global tokens in `globals.scss`; swap for Tailwind or another system if desired.
+- The `CMS` section integrates a WYSIWYG editor (`react-quill`) and manages the public pages exposed via GraphQL.
 
 ## Suggested next steps
 
@@ -58,3 +60,7 @@ admin-portal/
 2. **Pagination / virtualisation** – Extend the stores to accept cursor/offset parameters and page through large datasets.
 3. **Testing** – Add component tests (e.g. Playwright, Testing Library) around the critical workflows and mock GraphQL responses.
 4. **Realtime signals** – Consider wiring GraphQL subscriptions or a polling layer for SLA dashboards that require live updates.
+
+## Docker
+
+A dedicated `Dockerfile` makes it easy to run the portal in production (`yarn build && yarn start`). The root `docker-compose.yml` already includes an `admin` service—just ensure `NEXT_PUBLIC_GRAPHQL_ENDPOINT` points to the backend container.

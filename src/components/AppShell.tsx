@@ -12,6 +12,7 @@ const navigation = [
   { label: 'Products', href: '/products', emoji: '🛒' },
   { label: 'Customers', href: '/users', emoji: '👤' },
   { label: 'Support Desk', href: '/support', emoji: '💬' },
+  { label: 'CMS', href: '/cms', emoji: '📝' },
 ]
 
 export const AppShell = ({ children }: { children: ReactNode }) => {

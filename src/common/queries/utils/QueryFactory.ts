@@ -3,7 +3,7 @@ import { DocumentNode, print } from 'graphql'
 
 import type { GraphQLResponse } from './GraphQLResponse'
 
-export type CacheOptions<V, R> = {
+export type CacheOptions<V> = {
   cacheable: boolean
   cacheTTL?: number
   cacheKey?: (variables: V) => string | string
@@ -13,7 +13,7 @@ export interface QueryFactoryConfig<R, V> {
   queryName: string
   queryObject: DocumentNode | string
   operationType?: 'query' | 'mutation'
-  cacheOptions?: CacheOptions<V, R>
+  cacheOptions?: CacheOptions<V>
   throwOnErrors?: boolean
   preProcess?: (rootContext: RootContext, variables: V) => Promise<V>
   preProcessClient?: (rootContext: RootContext, variables: V) => Promise<V>
@@ -32,7 +32,7 @@ export class QueryFactory<R, V = Record<string, unknown>> implements QueryFactor
   queryName: string
   queryObject: DocumentNode | string
   operationType: 'query' | 'mutation'
-  cacheOptions?: CacheOptions<V, R>
+  cacheOptions?: CacheOptions<V>
   throwOnErrors?: boolean
   preProcess?: QueryFactoryConfig<R, V>['preProcess']
   preProcessClient?: QueryFactoryConfig<R, V>['preProcessClient']

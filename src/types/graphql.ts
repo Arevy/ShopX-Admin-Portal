@@ -1,4 +1,4 @@
-import { Category, CustomerProfile, Order, Product, User, UserRole } from '@/types/domain'
+import { Category, CustomerProfile, Order, Product, User, UserRole, CmsPage, CmsStatus } from '@/types/domain'
 
 export interface CustomerSupportProductsVariables {
   limit?: number
@@ -152,5 +152,59 @@ export interface CustomerSupportUpdateOrderStatusVariables {
 export interface CustomerSupportUpdateOrderStatusResponse {
   customerSupport: {
     updateOrderStatus: boolean
+  }
+}
+
+export interface CustomerSupportCmsPagesVariables {
+  status?: CmsStatus
+  search?: string
+}
+
+export interface CustomerSupportCmsPagesResponse {
+  customerSupport: {
+    cmsPages: CmsPage[]
+  }
+}
+
+export interface CustomerSupportCmsPageVariables {
+  id?: string
+  slug?: string
+}
+
+export interface CustomerSupportCmsPageResponse {
+  customerSupport: {
+    cmsPage: CmsPage | null
+  }
+}
+
+export interface CustomerSupportCreateCmsPageVariables {
+  input: {
+    slug: string
+    title: string
+    excerpt?: string | null
+    body: string
+    status?: CmsStatus
+    publishedAt?: string | null
+  }
+}
+
+export interface CustomerSupportUpdateCmsPageVariables {
+  id: string
+  input: {
+    slug?: string
+    title?: string
+    excerpt?: string | null
+    body?: string
+    status?: CmsStatus
+    publishedAt?: string | null
+  }
+}
+
+export interface CustomerSupportCmsPageMutationResponse {
+  customerSupport: {
+    createCmsPage?: CmsPage
+    updateCmsPage?: CmsPage
+    publishCmsPage?: CmsPage
+    deleteCmsPage?: boolean
   }
 }

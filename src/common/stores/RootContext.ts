@@ -1,4 +1,5 @@
 import ApiService from '@/common/services/ApiService'
+import { CmsStore } from '@/common/stores/domain/CmsStore'
 import { OrderStore } from '@/common/stores/domain/OrderStore'
 import { ProductStore } from '@/common/stores/domain/ProductStore'
 import { SupportStore } from '@/common/stores/domain/SupportStore'
@@ -16,6 +17,7 @@ class RootContext {
   userStore: UserStore
   orderStore: OrderStore
   supportStore: SupportStore
+  cmsStore: CmsStore
 
   constructor(options?: RootContextOptions) {
     this.apiService = new ApiService(this, options?.endpoint)
@@ -27,6 +29,7 @@ class RootContext {
     this.userStore = new UserStore(this)
     this.orderStore = new OrderStore(this)
     this.supportStore = new SupportStore(this)
+    this.cmsStore = new CmsStore(this)
   }
 
   setAuthToken(token?: string) {
