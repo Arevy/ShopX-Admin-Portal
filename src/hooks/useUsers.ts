@@ -64,6 +64,56 @@ export const useUsers = () => {
     [userStore, formState],
   )
 
+  const handleForceLogout = useCallback(
+    async (userId: string) => {
+      try {
+        setFeedback(null)
+        const revoked = await userStore.logoutUserSessions(userId)
+        setFeedback(
+          revoked
+            ? 'All active sessions for this user were revoked.'
+            : 'No active sessions were found for this user.',
+        )
+      } catch (error) {
+        setFeedback(
+          error instanceof Error
+            ? error.message
+            : 'Failed to revoke user sessions. Please retry.',
+        )
+      }
+    },
+    [userStore],
+  )
+
+  const handleImpersonate = useCallback(
+    async (userId: string) => {
+      setFeedback(null)
+      try {
+        const ticket = await userStore.impersonateUser(userId)
+        if (!ticket) {
+          throw new Error('Unable to generate an impersonation ticket.')
+        }
+
+        if (typeof window === 'undefined') {
+          throw new Error('Impersonation requires a browser environment.')
+        }
+
+        const baseUrl =
+          process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'http://localhost:3100'
+        const impersonateUrl = `${baseUrl.replace(/\/$/, '')}/impersonate?token=${ticket.token}`
+        window.open(impersonateUrl, '_blank', 'noopener')
+        setFeedback('Impersonation window opened in a new tab.')
+      } catch (error) {
+        setFeedback(
+          error instanceof Error
+            ? error.message
+            : 'Failed to start impersonation. Please retry.',
+        )
+      }
+    },
+    [userStore],
+  )
+
   const roleOptions = useMemo(() => ['CUSTOMER', 'SUPPORT'] as const, [])
 
   return {
@@ -82,5 +132,7 @@ export const useUsers = () => {
     creating,
     feedback,
     roleOptions,
+    handleForceLogout,
+    handleImpersonate,
   }
 }

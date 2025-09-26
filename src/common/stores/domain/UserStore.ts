@@ -3,6 +3,8 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { MutationCustomerSupportCreateUser } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportCreateUser'
 import { MutationCustomerSupportDeleteUser } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportDeleteUser'
 import { MutationCustomerSupportUpdateUser } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportUpdateUser'
+import { MutationCustomerSupportLogoutUserSessions } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportLogoutUserSessions'
+import { MutationCustomerSupportImpersonateUser } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportImpersonateUser'
 import { QueryCustomerSupportUsers } from '@/common/queries/customerSupport/QueryCustomerSupportUsers'
 import type RootContext from '@/common/stores/RootContext'
 import { User, UserRole } from '@/types/domain'
@@ -10,6 +12,10 @@ import type {
   CustomerSupportCreateUserVariables,
   CustomerSupportUpdateUserVariables,
   CustomerSupportUsersVariables,
+  CustomerSupportLogoutUserSessionsResponse,
+  CustomerSupportLogoutUserSessionsVariables,
+  CustomerSupportImpersonateUserResponse,
+  CustomerSupportImpersonateUserVariables,
 } from '@/types/graphql'
 
 interface UserFilters {
@@ -137,5 +143,32 @@ export class UserStore {
     }
 
     await this.fetchUsers(this.filters)
+  }
+
+  async logoutUserSessions(userId: string): Promise<boolean> {
+    const response = await this.root.apiService.executeGraphQL<
+      CustomerSupportLogoutUserSessionsResponse,
+      CustomerSupportLogoutUserSessionsVariables
+    >(MutationCustomerSupportLogoutUserSessions, { userId })
+
+    if (response.errors?.length) {
+      throw new Error(response.errors.map((err) => err.message).join('; '))
+    }
+
+    await this.fetchUsers(this.filters)
+    return Boolean(response.data?.customerSupport.logoutUserSessions)
+  }
+
+  async impersonateUser(userId: string) {
+    const response = await this.root.apiService.executeGraphQL<
+      CustomerSupportImpersonateUserResponse,
+      CustomerSupportImpersonateUserVariables
+    >(MutationCustomerSupportImpersonateUser, { userId })
+
+    if (response.errors?.length) {
+      throw new Error(response.errors.map((err) => err.message).join('; '))
+    }
+
+    return response.data?.customerSupport.impersonateUser ?? null
   }
 }

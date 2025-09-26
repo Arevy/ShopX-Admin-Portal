@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ReactNode, useMemo } from 'react'
 import classNames from 'classnames'
 import styles from './AppShell.module.scss'
+import { SupportSessionControls } from './SupportSessionControls'
 
 const navigation = [
   { label: 'Overview', href: '/dashboard', emoji: '📊' },
@@ -67,6 +68,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           <div className={styles.headerBadges}>
             <span className={classNames('badge', styles.badgeOnline)}>● Online</span>
             <span className="badge">Node &gt;= 20 required</span>
+            <SupportSessionControls />
           </div>
         </header>
         <main className={styles.main}>{children}</main>

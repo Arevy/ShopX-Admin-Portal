@@ -1,9 +1,23 @@
 node_modules
 .next
 out
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Environment / secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Cache / temp
+.cache/
+tmp/
+temp/
+*.tmp
+.npm/
+.npmrc
+.eslintcache
+jest/cache/
+*.pid
+*.seed
+*.pid.lock
 .cache
 tsconfig.tsbuildinfo

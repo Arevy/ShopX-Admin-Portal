@@ -90,6 +90,29 @@ export interface CustomerSupportCustomerProfileResponse {
     reviews: Review[]
   } | null
 }
+export interface CustomerSupportLogoutUserSessionsVariables {
+  userId: string
+}
+
+export interface CustomerSupportLogoutUserSessionsResponse {
+  customerSupport: {
+    logoutUserSessions: boolean
+  }
+}
+
+export interface CustomerSupportImpersonateUserVariables {
+  userId: string
+}
+
+export interface CustomerSupportImpersonateUserResponse {
+  customerSupport: {
+    impersonateUser: {
+      token: string
+      expiresAt: string
+    }
+  }
+}
+
 
 export interface CustomerSupportCreateProductVariables {
   name: string

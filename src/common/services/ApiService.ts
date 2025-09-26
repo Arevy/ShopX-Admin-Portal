@@ -5,24 +5,99 @@ import type { QueryFactory } from '@/common/queries/utils/QueryFactory'
 import type { GraphQLResponse, GraphQLResponseError } from '@/common/queries/utils/GraphQLResponse'
 import type RootContext from '@/common/stores/RootContext'
 
-const DEFAULT_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? 'http://localhost:4000/graphql'
+const isAbsoluteUrl = (value: string | undefined) =>
+  typeof value === 'string' && /^https?:\/\//i.test(value)
+
+const sanitizeEnv = (value: string | undefined) => {
+  if (!value) {
+    return undefined
+  }
+
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return undefined
+  }
+
+  // Support inline comments in env files by trimming trailing " # comment" blocks
+  const commentMatch = /\s#[^]*$/.exec(trimmed)
+  if (commentMatch) {
+    return trimmed.slice(0, commentMatch.index).trim() || undefined
+  }
+
+  return trimmed
+}
+
+const resolveOrigin = () => {
+  const configured =
+    sanitizeEnv(process.env.GRAPHQL_PROXY_ORIGIN) ||
+    sanitizeEnv(process.env.NEXT_PUBLIC_APP_BASE_URL) ||
+    sanitizeEnv(process.env.APP_BASE_URL) ||
+    sanitizeEnv(process.env.VERCEL_URL)
+
+  if (!configured) {
+    return 'http://localhost:3000'
+  }
+
+  if (configured.startsWith('http://') || configured.startsWith('https://')) {
+    return configured.replace(/\/$/, '')
+  }
+
+  return `https://${configured}`.replace(/\/$/, '')
+}
+
+const toAbsoluteUrl = (candidate: string): string => {
+  if (isAbsoluteUrl(candidate)) {
+    return candidate
+  }
+
+  if (typeof window !== 'undefined') {
+    try {
+      return new URL(candidate, window.location.origin).toString()
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to resolve GraphQL endpoint in browser', { candidate, error })
+    }
+  }
+
+  const origin = resolveOrigin()
+
+  try {
+    return new URL(candidate, origin).toString()
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to resolve GraphQL endpoint on server', { candidate, origin, error })
+    return `${origin}/api/support-graphql`
+  }
+}
+
+const resolveEndpoint = () => {
+  const explicit = sanitizeEnv(process.env.NEXT_PUBLIC_GRAPHQL_PROXY_ENDPOINT)
+  const candidate = explicit || sanitizeEnv(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT) || '/api/support-graphql'
+
+  return toAbsoluteUrl(candidate)
+}
 
 export class ApiService {
   private client: GraphQLClient
-  private authToken?: string
 
-  constructor(private readonly rootContext: RootContext, endpoint: string = DEFAULT_ENDPOINT) {
-    this.client = new GraphQLClient(endpoint)
-  }
+  constructor(private readonly rootContext: RootContext, endpoint?: string) {
+    const resolvedEndpoint = endpoint ?? resolveEndpoint()
 
-  setAuthToken(token?: string) {
-    this.authToken = token
-    const headers: Record<string, string> = {}
-    if (token) {
-      headers.Authorization = `Bearer ${token}`
+    if (typeof window === 'undefined') {
+      // eslint-disable-next-line no-console
+      console.info('[ApiService] GraphQL endpoint resolved to', resolvedEndpoint)
     }
 
-    this.client.setHeaders(headers)
+    this.client = new GraphQLClient(resolvedEndpoint, {
+      credentials: 'include',
+    })
+  }
+
+  // Session cookies carry authentication; retaining this method keeps backwards compatibility.
+  setAuthToken(token?: string) {
+    if (token) {
+      void token
+    }
   }
 
   async executeGraphQL<R, V extends object | undefined = Record<string, unknown>>(

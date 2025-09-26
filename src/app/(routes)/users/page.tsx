@@ -26,6 +26,8 @@ const UsersPage = observer(() => {
     creating,
     feedback,
     roleOptions,
+    handleForceLogout,
+    handleImpersonate,
   } = useUsers()
 
   if (loading) {
@@ -41,6 +43,28 @@ const UsersPage = observer(() => {
     { key: 'email', header: 'Email' },
     { key: 'name', header: 'Name' },
     { key: 'role', header: 'Role' },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (user) => (
+        <div className={styles.actionGroup}>
+          <button
+            type="button"
+            className={classNames('badge', styles.actionButton)}
+            onClick={() => handleImpersonate(user.id)}
+          >
+            Impersonate
+          </button>
+          <button
+            type="button"
+            className={classNames('badge', styles.dangerButton)}
+            onClick={() => handleForceLogout(user.id)}
+          >
+            Force logout
+          </button>
+        </div>
+      ),
+    },
   ]
 
   return (

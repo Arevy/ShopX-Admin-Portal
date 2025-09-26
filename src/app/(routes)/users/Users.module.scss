@@ -87,3 +87,34 @@
 .feedbackNegative {
   color: #fecaca;
 }
+
+.actionGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  cursor: pointer;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+  }
+}
+
+.dangerButton {
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  color: #fff;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+  }
+}
