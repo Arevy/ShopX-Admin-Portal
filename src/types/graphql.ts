@@ -1,4 +1,16 @@
-import { Category, CustomerProfile, Order, Product, User, UserRole, CmsPage, CmsStatus } from '@/types/domain'
+import {
+  Category,
+  Order,
+  Product,
+  User,
+  UserRole,
+  CmsPage,
+  CmsStatus,
+  Address,
+  Cart,
+  Wishlist,
+  Review,
+} from '@/types/domain'
 
 export interface CustomerSupportProductsVariables {
   limit?: number
@@ -67,7 +79,16 @@ export interface CustomerSupportCustomerProfileVariables {
 }
 
 export interface CustomerSupportCustomerProfileResponse {
-  customerSupport: CustomerProfile
+  customerSupport: {
+    userContext: {
+      user: User | null
+      cart: Cart | null
+      wishlist: Wishlist | null
+      addresses: Address[]
+    } | null
+    orders: Order[]
+    reviews: Review[]
+  } | null
 }
 
 export interface CustomerSupportCreateProductVariables {

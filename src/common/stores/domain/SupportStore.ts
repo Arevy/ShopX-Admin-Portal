@@ -94,8 +94,89 @@ export class SupportStore {
         throw new Error(response.errors.map((err) => err.message).join('; '))
       }
 
+      const support = response.data?.customerSupport
+
       runInAction(() => {
-        this.customerProfile = response.data?.customerSupport ?? null
+        if (!support || !support.userContext) {
+          this.customerProfile = null
+          return
+        }
+
+        const context = support.userContext
+        const user = context.user
+          ? {
+              id: String(context.user.id),
+              email: context.user.email,
+              name: context.user.name ?? null,
+              role: context.user.role,
+            }
+          : null
+
+        const addresses = (context.addresses ?? []).map((address) => ({
+          id: String(address.id),
+          userId: String(address.userId ?? user?.id ?? ''),
+          street: address.street,
+          city: address.city,
+          postalCode: address.postalCode,
+          country: address.country,
+        }))
+
+        const cart = context.cart
+          ? {
+              userId: String(context.cart.userId),
+              total: Number(context.cart.total ?? 0),
+              items: context.cart.items.map((item) => ({
+                quantity: Number(item.quantity ?? 0),
+                product: {
+                  id: String(item.product.id),
+                  name: item.product.name,
+                  price: Number(item.product.price ?? 0),
+                  description: null,
+                  categoryId: null,
+                },
+              })),
+            }
+          : null
+
+        const wishlist = context.wishlist
+          ? {
+              userId: String(context.wishlist.userId),
+              products: context.wishlist.products.map((product) => ({
+                id: String(product.id),
+                name: product.name,
+                price: Number(product.price ?? 0),
+                description: null,
+                categoryId: null,
+              })),
+            }
+          : null
+
+        const orders = (support.orders ?? []).map((order) => ({
+          id: String(order.id),
+          userId: user?.id ?? '',
+          total: Number(order.total ?? 0),
+          status: String(order.status),
+          createdAt: order.createdAt ?? null,
+          updatedAt: null,
+          products: [],
+        }))
+
+        const reviews = (support.reviews ?? []).map((review) => ({
+          id: String(review.id),
+          productId: String(review.productId),
+          rating: Number(review.rating ?? 0),
+          reviewText: review.reviewText ?? null,
+          createdAt: review.createdAt,
+        }))
+
+        this.customerProfile = {
+          user,
+          orders,
+          addresses,
+          cart,
+          wishlist,
+          reviews,
+        }
       })
     } catch (error) {
       runInAction(() => {

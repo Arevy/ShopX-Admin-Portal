@@ -1,6 +1,6 @@
 # ShopX Admin Portal
 
-ShopX Admin is the internal control centre for the ShopX commerce stack. It gives merchandising, marketing, and support teams a browser-based UI to manage the same GraphQL domain that powers the storefront: inventory, pricing, customer accounts, order lifecycles, and CMS pages. The app is built with **Next.js 14 (App Router)**, **React 18**, **TypeScript**, **MobX**, and **graphql-request** to provide reactive data views and optimistic workflows over the `e-commerce-backend` service.
+ShopX Admin is the internal control centre for the ShopX commerce stack. It gives merchandising, marketing, and support teams a browser-based UI to manage the same GraphQL domain that powers the store front: inventory, pricing, customer accounts, order lifecycles, and CMS pages. The app is built with **Next.js 14 (App Router)**, **React 18**, **TypeScript**, **MobX**, and **graphql-request** to provide reactive data views and optimistic workflows over the `e-commerce-backend` service.
 
 ---
 
@@ -15,7 +15,7 @@ ShopX Admin is the internal control centre for the ShopX commerce stack. It give
 | Support         | Look up a customer’s entire context (orders, carts, wishlists) for issue resolution. |
 | CMS             | Author and publish marketing pages via a WYSIWYG editor; schedule or archive content. |
 
-Every feature uses the GraphQL endpoints provided by `e-commerce-backend`, so any mutation performed in the portal is immediately reflected in the storefront.
+Every feature uses the GraphQL endpoints provided by `e-commerce-backend`, so any mutation performed in the portal is immediately reflected in the store front.
 
 ---
 
@@ -49,7 +49,7 @@ npm install
 npm run dev                  # launches http://localhost:3000
 ```
 
-- **Port 3000** is reserved for the admin portal. The storefront runs on port 3100 to avoid conflicts.
+- **Port 3000** is reserved for the admin portal. The store front runs on port 3100 to avoid conflicts.
 - When deploying, use `npm run build` followed by `npm start` (or the provided Dockerfile; see below).
 
 ---
@@ -82,6 +82,7 @@ MobX powers client-side state. `RootContext` instantiates all stores and the `Ap
 ## Data Integration Details
 
 - **GraphQL Client**: `ApiService` centralises authentication headers, error formatting, and post-processing logic. Operations are defined as `QueryFactory` instances for reuse on both server and client components.
+- **User context aggregate**: Support-desk flows call `customerSupport.userContext` to hydrate carts, wishlists, addresses, and identity in a single round trip, mirroring the shopper-facing `getUserContext` query.
 - **Error Handling**: Stores capture GraphQL/API errors and expose user-friendly messages displayed through toast notifications or inline alerts.
 - **CMS Editor**: Uses `react-quill` in a client component; content is persisted through the customer support namespace in the backend GraphQL schema. Redis caching is invalidated automatically after publish/delete mutations.
 - **Session Handling**: The skeleton ships without auth. To integrate JWT-based access, invoke `rootContext.apiService.setAuthToken(token)` once you have a token from your identity provider.
@@ -90,7 +91,7 @@ MobX powers client-side state. `RootContext` instantiates all stores and the `Ap
 
 ## Production & Ops
 
-- **Docker**: The provided `Dockerfile` installs dependencies, runs `npm run build`, and ships a lightweight runtime image exposing port 3000. Coordinate with the root `docker-compose.yml` (service name `admin`) to run alongside the backend and storefront.
+- **Docker**: The provided `Dockerfile` installs dependencies, runs `npm run build`, and ships a lightweight runtime image exposing port 3000. Coordinate with the root `docker-compose.yml` (service name `admin`) to run alongside the backend and store front.
 - **CI Recommendations**: Add `npm run lint` and `npm run build` to CI workflows to enforce type safety and Next.js constraints before deploying.
 - **Caching**: The backend invalidates Redis keys whenever CMS pages mutate. No additional cache busting is required on the admin side.
 

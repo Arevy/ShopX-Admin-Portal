@@ -16,42 +16,47 @@ export const QueryCustomerSupportCustomerProfile = new QueryFactory<
   queryObject: parse(/* GraphQL */ `
     query CustomerSupportCustomerProfile($userId: ID!) {
       customerSupport {
-        user(id: $userId) {
-          id
-          email
-          name
-          role
+        userContext(userId: $userId) {
+          user {
+            id
+            email
+            name
+            role
+          }
+          cart {
+            userId
+            total
+            items {
+              quantity
+              product {
+                id
+                name
+                price
+              }
+            }
+          }
+          wishlist {
+            userId
+            products {
+              id
+              name
+              price
+            }
+          }
+          addresses {
+            id
+            userId
+            street
+            city
+            postalCode
+            country
+          }
         }
         orders(userId: $userId, limit: 10, offset: 0) {
           id
           total
           status
           createdAt
-        }
-        addresses(userId: $userId) {
-          id
-          street
-          city
-          postalCode
-          country
-        }
-        cart(userId: $userId) {
-          userId
-          total
-          items {
-            quantity
-            product {
-              id
-              name
-              price
-            }
-          }
-        }
-        wishlist(userId: $userId) {
-          products {
-            id
-            name
-          }
         }
         reviews(userId: $userId) {
           id
