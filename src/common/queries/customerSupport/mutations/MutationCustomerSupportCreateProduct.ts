@@ -20,6 +20,7 @@ export const MutationCustomerSupportCreateProduct = new QueryFactory<
       $price: Float!
       $description: String
       $categoryId: ID!
+      $image: ProductImageUploadInput
     ) {
       customerSupport {
         addProduct(
@@ -27,12 +28,19 @@ export const MutationCustomerSupportCreateProduct = new QueryFactory<
           price: $price
           description: $description
           categoryId: $categoryId
+          image: $image
         ) {
           id
           name
           price
           description
           categoryId
+          image {
+            url
+            filename
+            mimeType
+            updatedAt
+          }
         }
       }
     }

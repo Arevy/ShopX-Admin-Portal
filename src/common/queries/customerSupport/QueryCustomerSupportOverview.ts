@@ -17,6 +17,10 @@ export const QueryCustomerSupportOverview = new QueryFactory<
           id
           name
           price
+          image {
+            url
+            mimeType
+          }
         }
         orders(limit: $orderLimit, offset: 0) {
           id

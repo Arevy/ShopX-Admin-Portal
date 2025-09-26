@@ -10,7 +10,7 @@ ShopX Admin is the internal control centre for the ShopX commerce stack. It give
 |-----------------|----------------------------------------------------------------------------------|
 | Dashboard       | Review revenue, order velocity, and inventory KPIs in a single snapshot.        |
 | Orders          | Search, filter, and update orders (status changes, payment verification, notes). |
-| Products        | Create/edit products, adjust pricing, toggle availability, and manage categories.|
+| Products        | Create/edit products, adjust pricing, manage imagery, toggle availability, and manage categories.|
 | Users           | Manage customer/support accounts, revoke sessions, and launch customer impersonation. |
 | Support         | Look up a customer’s entire context (orders, carts, wishlists) for issue resolution. |
 | CMS             | Author and publish marketing pages via a WYSIWYG editor; schedule or archive content. |
@@ -108,6 +108,8 @@ MobX powers client-side state. `RootContext` instantiates all stores and the `Ap
 - **User context aggregate**: Support-desk flows call `customerSupport.userContext` to hydrate carts, wishlists, addresses, and identity in a single round trip, mirroring the shopper-facing `getUserContext` query.
 - **Error Handling**: Stores capture GraphQL/API errors and expose user-friendly messages displayed through toast notifications or inline alerts.
 - **CMS Editor**: Uses `react-quill` in a client component; content is persisted through the customer support namespace in the backend GraphQL schema. Redis caching is invalidated automatically after publish/delete mutations.
+- **Product imagery**: Upload widgets convert selected files to base64, call the `ProductImageUploadInput`
+  GraphQL argument, and rely on the backend-hosted `/products/:id/image` URL for live previews.
 - **Session handling**: Support staff authenticate with `/api/auth/login`, which proxies the backend `login` mutation and forwards the issued HTTP-only `sid` cookie back to the browser. Middleware gates all routes based on that cookie, and the shared `ApiService` always sends credentials so GraphQL calls execute under the active session. Logging out clears both the Redis session and the browser cookie.
 - **Impersonation & forced logout**: User management pages expose actions that call `customerSupport.logoutUserSessions` and `customerSupport.impersonateUser`. The first revokes Redis sessions so the customer is logged out on their next request; the second generates a short-lived token that opens the storefront’s `/impersonate` route with a fresh cookie for the selected customer.
 

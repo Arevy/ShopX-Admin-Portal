@@ -23,6 +23,12 @@ export const QueryCustomerSupportProducts = new QueryFactory<
             id
             name
           }
+          image {
+            url
+            filename
+            mimeType
+            updatedAt
+          }
         }
         categories(limit: 50) {
           id

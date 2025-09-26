@@ -10,6 +10,7 @@ import type {
   CustomerSupportCreateProductVariables,
   CustomerSupportProductsVariables,
   CustomerSupportUpdateProductVariables,
+  ProductImageInput,
 } from '@/types/graphql'
 
 interface ProductFilters {
@@ -24,6 +25,7 @@ interface ProductFormInput {
   price: number
   description?: string
   categoryId: string
+  image?: ProductImageInput
 }
 
 export class ProductStore {
@@ -103,6 +105,7 @@ export class ProductStore {
       price: input.price,
       description: input.description,
       categoryId: input.categoryId,
+      image: input.image,
     }
 
     const response = await this.root.apiService.executeGraphQL(
@@ -117,13 +120,20 @@ export class ProductStore {
     await this.fetchProducts()
   }
 
-  async updateProduct(id: string, input: Partial<ProductFormInput>) {
+  async updateProduct(
+    id: string,
+    input: Partial<ProductFormInput> & { removeImage?: boolean },
+  ) {
+    const { removeImage, ...payload } = input
+
     const variables: CustomerSupportUpdateProductVariables = {
       id,
-      name: input.name,
-      price: input.price,
-      description: input.description,
-      categoryId: input.categoryId,
+      name: payload.name,
+      price: payload.price,
+      description: payload.description,
+      categoryId: payload.categoryId,
+      image: payload.image,
+      removeImage,
     }
 
     const response = await this.root.apiService.executeGraphQL(

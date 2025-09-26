@@ -12,6 +12,12 @@ import {
   Review,
 } from '@/types/domain'
 
+export interface ProductImageInput {
+  filename: string
+  mimeType: string
+  base64Data: string
+}
+
 export interface CustomerSupportProductsVariables {
   limit?: number
   offset?: number
@@ -67,7 +73,7 @@ export interface CustomerSupportOverviewVariables {
 
 export interface CustomerSupportOverviewResponse {
   customerSupport: {
-    products: Array<Pick<Product, 'id' | 'name' | 'price'>>
+    products: Array<Pick<Product, 'id' | 'name' | 'price' | 'image'>>
     orders: Array<Pick<Order, 'id' | 'userId' | 'total' | 'status' | 'createdAt'>>
     users: Array<Pick<User, 'id' | 'role'>>
     reviews: Array<{ id: string; rating: number }>
@@ -119,6 +125,7 @@ export interface CustomerSupportCreateProductVariables {
   price: number
   description?: string
   categoryId: string
+  image?: ProductImageInput
 }
 
 export interface CustomerSupportCreateProductResponse {
@@ -133,6 +140,8 @@ export interface CustomerSupportUpdateProductVariables {
   price?: number
   description?: string
   categoryId?: string
+  image?: ProductImageInput
+  removeImage?: boolean
 }
 
 export interface CustomerSupportUpdateProductResponse {

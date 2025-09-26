@@ -21,6 +21,8 @@ export const MutationCustomerSupportUpdateProduct = new QueryFactory<
       $price: Float
       $description: String
       $categoryId: ID
+      $image: ProductImageUploadInput
+      $removeImage: Boolean
     ) {
       customerSupport {
         updateProduct(
@@ -29,12 +31,20 @@ export const MutationCustomerSupportUpdateProduct = new QueryFactory<
           price: $price
           description: $description
           categoryId: $categoryId
+          image: $image
+          removeImage: $removeImage
         ) {
           id
           name
           price
           description
           categoryId
+          image {
+            url
+            filename
+            mimeType
+            updatedAt
+          }
         }
       }
     }

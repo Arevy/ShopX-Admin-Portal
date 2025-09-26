@@ -32,6 +32,10 @@ export const QueryCustomerSupportCustomerProfile = new QueryFactory<
                 id
                 name
                 price
+                image {
+                  url
+                  mimeType
+                }
               }
             }
           }
@@ -41,6 +45,10 @@ export const QueryCustomerSupportCustomerProfile = new QueryFactory<
               id
               name
               price
+              image {
+                url
+                mimeType
+              }
             }
           }
           addresses {

@@ -24,12 +24,15 @@ const ProductsPage = observer(() => {
     createForm,
     setCreateForm,
     handleCreate,
+    handleCreateImageChange,
     creating,
     editForm,
     setEditForm,
     beginEdit,
     resetEdit,
     handleUpdate,
+    handleEditImageChange,
+    handleEditRemoveImageToggle,
     updating,
     handleDelete,
     feedback,
@@ -53,6 +56,20 @@ const ProductsPage = observer(() => {
 
   const productColumns: Column<Product>[] = [
     { key: 'id', header: 'ID' },
+    {
+      key: 'image',
+      header: 'Image',
+      render: (product) =>
+        product.image ? (
+          <img
+            src={product.image.url}
+            alt={product.image.filename ?? product.name}
+            className={styles.thumbnail}
+          />
+        ) : (
+          <span className={styles.emptyImage}>No image</span>
+        ),
+    },
     { key: 'name', header: 'Name' },
     {
       key: 'price',
@@ -190,6 +207,23 @@ const ProductsPage = observer(() => {
               }
             />
           </div>
+          <div className={styles.wideField}>
+            <label className={styles.fieldLabel}>Image</label>
+            <div className={styles.imageField}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  void handleCreateImageChange(event.target.files?.[0] ?? null)
+                }
+              />
+              {createForm.imageBase64 ? (
+                <img src={createForm.imageBase64} alt="Preview" className={styles.previewImage} />
+              ) : (
+                <span className={styles.emptyImage}>No image selected</span>
+              )}
+            </div>
+          </div>
           <div className={styles.formFooter}>
             <button type="submit" disabled={creating} className={styles.primaryButton}>
               {creating ? 'Saving…' : 'Create product'}
@@ -249,6 +283,45 @@ const ProductsPage = observer(() => {
                   setEditForm((prev) => ({ ...prev, description: event.target.value }))
                 }
               />
+            </div>
+            <div className={styles.wideField}>
+              <label className={styles.fieldLabel}>Image</label>
+              <div className={styles.imageField}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={editForm.removeImage}
+                  onChange={(event) =>
+                    void handleEditImageChange(event.target.files?.[0] ?? null)
+                  }
+                />
+                {editForm.imageBase64 ? (
+                  <img
+                    src={editForm.imageBase64}
+                    alt="Preview"
+                    className={styles.previewImage}
+                  />
+                ) : editForm.existingImageUrl && !editForm.removeImage ? (
+                  <img
+                    src={editForm.existingImageUrl}
+                    alt={editForm.existingImageFilename ?? 'Current image'}
+                    className={styles.previewImage}
+                  />
+                ) : (
+                  <span className={styles.emptyImage}>No image on record</span>
+                )}
+              </div>
+              {(editForm.existingImageUrl || editForm.removeImage) && (
+                <label className={styles.checkboxRow}>
+                  <input
+                    type="checkbox"
+                    checked={editForm.removeImage}
+                    onChange={(event) => handleEditRemoveImageToggle(event.target.checked)}
+                    disabled={Boolean(editForm.imageBase64)}
+                  />
+                  Remove current image
+                </label>
+              )}
             </div>
             <div className={styles.editActions}>
               <button type="submit" disabled={updating} className={styles.primaryButton}>
