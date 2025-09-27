@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { getGraphqlUpstream } from '@/app/api/_lib/getGraphqlUpstream'
+import { sanitizeErrorMessage } from '@/common/utils/getUserFriendlyMessage'
 
 type LoginResponse = {
   data?: {
@@ -68,8 +69,10 @@ export async function POST(request: NextRequest) {
   const payload = (await graphqlResponse.json()) as LoginResponse
 
   if (payload.errors?.length) {
+    const friendlyMessage =
+      sanitizeErrorMessage(payload.errors[0]?.message) ?? 'Invalid email or password.'
     return NextResponse.json(
-      { ok: false, message: payload.errors[0]?.message ?? 'Invalid credentials.' },
+      { ok: false, message: friendlyMessage },
       { status: 401 },
     )
   }

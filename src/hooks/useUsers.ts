@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useStores } from '@/common/hooks/useStores'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import { UserRole } from '@/types/domain'
 
 interface CreateUserFormState {
@@ -56,7 +57,9 @@ export const useUsers = () => {
         setFormState({ email: '', name: '', password: '', role: 'SUPPORT' })
         setFeedback('User created and synced with backend!')
       } catch (error) {
-        setFeedback(error instanceof Error ? error.message : 'Failed to create user.')
+        setFeedback(
+          getUserFriendlyMessage(error, 'Failed to create user.'),
+        )
       } finally {
         setCreating(false)
       }
@@ -76,9 +79,10 @@ export const useUsers = () => {
         )
       } catch (error) {
         setFeedback(
-          error instanceof Error
-            ? error.message
-            : 'Failed to revoke user sessions. Please retry.',
+          getUserFriendlyMessage(
+            error,
+            'Failed to revoke user sessions. Please retry.',
+          ),
         )
       }
     },
@@ -105,9 +109,10 @@ export const useUsers = () => {
         setFeedback('Impersonation window opened in a new tab.')
       } catch (error) {
         setFeedback(
-          error instanceof Error
-            ? error.message
-            : 'Failed to start impersonation. Please retry.',
+          getUserFriendlyMessage(
+            error,
+            'Failed to start impersonation. Please retry.',
+          ),
         )
       }
     },

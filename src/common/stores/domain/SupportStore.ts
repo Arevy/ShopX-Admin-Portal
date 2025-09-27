@@ -3,6 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { QueryCustomerSupportCustomerProfile } from '@/common/queries/customerSupport/QueryCustomerSupportCustomerProfile'
 import { QueryCustomerSupportOverview } from '@/common/queries/customerSupport/QueryCustomerSupportOverview'
 import type RootContext from '@/common/stores/RootContext'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import { CustomerProfile, SupportMetrics } from '@/types/domain'
 import type {
   CustomerSupportCustomerProfileVariables,
@@ -66,9 +67,9 @@ export class SupportStore {
         }
       })
     } catch (error) {
+      const message = getUserFriendlyMessage(error, 'Unexpected error fetching metrics.')
       runInAction(() => {
-        this.overviewError =
-          error instanceof Error ? error.message : 'Unexpected error fetching metrics.'
+        this.overviewError = message
         this.metrics = null
       })
     } finally {
@@ -179,11 +180,12 @@ export class SupportStore {
         }
       })
     } catch (error) {
+      const message = getUserFriendlyMessage(
+        error,
+        'Unexpected error loading customer profile.',
+      )
       runInAction(() => {
-        this.profileError =
-          error instanceof Error
-            ? error.message
-            : 'Unexpected error loading customer profile.'
+        this.profileError = message
         this.customerProfile = null
       })
     } finally {

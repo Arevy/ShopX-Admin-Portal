@@ -5,6 +5,7 @@ import { MutationCustomerSupportDeleteProduct } from '@/common/queries/customerS
 import { MutationCustomerSupportUpdateProduct } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportUpdateProduct'
 import { QueryCustomerSupportProducts } from '@/common/queries/customerSupport/QueryCustomerSupportProducts'
 import type RootContext from '@/common/stores/RootContext'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import { Product, Category } from '@/types/domain'
 import type {
   CustomerSupportCreateProductVariables,
@@ -109,8 +110,10 @@ export class ProductStore {
       })
     } catch (error) {
       runInAction(() => {
-        this.error =
-          error instanceof Error ? error.message : 'Unexpected error fetching products.'
+        this.error = getUserFriendlyMessage(
+          error,
+          'Unexpected error fetching products.',
+        )
         this.products = []
       })
     } finally {

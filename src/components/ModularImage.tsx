@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface ModularImageProps {
   src?: string | null
@@ -11,7 +11,6 @@ interface ModularImageProps {
   sizes?: string
   priority?: boolean
   quality?: number
-  style?: CSSProperties
   fallback?: ReactNode
   unoptimized?: boolean
 }
@@ -26,7 +25,6 @@ export const ModularImage = ({
   sizes = '100vw',
   priority = false,
   quality,
-  style,
   fallback = null,
   unoptimized,
 }: ModularImageProps) => {
@@ -52,7 +50,6 @@ export const ModularImage = ({
         className={className}
         priority={priority}
         quality={quality}
-        style={style}
         unoptimized={bypassOptimization}
       />
     )
@@ -68,7 +65,6 @@ export const ModularImage = ({
       className={className}
       priority={priority}
       quality={quality}
-      style={style}
       unoptimized={bypassOptimization}
     />
   )

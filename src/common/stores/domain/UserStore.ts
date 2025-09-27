@@ -7,6 +7,7 @@ import { MutationCustomerSupportLogoutUserSessions } from '@/common/queries/cust
 import { MutationCustomerSupportImpersonateUser } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportImpersonateUser'
 import { QueryCustomerSupportUsers } from '@/common/queries/customerSupport/QueryCustomerSupportUsers'
 import type RootContext from '@/common/stores/RootContext'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import { User, UserRole } from '@/types/domain'
 import type {
   CustomerSupportCreateUserVariables,
@@ -96,8 +97,10 @@ export class UserStore {
       })
     } catch (error) {
       runInAction(() => {
-        this.error =
-          error instanceof Error ? error.message : 'Unexpected error fetching users.'
+        this.error = getUserFriendlyMessage(
+          error,
+          'Unexpected error fetching users.',
+        )
         this.users = []
       })
     } finally {

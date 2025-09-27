@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 
 import { useStores } from '@/common/hooks/useStores'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import { Product } from '@/types/domain'
 import type { ProductImageInput } from '@/types/graphql'
 
@@ -113,7 +114,7 @@ export const useProducts = () => {
         }))
       } catch (error) {
         setFeedback(
-          error instanceof Error ? error.message : 'Failed to load the selected image.',
+          getUserFriendlyMessage(error, 'Failed to load the selected image.'),
         )
       }
     },
@@ -141,7 +142,7 @@ export const useProducts = () => {
         }))
       } catch (error) {
         setFeedback(
-          error instanceof Error ? error.message : 'Failed to load the selected image.',
+          getUserFriendlyMessage(error, 'Failed to load the selected image.'),
         )
       }
     },
@@ -184,7 +185,9 @@ export const useProducts = () => {
         })
         setFeedback('Product created successfully!')
       } catch (error) {
-        setFeedback(error instanceof Error ? error.message : 'Failed to create product.')
+        setFeedback(
+          getUserFriendlyMessage(error, 'Failed to create product.'),
+        )
       } finally {
         setCreating(false)
       }
@@ -243,7 +246,9 @@ export const useProducts = () => {
         setFeedback(`Product ${editForm.id} updated.`)
         resetEdit()
       } catch (error) {
-        setFeedback(error instanceof Error ? error.message : 'Failed to update product.')
+        setFeedback(
+          getUserFriendlyMessage(error, 'Failed to update product.'),
+        )
       } finally {
         setUpdating(false)
       }
@@ -258,7 +263,9 @@ export const useProducts = () => {
         await productStore.deleteProduct(productId)
         setFeedback(`Product ${productId} removed.`)
       } catch (error) {
-        setFeedback(error instanceof Error ? error.message : 'Failed to delete product.')
+        setFeedback(
+          getUserFriendlyMessage(error, 'Failed to delete product.'),
+        )
       }
     },
     [productStore],

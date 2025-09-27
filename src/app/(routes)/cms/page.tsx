@@ -163,8 +163,8 @@ const CmsPageRoute = observer(() => {
     <div className={styles.container}>
       <aside className="card">
         <div className={styles.sidebarCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ margin: 0 }}>CMS pages</h2>
+          <div className={styles.sidebarHeader}>
+            <h2 className={styles.sidebarHeading}>CMS pages</h2>
             <button
               type="button"
               onClick={resetForm}
@@ -220,7 +220,7 @@ const CmsPageRoute = observer(() => {
               </button>
             ))}
             {sortedPages.length === 0 && (
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              <span className={styles.emptyState}>
                 No pages available yet.
               </span>
             )}
@@ -230,9 +230,9 @@ const CmsPageRoute = observer(() => {
 
       <section className="card">
         <div className={styles.editorContainer}>
-          <div style={{ display: 'grid', gap: '0.75rem' }}>
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>Slug</span>
+          <div className={styles.fieldGrid}>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Slug</span>
               <input
                 value={form.slug}
                 onChange={(event) => handleChange('slug', event.target.value)}
@@ -240,24 +240,24 @@ const CmsPageRoute = observer(() => {
                 required
               />
             </label>
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>Title</span>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Title</span>
               <input
                 value={form.title}
                 onChange={(event) => handleChange('title', event.target.value)}
                 required
               />
             </label>
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>Short description</span>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Short description</span>
               <input
                 value={form.excerpt}
                 onChange={(event) => handleChange('excerpt', event.target.value)}
                 placeholder="Optional – used in previews."
               />
             </label>
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>Status</span>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Status</span>
               <select
                 value={form.status}
                 onChange={(event) => handleChange('status', event.target.value as CmsStatus)}
@@ -267,8 +267,8 @@ const CmsPageRoute = observer(() => {
                 <option value="ARCHIVED">Archived</option>
               </select>
             </label>
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>Schedule publish</span>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Schedule publish</span>
               <input
                 type="datetime-local"
                 value={form.publishedAt}
@@ -278,7 +278,7 @@ const CmsPageRoute = observer(() => {
           </div>
 
           <div>
-            <span style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Content</span>
+            <span className={styles.richTextLabel}>Content</span>
             <RichTextEditor
               value={form.body}
               onChange={(value) => handleChange('body', value)}
@@ -316,7 +316,7 @@ const CmsPageRoute = observer(() => {
           </div>
 
           {cmsStore.error && (
-            <span style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>{cmsStore.error}</span>
+            <span className={styles.errorMessage}>{cmsStore.error}</span>
           )}
 
           {form.id && cmsStore.selectedPage && (
@@ -337,13 +337,7 @@ const CmsPageRoute = observer(() => {
               <button
                 type="button"
                 onClick={handleDelete}
-                style={{
-                  background: 'transparent',
-                  border: '1px solid rgba(239, 68, 68, 0.4)',
-                  color: '#fca5a5',
-                  borderRadius: '999px',
-                  padding: '0.55rem 1rem',
-                }}
+                className={styles.deleteButton}
               >
                 Delete page
               </button>

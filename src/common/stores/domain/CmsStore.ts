@@ -9,6 +9,7 @@ import {
 import { QueryCustomerSupportCmsPage } from '@/common/queries/cms/QueryCustomerSupportCmsPage'
 import { QueryCustomerSupportCmsPages } from '@/common/queries/cms/QueryCustomerSupportCmsPages'
 import type RootContext from '@/common/stores/RootContext'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import type { CmsPage, CmsStatus } from '@/types/domain'
 import type { CustomerSupportCmsPagesVariables } from '@/types/graphql'
 
@@ -98,7 +99,7 @@ export class CmsStore {
       })
     } catch (error) {
       console.error('Failed to fetch CMS pages', error)
-      const message = error instanceof Error ? error.message : "We couldn't load the CMS pages."
+      const message = getUserFriendlyMessage(error, "We couldn't load the CMS pages.")
       this.error = message
     } finally {
       this.loading = false
@@ -120,7 +121,7 @@ export class CmsStore {
       return page
     } catch (error) {
       console.error('Failed to load CMS page', error)
-      const message = error instanceof Error ? error.message : "We couldn't load the CMS page."
+      const message = getUserFriendlyMessage(error, "We couldn't load the CMS page.")
       this.error = message
       return null
     } finally {
@@ -155,7 +156,7 @@ export class CmsStore {
       return page
     } catch (error) {
       console.error('Failed to create CMS page', error)
-      const message = error instanceof Error ? error.message : "We couldn't create the CMS page."
+      const message = getUserFriendlyMessage(error, "We couldn't create the CMS page.")
       this.error = message
       throw error
     } finally {
@@ -199,7 +200,7 @@ export class CmsStore {
       return page
     } catch (error) {
       console.error('Failed to update CMS page', error)
-      const message = error instanceof Error ? error.message : "We couldn't update the CMS page."
+      const message = getUserFriendlyMessage(error, "We couldn't update the CMS page.")
       this.error = message
       throw error
     } finally {
@@ -236,7 +237,7 @@ export class CmsStore {
       return page
     } catch (error) {
       console.error('Failed to publish CMS page', error)
-      const message = error instanceof Error ? error.message : "We couldn't publish the CMS page."
+      const message = getUserFriendlyMessage(error, "We couldn't publish the CMS page.")
       this.error = message
       throw error
     } finally {
@@ -260,7 +261,7 @@ export class CmsStore {
       })
     } catch (error) {
       console.error('Failed to delete CMS page', error)
-      const message = error instanceof Error ? error.message : "We couldn't delete the CMS page."
+      const message = getUserFriendlyMessage(error, "We couldn't delete the CMS page.")
       this.error = message
       throw error
     } finally {

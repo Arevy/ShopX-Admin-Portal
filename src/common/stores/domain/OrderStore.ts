@@ -4,6 +4,7 @@ import { MutationCustomerSupportUpdateOrderStatus } from '@/common/queries/custo
 import { QueryCustomerSupportOrderDetail } from '@/common/queries/customerSupport/QueryCustomerSupportOrderDetail'
 import { QueryCustomerSupportOrders } from '@/common/queries/customerSupport/QueryCustomerSupportOrders'
 import type RootContext from '@/common/stores/RootContext'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 import { Order } from '@/types/domain'
 import type {
   CustomerSupportOrderDetailVariables,
@@ -109,8 +110,10 @@ export class OrderStore {
       })
     } catch (error) {
       runInAction(() => {
-        this.error =
-          error instanceof Error ? error.message : 'Unexpected error fetching orders.'
+        this.error = getUserFriendlyMessage(
+          error,
+          'Unexpected error fetching orders.',
+        )
         this.orders = []
       })
     } finally {

@@ -15,6 +15,16 @@
   gap: 1rem;
 }
 
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebarHeading {
+  margin: 0;
+}
+
 .filterForm {
   display: grid;
   gap: 0.75rem;
@@ -62,6 +72,11 @@
   gap: 0.5rem;
 }
 
+.emptyState {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
 .pageListItem {
   display: flex;
   justify-content: space-between;
@@ -92,6 +107,27 @@
   gap: 1rem;
 }
 
+.fieldGrid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.fieldLabel {
+  display: block;
+  font-weight: 600;
+}
+
+.richTextLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
 .actions {
   display: flex;
   gap: 0.75rem;
@@ -103,6 +139,11 @@
   gap: 0.5rem;
   font-size: 0.85rem;
   color: var(--color-text-muted);
+}
+
+.errorMessage {
+  color: var(--danger);
+  font-size: 0.85rem;
 }
 
 .buttonPrimary {
@@ -140,4 +181,17 @@
   border-top: 1px solid rgba(148, 163, 184, 0.16);
   display: flex;
   justify-content: flex-end;
+}
+
+.deleteButton {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: rgba(239, 68, 68, 0.9);
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: rgba(239, 68, 68, 0.08);
 }

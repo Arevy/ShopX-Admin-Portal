@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useStores } from '@/common/hooks/useStores'
+import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
 
 const STATUS_OPTIONS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as const
 
@@ -38,7 +39,10 @@ export const useOrders = () => {
         setFeedback(`Order ${orderId} updated to ${status}.`)
       } catch (error) {
         setFeedback(
-          error instanceof Error ? error.message : 'Failed to update order status in backend.',
+          getUserFriendlyMessage(
+            error,
+            'Failed to update order status in backend.',
+          ),
         )
       } finally {
         setPending((prev) => ({ ...prev, [orderId]: false }))
