@@ -10,6 +10,7 @@ import { QueryCustomerSupportCmsPage } from '@/common/queries/cms/QueryCustomerS
 import { QueryCustomerSupportCmsPages } from '@/common/queries/cms/QueryCustomerSupportCmsPages'
 import type RootContext from '@/common/stores/RootContext'
 import type { CmsPage, CmsStatus } from '@/types/domain'
+import type { CustomerSupportCmsPagesVariables } from '@/types/graphql'
 
 export class CmsStore {
   private readonly root: RootContext
@@ -19,6 +20,7 @@ export class CmsStore {
   loading = false
   saving = false
   error: string | null = null
+  filters: { status?: CmsStatus; slug: string } = { slug: '' }
 
   constructor(root: RootContext) {
     this.root = root
@@ -29,36 +31,63 @@ export class CmsStore {
     this.selectedPage = page
   }
 
-  async fetchPages(filter?: { status?: CmsStatus; search?: string }) {
+  private matchesActiveFilters(page: CmsPage, filters = this.filters) {
+    if (filters.status && page.status !== filters.status) {
+      return false
+    }
+
+    const normalizedSlug = filters.slug.trim().toLowerCase()
+    if (normalizedSlug && !page.slug.toLowerCase().includes(normalizedSlug)) {
+      return false
+    }
+
+    return true
+  }
+
+  async fetchPages(filter?: { status?: CmsStatus | null; slug?: string | null }) {
     this.loading = true
     this.error = null
     try {
+      const statusOverrideProvided =
+        filter && Object.prototype.hasOwnProperty.call(filter, 'status')
+      const slugOverrideProvided =
+        filter && Object.prototype.hasOwnProperty.call(filter, 'slug')
+
+      const targetStatus = statusOverrideProvided
+        ? filter?.status ?? undefined
+        : this.filters.status ?? undefined
+
+      const rawSlug = slugOverrideProvided
+        ? (filter?.slug ?? '')
+        : this.filters.slug ?? ''
+
+      const normalizedSlug = rawSlug.trim()
+      const normalizedSlugLower = normalizedSlug.toLowerCase()
+
+      const variables: CustomerSupportCmsPagesVariables = {
+        status: targetStatus,
+        search: normalizedSlug || undefined,
+      }
+
+      this.filters = {
+        status: targetStatus,
+        slug: normalizedSlug,
+      }
+
       const response = await this.root.apiService.executeGraphQL(
         QueryCustomerSupportCmsPages,
-        filter,
+        variables,
       )
+
       const pages = response.data?.customerSupport.cmsPages ?? []
-      const normalizedStatus = filter?.status ?? null
-      const normalizedSearch = filter?.search?.trim().toLowerCase() ?? null
 
       const filteredPages = pages.filter((page) => {
-        if (normalizedStatus && page.status !== normalizedStatus) {
+        if (targetStatus && page.status !== targetStatus) {
           return false
         }
 
-        if (normalizedSearch) {
-          const haystack = [
-            page.slug,
-            page.title,
-            page.excerpt ?? '',
-            page.body,
-          ]
-            .join(' ')
-            .toLowerCase()
-
-          if (!haystack.includes(normalizedSearch)) {
-            return false
-          }
+        if (normalizedSlugLower && !page.slug.toLowerCase().includes(normalizedSlugLower)) {
+          return false
         }
 
         return true
@@ -117,7 +146,9 @@ export class CmsStore {
       const page = response.data?.customerSupport.createCmsPage
       if (page) {
         runInAction(() => {
-          this.pages = [page, ...this.pages.filter((item) => item.id !== page.id)]
+          if (this.matchesActiveFilters(page)) {
+            this.pages = [page, ...this.pages.filter((item) => item.id !== page.id)]
+          }
           this.selectedPage = page
         })
       }
@@ -150,9 +181,18 @@ export class CmsStore {
       const page = response.data?.customerSupport.updateCmsPage
       if (page) {
         runInAction(() => {
-          this.pages = this.pages.map((existing) =>
-            existing.id === page.id ? page : existing,
-          )
+          if (this.matchesActiveFilters(page)) {
+            const existingIndex = this.pages.findIndex((item) => item.id === page.id)
+            if (existingIndex === -1) {
+              this.pages = [page, ...this.pages]
+            } else {
+              this.pages = this.pages.map((existing) =>
+                existing.id === page.id ? page : existing,
+              )
+            }
+          } else {
+            this.pages = this.pages.filter((existing) => existing.id !== page.id)
+          }
           this.selectedPage = page
         })
       }
@@ -178,9 +218,18 @@ export class CmsStore {
       const page = response.data?.customerSupport.publishCmsPage
       if (page) {
         runInAction(() => {
-          this.pages = this.pages.map((existing) =>
-            existing.id === page.id ? page : existing,
-          )
+          if (this.matchesActiveFilters(page)) {
+            const existingIndex = this.pages.findIndex((item) => item.id === page.id)
+            if (existingIndex === -1) {
+              this.pages = [page, ...this.pages]
+            } else {
+              this.pages = this.pages.map((existing) =>
+                existing.id === page.id ? page : existing,
+              )
+            }
+          } else {
+            this.pages = this.pages.filter((existing) => existing.id !== page.id)
+          }
           this.selectedPage = page
         })
       }

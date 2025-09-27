@@ -1,6 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 
@@ -22,6 +29,11 @@ const defaultForm = () => ({
 const CmsPageRoute = observer(() => {
   const cmsStore = useCms()
   const [form, setForm] = useState(defaultForm())
+  const [isDirty, setIsDirty] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<CmsStatus | ''>(
+    cmsStore.filters.status ?? '',
+  )
+  const [slugFilter, setSlugFilter] = useState(cmsStore.filters.slug ?? '')
 
   const sortedPages = useMemo(
     () =>
@@ -31,9 +43,8 @@ const CmsPageRoute = observer(() => {
     [cmsStore.pages],
   )
 
-  useEffect(() => {
-    if (cmsStore.selectedPage) {
-      const page = cmsStore.selectedPage
+  const populateForm = useCallback((page: CmsPage | null) => {
+    if (page) {
       setForm({
         id: page.id,
         slug: page.slug,
@@ -43,20 +54,39 @@ const CmsPageRoute = observer(() => {
         status: page.status,
         publishedAt: page.publishedAt ?? '',
       })
+    } else {
+      setForm(defaultForm())
     }
-  }, [cmsStore.selectedPage])
+    setIsDirty(false)
+  }, [])
+
+  useEffect(() => {
+    populateForm(cmsStore.selectedPage)
+  }, [cmsStore.selectedPage, populateForm])
+
+  useEffect(() => {
+    setStatusFilter(cmsStore.filters.status ?? '')
+    setSlugFilter(cmsStore.filters.slug ?? '')
+  }, [cmsStore.filters.status, cmsStore.filters.slug])
 
   const resetForm = useCallback(() => {
     cmsStore.selectPage(null)
-    setForm(defaultForm())
-  }, [cmsStore])
+    populateForm(null)
+  }, [cmsStore, populateForm])
 
-  const handleSelect = useCallback((page: CmsPage) => {
-    cmsStore.selectPage(page)
-  }, [cmsStore])
+  const handleSelect = useCallback(
+    (page: CmsPage) => {
+      cmsStore.selectPage(page)
+    },
+    [cmsStore],
+  )
 
   const handleChange = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }))
+    setIsDirty(true)
+    if (cmsStore.error) {
+      cmsStore.error = null
+    }
   }
 
   const handleSave = async () => {
@@ -76,6 +106,7 @@ const CmsPageRoute = observer(() => {
 
     if (form.id) {
       await cmsStore.updatePage(form.id, payload)
+      setIsDirty(false)
     } else {
       const created = await cmsStore.createPage(payload)
       if (created) {
@@ -89,12 +120,43 @@ const CmsPageRoute = observer(() => {
     await cmsStore.publishPage(form.id)
   }
 
+  const handleDiscard = () => {
+    populateForm(cmsStore.selectedPage)
+    if (cmsStore.error) {
+      cmsStore.error = null
+    }
+  }
+
   const handleDelete = async () => {
     if (!form.id) return
     const confirmation = window.confirm('Are you sure you want to delete this page?')
     if (!confirmation) return
     await cmsStore.deletePage(form.id)
     resetForm()
+  }
+
+  const handleFilterSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    await cmsStore.fetchPages({
+      status: statusFilter || null,
+      slug: slugFilter,
+    })
+  }
+
+  const handleStatusFilterChange = async (event: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target
+    const nextStatus = (value as CmsStatus) || ''
+    setStatusFilter(nextStatus)
+    await cmsStore.fetchPages({
+      status: nextStatus || null,
+      slug: cmsStore.filters.slug,
+    })
+  }
+
+  const handleResetFilters = async () => {
+    setStatusFilter('')
+    setSlugFilter('')
+    await cmsStore.fetchPages({ status: null, slug: '' })
   }
 
   return (
@@ -111,6 +173,38 @@ const CmsPageRoute = observer(() => {
               + New page
             </button>
           </div>
+          <form className={styles.filterForm} onSubmit={handleFilterSubmit}>
+            <label className={styles.filterField}>
+              <span>Slug contains</span>
+              <input
+                value={slugFilter}
+                onChange={(event) => setSlugFilter(event.target.value)}
+                placeholder="gift-guide-holidays"
+              />
+            </label>
+            <label className={styles.filterField}>
+              <span>Status</span>
+              <select value={statusFilter} onChange={handleStatusFilterChange}>
+                <option value="">Any status</option>
+                <option value="DRAFT">Draft</option>
+                <option value="PUBLISHED">Published</option>
+                <option value="ARCHIVED">Archived</option>
+              </select>
+            </label>
+            <div className={styles.filterActions}>
+              <button type="submit" className={styles.applyButton}>
+                Apply filters
+              </button>
+              <button
+                type="button"
+                className={styles.buttonSecondary}
+                onClick={handleResetFilters}
+                disabled={!statusFilter && !slugFilter}
+              >
+                Clear
+              </button>
+            </div>
+          </form>
           <div className={styles.pageList}>
             {sortedPages.map((page) => (
               <button
@@ -197,9 +291,17 @@ const CmsPageRoute = observer(() => {
               type="button"
               className={styles.buttonPrimary}
               onClick={handleSave}
-              disabled={cmsStore.saving}
+              disabled={cmsStore.saving || (form.id ? !isDirty : false)}
             >
               {form.id ? 'Save changes' : 'Create page'}
+            </button>
+            <button
+              type="button"
+              className={styles.buttonSecondary}
+              onClick={handleDiscard}
+              disabled={!isDirty || cmsStore.saving}
+            >
+              Discard
             </button>
             {form.id && (
               <button

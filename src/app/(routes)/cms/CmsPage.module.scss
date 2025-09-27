@@ -15,6 +15,48 @@
   gap: 1rem;
 }
 
+.filterForm {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-sm);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.filterField {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.filterActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.applyButton {
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.applyButton:hover {
+  background: rgba(37, 99, 235, 0.22);
+  border-color: rgba(37, 99, 235, 0.5);
+}
+
+.applyButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .pageList {
   display: grid;
   gap: 0.5rem;
