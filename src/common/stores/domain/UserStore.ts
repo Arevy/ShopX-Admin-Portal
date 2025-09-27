@@ -75,8 +75,24 @@ export class UserStore {
         throw new Error(response.errors.map((err) => err.message).join('; '))
       }
 
+      const dataset = response.data?.customerSupport.users ?? []
+      const normalizedEmail = sanitized.email?.toLowerCase() ?? null
+      const normalizedRole = sanitized.role ?? null
+
+      const filteredUsers = dataset.filter((user) => {
+        if (normalizedEmail && !user.email.toLowerCase().includes(normalizedEmail)) {
+          return false
+        }
+
+        if (normalizedRole && user.role !== normalizedRole) {
+          return false
+        }
+
+        return true
+      })
+
       runInAction(() => {
-        this.users = response.data?.customerSupport.users ?? []
+        this.users = filteredUsers
       })
     } catch (error) {
       runInAction(() => {

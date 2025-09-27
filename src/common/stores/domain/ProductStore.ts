@@ -82,9 +82,30 @@ export class ProductStore {
         throw new Error(response.errors.map((err) => err.message).join('; '))
       }
 
+      const dataset = response.data?.customerSupport.products ?? []
+      const categoryList = response.data?.customerSupport.categories ?? []
+
+      const normalizedName = sanitized.name?.toLowerCase() ?? null
+      const normalizedCategoryId = sanitized.categoryId ?? null
+
+      const filteredProducts = dataset.filter((product) => {
+        if (normalizedName && !product.name.toLowerCase().includes(normalizedName)) {
+          return false
+        }
+
+        if (
+          normalizedCategoryId &&
+          String(product.categoryId ?? '') !== normalizedCategoryId
+        ) {
+          return false
+        }
+
+        return true
+      })
+
       runInAction(() => {
-        this.products = response.data?.customerSupport.products ?? []
-        this.categories = response.data?.customerSupport.categories ?? []
+        this.products = filteredProducts
+        this.categories = categoryList
       })
     } catch (error) {
       runInAction(() => {

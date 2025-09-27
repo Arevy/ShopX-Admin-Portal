@@ -45,10 +45,13 @@ export class OrderStore {
       ? sanitizedUserId
       : undefined
 
+    const normalizedStatus = merged.status?.trim()
+    const sanitizedStatus = normalizedStatus ? normalizedStatus.toUpperCase() : undefined
+
     const sanitized: CustomerSupportOrdersVariables = {
       limit: typeof merged.limit === 'number' ? merged.limit : 20,
       offset: typeof merged.offset === 'number' ? merged.offset : 0,
-      status: merged.status?.trim() || undefined,
+      status: sanitizedStatus,
       userId: normalizedUserId,
     }
 
@@ -78,8 +81,30 @@ export class OrderStore {
         throw new Error(response.errors.map((err) => err.message).join('; '))
       }
 
+      const dataset = response.data?.customerSupport.orders ?? []
+      const normalizedStatusFilter = sanitized.status ?? null
+      const normalizedUserIdFilter = sanitized.userId ?? null
+
+      const filteredOrders = dataset.filter((order) => {
+        if (
+          normalizedStatusFilter &&
+          String(order.status).toUpperCase() !== normalizedStatusFilter
+        ) {
+          return false
+        }
+
+        if (
+          normalizedUserIdFilter &&
+          String(order.userId ?? '') !== normalizedUserIdFilter
+        ) {
+          return false
+        }
+
+        return true
+      })
+
       runInAction(() => {
-        this.orders = response.data?.customerSupport.orders ?? []
+        this.orders = filteredOrders
         this.error = null
       })
     } catch (error) {

@@ -38,8 +38,34 @@ export class CmsStore {
         filter,
       )
       const pages = response.data?.customerSupport.cmsPages ?? []
+      const normalizedStatus = filter?.status ?? null
+      const normalizedSearch = filter?.search?.trim().toLowerCase() ?? null
+
+      const filteredPages = pages.filter((page) => {
+        if (normalizedStatus && page.status !== normalizedStatus) {
+          return false
+        }
+
+        if (normalizedSearch) {
+          const haystack = [
+            page.slug,
+            page.title,
+            page.excerpt ?? '',
+            page.body,
+          ]
+            .join(' ')
+            .toLowerCase()
+
+          if (!haystack.includes(normalizedSearch)) {
+            return false
+          }
+        }
+
+        return true
+      })
+
       runInAction(() => {
-        this.pages = pages
+        this.pages = filteredPages
       })
     } catch (error) {
       console.error('Failed to fetch CMS pages', error)

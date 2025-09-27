@@ -3,6 +3,7 @@
 import { observer } from 'mobx-react-lite'
 import classNames from 'classnames'
 import { DataTable, type Column } from '@/components/DataTable'
+import { ModularImage } from '@/components/ModularImage'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { useProducts } from '@/hooks/useProducts'
@@ -61,9 +62,12 @@ const ProductsPage = observer(() => {
       header: 'Image',
       render: (product) =>
         product.image ? (
-          <img
+          <ModularImage
             src={product.image.url}
             alt={product.image.filename ?? product.name}
+            width={48}
+            height={48}
+            sizes="48px"
             className={styles.thumbnail}
           />
         ) : (
@@ -218,7 +222,14 @@ const ProductsPage = observer(() => {
                 }
               />
               {createForm.imageBase64 ? (
-                <img src={createForm.imageBase64} alt="Preview" className={styles.previewImage} />
+                <ModularImage
+                  src={createForm.imageBase64}
+                  alt="Preview"
+                  width={82}
+                  height={82}
+                  sizes="82px"
+                  className={styles.previewImage}
+                />
               ) : (
                 <span className={styles.emptyImage}>No image selected</span>
               )}
@@ -296,15 +307,21 @@ const ProductsPage = observer(() => {
                   }
                 />
                 {editForm.imageBase64 ? (
-                  <img
+                  <ModularImage
                     src={editForm.imageBase64}
                     alt="Preview"
+                    width={82}
+                    height={82}
+                    sizes="82px"
                     className={styles.previewImage}
                   />
                 ) : editForm.existingImageUrl && !editForm.removeImage ? (
-                  <img
+                  <ModularImage
                     src={editForm.existingImageUrl}
                     alt={editForm.existingImageFilename ?? 'Current image'}
+                    width={82}
+                    height={82}
+                    sizes="82px"
                     className={styles.previewImage}
                   />
                 ) : (

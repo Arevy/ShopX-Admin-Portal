@@ -21,6 +21,7 @@ export const QueryCustomerSupportCmsPages = new QueryFactory<
           slug
           title
           excerpt
+          body
           status
           updatedAt
           publishedAt
