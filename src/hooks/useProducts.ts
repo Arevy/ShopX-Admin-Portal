@@ -1,11 +1,15 @@
 'use client'
 
-import { FormEvent, useCallback, useEffect, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useStores } from '@/common/hooks/useStores'
 import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
-import { Product } from '@/types/domain'
+import { useTranslation } from '@/i18n'
+import type { Category, Product } from '@/types/domain'
 import type { ProductImageInput } from '@/types/graphql'
+import { QueryCustomerSupportProducts } from '@/common/queries/customerSupport/QueryCustomerSupportProducts'
+import { MutationCustomerSupportCreateProduct } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportCreateProduct'
+import { MutationCustomerSupportUpdateProduct } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportUpdateProduct'
+import { MutationCustomerSupportDeleteProduct } from '@/common/queries/customerSupport/mutations/MutationCustomerSupportDeleteProduct'
 
 interface ProductFormState {
   name: string
@@ -23,11 +27,39 @@ interface EditFormState extends ProductFormState {
   existingImageFilename: string | null
 }
 
+type Feedback = {
+  tone: 'positive' | 'negative'
+  message: string
+} | null
+
+type GraphQLProductRecord = {
+  id: string | number
+  name: string
+  price: number | string
+  description?: string | null
+  categoryId?: string | null
+  category?: {
+    id: string | number
+    name: string
+    description?: string | null
+  } | null
+  image?: {
+    url: string
+    filename?: string | null
+    mimeType?: string | null
+    updatedAt?: string | null
+  } | null
+}
+
 export const useProducts = () => {
-  const { rootContext } = useStores()
-  const productStore = rootContext.productStore
+  const { t } = useTranslation('Page_Admin_Products')
   const [nameFilter, setNameFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [activeFilters, setActiveFilters] = useState<{ name?: string; categoryId?: string }>({})
+  const [products, setProducts] = useState<Product[]>([])
+  const [categoryOptions, setCategoryOptions] = useState<{ value: string; label: string }[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [createForm, setCreateForm] = useState<ProductFormState>({
     name: '',
     price: '',
@@ -50,21 +82,45 @@ export const useProducts = () => {
   })
   const [creating, setCreating] = useState(false)
   const [updating, setUpdating] = useState(false)
-  const [feedback, setFeedback] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<Feedback>(null)
 
-  useEffect(() => {
-    void productStore.fetchProducts()
-  }, [productStore])
+  const graphQLEndpoint = useMemo(
+    () => process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? '/api/support-graphql',
+    [],
+  )
 
-  const handleFilter = useCallback(
-    (event: FormEvent) => {
-      event.preventDefault()
-      void productStore.fetchProducts({
-        name: nameFilter || undefined,
-        categoryId: categoryFilter || undefined,
+  const executeGraphQL = useCallback(
+    async <T,>(query: string, variables?: Record<string, unknown>): Promise<T> => {
+      const response = await fetch(graphQLEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ query, variables }),
       })
+
+      const payload = (await response.json()) as {
+        data?: T
+        errors?: Array<{ message?: string | null } | null> | null
+      }
+
+      if (!response.ok || (payload.errors && payload.errors.length > 0)) {
+        const message = payload.errors
+          ?.map((item) => item?.message)
+          .filter((value): value is string => Boolean(value))
+          .join('\n')
+
+        throw new Error(message || response.statusText)
+      }
+
+      if (!payload.data) {
+        throw new Error('GraphQL response was empty.')
+      }
+
+      return payload.data
     },
-    [productStore, nameFilter, categoryFilter],
+    [graphQLEndpoint],
   )
 
   const readFileAsDataUrl = useCallback((file: File): Promise<string> => {
@@ -78,10 +134,11 @@ export const useProducts = () => {
           reject(new Error('Unexpected file reader result.'))
         }
       }
-      reader.onerror = () => reject(reader.error ?? new Error('Failed to read image file.'))
+      reader.onerror = () =>
+        reject(reader.error ?? new Error(t('feedback.errors.image_load')))
       reader.readAsDataURL(file)
     })
-  }, [])
+  }, [t])
 
   const buildImagePayload = useCallback(
     (file: File | null, base64: string | null): ProductImageInput | undefined => {
@@ -113,12 +170,13 @@ export const useProducts = () => {
           imageBase64: base64,
         }))
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(error, 'Failed to load the selected image.'),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.image_load')),
+        })
       }
     },
-    [readFileAsDataUrl],
+    [readFileAsDataUrl, t],
   )
 
   const handleEditImageChange = useCallback(
@@ -141,12 +199,13 @@ export const useProducts = () => {
           removeImage: false,
         }))
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(error, 'Failed to load the selected image.'),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.image_load')),
+        })
       }
     },
-    [readFileAsDataUrl],
+    [readFileAsDataUrl, t],
   )
 
   const handleEditRemoveImageToggle = useCallback((checked: boolean) => {
@@ -158,23 +217,104 @@ export const useProducts = () => {
     }))
   }, [])
 
+  const deserialiseProduct = useCallback(
+    (product: GraphQLProductRecord): Product => ({
+      id: String(product.id),
+      name: product.name,
+      price: Number(product.price ?? 0),
+      description: product.description ?? null,
+      categoryId: product.categoryId ?? null,
+      category: product.category
+        ? {
+            id: String(product.category.id),
+            name: product.category.name,
+            description: product.category.description ?? null,
+          }
+        : null,
+      image: product.image
+        ? {
+            filename: product.image.filename ?? 'product-image',
+            mimeType: product.image.mimeType ?? 'application/octet-stream',
+            url: product.image.url,
+            updatedAt: product.image.updatedAt ?? null,
+          }
+        : null,
+    }),
+    [],
+  )
+
+  const fetchProducts = useCallback(
+    async (overrides?: { name?: string; categoryId?: string }) => {
+      const nextFilters = {
+        name: overrides?.name ?? nameFilter,
+        categoryId: overrides?.categoryId ?? categoryFilter,
+      }
+
+      setLoading(true)
+      setError(null)
+
+      try {
+        const data = await executeGraphQL<{
+          customerSupport: { products: GraphQLProductRecord[]; categories: Category[] } | null
+        }>(
+          QueryCustomerSupportProducts.queryString,
+          {
+            limit: 100,
+            name: nextFilters.name?.trim() || undefined,
+            categoryId: nextFilters.categoryId?.trim() || undefined,
+          },
+        )
+
+        const customerSupport = data.customerSupport ?? { products: [], categories: [] }
+        setProducts(customerSupport.products.map(deserialiseProduct))
+        setCategoryOptions(
+          (customerSupport.categories ?? []).map((category) => ({
+            value: String(category.id),
+            label: category.name ?? `#${category.id}`,
+          })),
+        )
+        setActiveFilters(nextFilters)
+      } catch (err) {
+        setError(getUserFriendlyMessage(err, t('feedback.errors.fetch')))
+      } finally {
+        setLoading(false)
+      }
+    },
+    [categoryFilter, deserialiseProduct, executeGraphQL, nameFilter, t],
+  )
+
+  useEffect(() => {
+    void fetchProducts()
+  }, [fetchProducts])
+
+  const handleFilter = useCallback(
+    (event: FormEvent) => {
+      event.preventDefault()
+      void fetchProducts({ name: nameFilter, categoryId: categoryFilter })
+    },
+    [categoryFilter, fetchProducts, nameFilter],
+  )
+
   const handleCreate = useCallback(
     async (event: FormEvent) => {
       event.preventDefault()
       if (!createForm.name || !createForm.price || !createForm.categoryId) {
-        setFeedback('Name, price and category are required.')
+        setFeedback({ tone: 'negative', message: t('feedback.errors.missing_required_fields') })
         return
       }
 
       try {
         setCreating(true)
-        await productStore.createProduct({
-          name: createForm.name,
-          price: Number(createForm.price),
-          description: createForm.description || undefined,
-          categoryId: createForm.categoryId,
-          image: buildImagePayload(createForm.imageFile, createForm.imageBase64),
-        })
+        await executeGraphQL<{ customerSupport: { addProduct: unknown } | null }>(
+          MutationCustomerSupportCreateProduct.queryString,
+          {
+            name: createForm.name,
+            price: Number(createForm.price),
+            description: createForm.description || undefined,
+            categoryId: createForm.categoryId,
+            image: buildImagePayload(createForm.imageFile, createForm.imageBase64),
+          },
+        )
         setCreateForm({
           name: '',
           price: '',
@@ -183,16 +323,18 @@ export const useProducts = () => {
           imageFile: null,
           imageBase64: null,
         })
-        setFeedback('Product created successfully!')
+        setFeedback({ tone: 'positive', message: t('feedback.success.create') })
+        await fetchProducts()
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(error, 'Failed to create product.'),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.create')),
+        })
       } finally {
         setCreating(false)
       }
     },
-    [productStore, createForm, buildImagePayload],
+    [createForm, buildImagePayload, executeGraphQL, fetchProducts, t],
   )
 
   const beginEdit = useCallback((product: Product) => {
@@ -235,48 +377,59 @@ export const useProducts = () => {
 
       try {
         setUpdating(true)
-        await productStore.updateProduct(editForm.id, {
-          name: editForm.name || undefined,
-          price: editForm.price ? Number(editForm.price) : undefined,
-          description: editForm.description || undefined,
-          categoryId: editForm.categoryId || undefined,
-          image: buildImagePayload(editForm.imageFile, editForm.imageBase64),
-          removeImage: editForm.removeImage,
-        })
-        setFeedback(`Product ${editForm.id} updated.`)
-        resetEdit()
-      } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(error, 'Failed to update product.'),
+        await executeGraphQL<{ customerSupport: { updateProduct: unknown } | null }>(
+          MutationCustomerSupportUpdateProduct.queryString,
+          {
+            id: editForm.id,
+            name: editForm.name || undefined,
+            price: editForm.price ? Number(editForm.price) : undefined,
+            description: editForm.description || undefined,
+            categoryId: editForm.categoryId || undefined,
+            image: buildImagePayload(editForm.imageFile, editForm.imageBase64),
+            removeImage: editForm.removeImage || undefined,
+          },
         )
+        setFeedback({ tone: 'positive', message: t('feedback.success.update', { id: editForm.id }) })
+        resetEdit()
+        await fetchProducts()
+      } catch (error) {
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.update')),
+        })
       } finally {
         setUpdating(false)
       }
     },
-    [productStore, editForm, resetEdit, buildImagePayload],
+    [editForm, resetEdit, buildImagePayload, executeGraphQL, fetchProducts, t],
   )
 
   const handleDelete = useCallback(
     async (productId: string) => {
       setFeedback(null)
       try {
-        await productStore.deleteProduct(productId)
-        setFeedback(`Product ${productId} removed.`)
-      } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(error, 'Failed to delete product.'),
+        await executeGraphQL<{ customerSupport: { deleteProduct: boolean } | null }>(
+          MutationCustomerSupportDeleteProduct.queryString,
+          { id: productId },
         )
+        setFeedback({ tone: 'positive', message: t('feedback.success.delete', { id: productId }) })
+        await fetchProducts()
+      } catch (error) {
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.delete')),
+        })
       }
     },
-    [productStore],
+    [executeGraphQL, fetchProducts, t],
   )
 
   return {
-    products: productStore.products,
-    categories: productStore.categoryOptions,
-    loading: productStore.loading,
-    error: productStore.error,
-    activeFilters: productStore.filters,
+    products,
+    categories: categoryOptions,
+    loading,
+    error,
+    activeFilters,
     nameFilter,
     setNameFilter,
     categoryFilter,

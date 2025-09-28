@@ -1,0 +1,104 @@
+{
+  "loading": {
+    "catalog": "Loading catalog…"
+  },
+  "dialogs": {
+    "confirm_delete": "This will remove the product. Continue?"
+  },
+  "table": {
+    "columns": {
+      "id": "ID",
+      "image": "Image",
+      "name": "Name",
+      "price": "Price",
+      "category": "Category",
+      "actions": "Actions"
+    },
+    "cells": {
+      "no_image": "No image",
+      "uncategorised": "Uncategorised"
+    },
+    "actions": {
+      "edit": "Edit",
+      "remove": "Remove"
+    },
+    "empty": "No products matched the current filters."
+  },
+  "filters": {
+    "fields": {
+      "name": {
+        "label": "Name contains",
+        "placeholder": "Sneakers"
+      },
+      "category": {
+        "label": "Category",
+        "any": "All categories"
+      }
+    },
+    "actions": {
+      "apply": "Filter products"
+    },
+    "summary": {
+      "label": "Active filters:",
+      "name": " name contains \"{{value}}\"",
+      "category": " category #{{value}}",
+      "separator": ","
+    }
+  },
+  "form": {
+    "fields": {
+      "name": "Name",
+      "price": "Price",
+      "category": "Category",
+      "category_placeholder": "Select category",
+      "description": "Description",
+      "image": "Image"
+    },
+    "image": {
+      "preview_alt": "Preview",
+      "empty": "No image selected"
+    }
+  },
+  "create": {
+    "heading": "Create product",
+    "subheading": "Draft new items straight into the GraphQL layer. All fields are mandatory except description.",
+    "actions": {
+      "submit": "Create product",
+      "pending": "Saving…"
+    }
+  },
+  "edit": {
+    "heading": "Update product",
+    "subheading": "Editing product {{id}}",
+    "fields": {
+      "category": {
+        "unassigned": "Unassigned"
+      }
+    },
+    "image": {
+      "current_alt": "Current image",
+      "absent": "No image on record",
+      "remove_toggle": "Remove current image"
+    },
+    "actions": {
+      "submit": "Save changes",
+      "pending": "Updating…",
+      "cancel": "Cancel"
+    }
+  },
+  "feedback": {
+    "errors": {
+      "image_load": "Failed to load the selected image.",
+      "missing_required_fields": "Name, price and category are required.",
+      "create": "Failed to create product.",
+      "update": "Failed to update product.",
+      "delete": "Failed to delete product.",
+      "fetch": "We couldn’t load the catalog."
+    },
+    "success": {
+      "create": "Product created successfully!",
+      "update": "Product {{id}} updated.",
+      "delete": "Product {{id}} removed."
+    }
+  }
+}

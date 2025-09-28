@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "sync": "Syncing orders…"
+  },
+  "table": {
+    "columns": {
+      "order": "Order",
+      "customer": "Customer",
+      "total": "Total",
+      "status": "Status",
+      "created_at": "Created at",
+      "update_status": "Update status"
+    },
+    "empty": "No orders yet. Adjust your filter or sync backend."
+  },
+  "filters": {
+    "fields": {
+      "status": {
+        "label": "Status",
+        "any": "All statuses"
+      },
+      "user": {
+        "label": "Customer ID",
+        "placeholder": "Numeric user ID"
+      }
+    },
+    "actions": {
+      "apply": "Apply filters"
+    },
+    "summary": {
+      "label": "Active filters:",
+      "status": " status = {{value}}",
+      "user": " customer ID = {{value}}",
+      "separator": ","
+    }
+  },
+  "statuses": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "feedback": {
+    "errors": {
+      "update": "Failed to update order status in backend."
+    },
+    "success": {
+      "update": "Order {{id}} updated to {{status}}."
+    }
+  }
+}

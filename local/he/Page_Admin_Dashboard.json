@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "metrics": "טוען מדדים…"
+  },
+  "metrics": {
+    "revenue": {
+      "label": "הכנסה נטו (תקופה)",
+      "delta": "+4.5% מול המחזור הקודם"
+    },
+    "orders": {
+      "label": "הזמנות שעובדו",
+      "delta": "‏97% עמידה ב‑SLA"
+    },
+    "products": {
+      "label": "מוצרים פעילים",
+      "delta": "‏12 ממתינים לאישור"
+    },
+    "customers": {
+      "label": "לקוחות פעילים"
+    },
+    "rating": {
+      "label": "דירוג ממוצע למוצר"
+    }
+  },
+  "sections": {
+    "latest_orders": {
+      "title": "הזמנות אחרונות",
+      "table": {
+        "columns": {
+          "order": "הזמנה",
+          "total": "סה\"כ",
+          "customer": "לקוח",
+          "status": "סטטוס",
+          "created_at": "נוצר בתאריך"
+        },
+        "empty": "אין הזמנות להצגה."
+      }
+    },
+    "top_customers": {
+      "title": "לקוחות מובילים",
+      "placeholder": "לא נמצאו לקוחות."
+    }
+  }
+}

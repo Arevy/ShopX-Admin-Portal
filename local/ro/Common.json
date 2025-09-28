@@ -1,0 +1,73 @@
+{
+  "language": {
+    "label": "Limba",
+    "accessibility_label": "Selectează limba interfeței",
+    "options": {
+      "en": "English",
+      "ro": "Română",
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "he": "עברית"
+    }
+  },
+  "app_shell": {
+    "brand": {
+      "meta": "Control în timp real",
+      "title": "ShopX Admin",
+      "subtitle": "Consolă pentru suport clienți și automatizarea catalogului."
+    },
+    "navigation": {
+      "overview": "Prezentare generală",
+      "orders": "Comenzi",
+      "products": "Produse",
+      "customers": "Clienți",
+      "support": "Asistență",
+      "cms": "CMS"
+    },
+    "endpoint": {
+      "label": "Endpoint backend",
+      "fallback": "http://localhost:4000/graphql"
+    },
+    "active_area": {
+      "label": "Zonă activă"
+    },
+    "status": {
+      "online": "● Online"
+    },
+    "badges": {
+      "node_requirement": "Necesită Node >= 20"
+    },
+    "footer": {
+      "note": "Limba interfeței se aplică instant în consolă."
+    }
+  },
+  "support_session": {
+    "actions": {
+      "sign_out": "Deconectare",
+      "signing_out": "Se deconectează…"
+    },
+    "errors": {
+      "terminate_failed": "Nu s-a putut închide sesiunea.",
+      "unexpected": "Eroare neașteptată la deconectare."
+    }
+  },
+  "common": {
+    "loading": {
+      "default": "Se încarcă datele…"
+    },
+    "errors": {
+      "generic_title": "A apărut o problemă"
+    },
+    "prompts": {
+      "confirm_delete_product": "Această acțiune va elimina produsul. Continuați?"
+    }
+  },
+  "order_status": {
+    "pending": "În așteptare",
+    "processing": "În procesare",
+    "shipped": "Expediată",
+    "delivered": "Livrată",
+    "cancelled": "Anulată"
+  }
+}

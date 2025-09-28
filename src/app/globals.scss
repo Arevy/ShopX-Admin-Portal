@@ -38,6 +38,16 @@ body {
   min-height: 100vh;
 }
 
+html[dir='rtl'] body {
+  direction: rtl;
+}
+
+html[dir='rtl'] input,
+html[dir='rtl'] select,
+html[dir='rtl'] textarea {
+  text-align: right;
+}
+
 a {
   color: inherit;
   text-decoration: none;

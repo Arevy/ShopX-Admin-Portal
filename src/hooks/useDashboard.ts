@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo } from 'react'
 
-import { useStores } from '@/common/hooks/useStores'
+import { useRootContext } from '@/stores/provider'
 
 export const useDashboard = () => {
-  const { rootContext } = useStores()
+  const rootContext = useRootContext()
   const supportStore = rootContext.supportStore
   const orderStore = rootContext.orderStore
   const userStore = rootContext.userStore

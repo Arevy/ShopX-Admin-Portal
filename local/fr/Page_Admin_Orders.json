@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "sync": "Synchronisation des commandes…"
+  },
+  "table": {
+    "columns": {
+      "order": "Commande",
+      "customer": "Client",
+      "total": "Total",
+      "status": "Statut",
+      "created_at": "Créée le",
+      "update_status": "Mettre à jour le statut"
+    },
+    "empty": "Aucune commande. Ajustez vos filtres ou relancez la synchronisation."
+  },
+  "filters": {
+    "fields": {
+      "status": {
+        "label": "Statut",
+        "any": "Tous les statuts"
+      },
+      "user": {
+        "label": "ID client",
+        "placeholder": "Identifiant numérique"
+      }
+    },
+    "actions": {
+      "apply": "Appliquer les filtres"
+    },
+    "summary": {
+      "label": "Filtres actifs :",
+      "status": " statut = {{value}}",
+      "user": " ID client = {{value}}",
+      "separator": ","
+    }
+  },
+  "statuses": {
+    "pending": "En attente",
+    "processing": "En cours",
+    "shipped": "Expédiée",
+    "delivered": "Livrée",
+    "cancelled": "Annulée"
+  },
+  "feedback": {
+    "errors": {
+      "update": "Échec de la mise à jour du statut dans le backend."
+    },
+    "success": {
+      "update": "Commande {{id}} mise à jour sur {{status}}."
+    }
+  }
+}

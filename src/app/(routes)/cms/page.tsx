@@ -13,8 +13,11 @@ import { observer } from 'mobx-react-lite'
 
 import { RichTextEditor } from '@/components/RichTextEditor'
 import { useCms } from '@/hooks/useCms'
+import { useTranslation } from '@/i18n'
 import type { CmsPage, CmsStatus } from '@/types/domain'
 import styles from './CmsPage.module.scss'
+
+const TRANSLATION_NAMESPACE = 'Page_Admin_Cms'
 
 const defaultForm = () => ({
   id: '',
@@ -26,8 +29,12 @@ const defaultForm = () => ({
   publishedAt: '',
 })
 
+const statusLabel = (status: CmsStatus, translate: (key: string) => string) =>
+  translate(`statuses.${status.toLowerCase()}`)
+
 const CmsPageRoute = observer(() => {
   const cmsStore = useCms()
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
   const [form, setForm] = useState(defaultForm())
   const [isDirty, setIsDirty] = useState(false)
   const [statusFilter, setStatusFilter] = useState<CmsStatus | ''>(
@@ -43,22 +50,25 @@ const CmsPageRoute = observer(() => {
     [cmsStore.pages],
   )
 
-  const populateForm = useCallback((page: CmsPage | null) => {
-    if (page) {
-      setForm({
-        id: page.id,
-        slug: page.slug,
-        title: page.title,
-        excerpt: page.excerpt ?? '',
-        body: page.body,
-        status: page.status,
-        publishedAt: page.publishedAt ?? '',
-      })
-    } else {
-      setForm(defaultForm())
-    }
-    setIsDirty(false)
-  }, [])
+  const populateForm = useCallback(
+    (page: CmsPage | null) => {
+      if (page) {
+        setForm({
+          id: page.id,
+          slug: page.slug,
+          title: page.title,
+          excerpt: page.excerpt ?? '',
+          body: page.body,
+          status: page.status,
+          publishedAt: page.publishedAt ?? '',
+        })
+      } else {
+        setForm(defaultForm())
+      }
+      setIsDirty(false)
+    },
+    [],
+  )
 
   useEffect(() => {
     populateForm(cmsStore.selectedPage)
@@ -100,7 +110,7 @@ const CmsPageRoute = observer(() => {
     }
 
     if (!payload.slug || !payload.title || !payload.body) {
-      cmsStore.error = 'Slug, title, and content are required.'
+      cmsStore.error = t('form.errors.required_fields')
       return
     }
 
@@ -129,7 +139,7 @@ const CmsPageRoute = observer(() => {
 
   const handleDelete = async () => {
     if (!form.id) return
-    const confirmation = window.confirm('Are you sure you want to delete this page?')
+    const confirmation = window.confirm(t('form.confirm_delete'))
     if (!confirmation) return
     await cmsStore.deletePage(form.id)
     resetForm()
@@ -164,36 +174,36 @@ const CmsPageRoute = observer(() => {
       <aside className="card">
         <div className={styles.sidebarCard}>
           <div className={styles.sidebarHeader}>
-            <h2 className={styles.sidebarHeading}>CMS pages</h2>
+            <h2 className={styles.sidebarHeading}>{t('sidebar.title')}</h2>
             <button
               type="button"
               onClick={resetForm}
               className={styles.buttonSecondary}
             >
-              + New page
+              {t('sidebar.new_page')}
             </button>
           </div>
           <form className={styles.filterForm} onSubmit={handleFilterSubmit}>
             <label className={styles.filterField}>
-              <span>Slug contains</span>
+              <span>{t('filters.slug.label')}</span>
               <input
                 value={slugFilter}
                 onChange={(event) => setSlugFilter(event.target.value)}
-                placeholder="gift-guide-holidays"
+                placeholder={t('filters.slug.placeholder')}
               />
             </label>
             <label className={styles.filterField}>
-              <span>Status</span>
+              <span>{t('filters.status.label')}</span>
               <select value={statusFilter} onChange={handleStatusFilterChange}>
-                <option value="">Any status</option>
-                <option value="DRAFT">Draft</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="ARCHIVED">Archived</option>
+                <option value="">{t('filters.status.any')}</option>
+                <option value="DRAFT">{statusLabel('DRAFT', t)}</option>
+                <option value="PUBLISHED">{statusLabel('PUBLISHED', t)}</option>
+                <option value="ARCHIVED">{statusLabel('ARCHIVED', t)}</option>
               </select>
             </label>
             <div className={styles.filterActions}>
               <button type="submit" className={styles.applyButton}>
-                Apply filters
+                {t('filters.actions.apply')}
               </button>
               <button
                 type="button"
@@ -201,7 +211,7 @@ const CmsPageRoute = observer(() => {
                 onClick={handleResetFilters}
                 disabled={!statusFilter && !slugFilter}
               >
-                Clear
+                {t('filters.actions.clear')}
               </button>
             </div>
           </form>
@@ -216,13 +226,11 @@ const CmsPageRoute = observer(() => {
                 onClick={() => handleSelect(page)}
               >
                 <span>{page.title}</span>
-                <span className={styles.statusBadge}>{page.status.toLowerCase()}</span>
+                <span className={styles.statusBadge}>{statusLabel(page.status, t)}</span>
               </button>
             ))}
             {sortedPages.length === 0 && (
-              <span className={styles.emptyState}>
-                No pages available yet.
-              </span>
+              <span className={styles.emptyState}>{t('sidebar.empty')}</span>
             )}
           </div>
         </div>
@@ -232,16 +240,16 @@ const CmsPageRoute = observer(() => {
         <div className={styles.editorContainer}>
           <div className={styles.fieldGrid}>
             <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Slug</span>
+              <span className={styles.fieldLabel}>{t('form.fields.slug')}</span>
               <input
                 value={form.slug}
                 onChange={(event) => handleChange('slug', event.target.value)}
-                placeholder="ex: homepage"
+                placeholder={t('form.placeholders.slug')}
                 required
               />
             </label>
             <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Title</span>
+              <span className={styles.fieldLabel}>{t('form.fields.title')}</span>
               <input
                 value={form.title}
                 onChange={(event) => handleChange('title', event.target.value)}
@@ -249,26 +257,26 @@ const CmsPageRoute = observer(() => {
               />
             </label>
             <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Short description</span>
+              <span className={styles.fieldLabel}>{t('form.fields.excerpt')}</span>
               <input
                 value={form.excerpt}
                 onChange={(event) => handleChange('excerpt', event.target.value)}
-                placeholder="Optional – used in previews."
+                placeholder={t('form.placeholders.excerpt')}
               />
             </label>
             <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Status</span>
+              <span className={styles.fieldLabel}>{t('form.fields.status')}</span>
               <select
                 value={form.status}
                 onChange={(event) => handleChange('status', event.target.value as CmsStatus)}
               >
-                <option value="DRAFT">Draft</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="ARCHIVED">Archived</option>
+                <option value="DRAFT">{statusLabel('DRAFT', t)}</option>
+                <option value="PUBLISHED">{statusLabel('PUBLISHED', t)}</option>
+                <option value="ARCHIVED">{statusLabel('ARCHIVED', t)}</option>
               </select>
             </label>
             <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Schedule publish</span>
+              <span className={styles.fieldLabel}>{t('form.fields.schedule')}</span>
               <input
                 type="datetime-local"
                 value={form.publishedAt}
@@ -278,11 +286,11 @@ const CmsPageRoute = observer(() => {
           </div>
 
           <div>
-            <span className={styles.richTextLabel}>Content</span>
+            <span className={styles.richTextLabel}>{t('form.fields.body')}</span>
             <RichTextEditor
               value={form.body}
               onChange={(value) => handleChange('body', value)}
-              placeholder="Write the content for your page..."
+              placeholder={t('form.placeholders.body')}
             />
           </div>
 
@@ -293,7 +301,7 @@ const CmsPageRoute = observer(() => {
               onClick={handleSave}
               disabled={cmsStore.saving || (form.id ? !isDirty : false)}
             >
-              {form.id ? 'Save changes' : 'Create page'}
+              {form.id ? t('form.actions.update') : t('form.actions.create')}
             </button>
             <button
               type="button"
@@ -301,7 +309,7 @@ const CmsPageRoute = observer(() => {
               onClick={handleDiscard}
               disabled={!isDirty || cmsStore.saving}
             >
-              Discard
+              {t('form.actions.discard')}
             </button>
             {form.id && (
               <button
@@ -310,7 +318,7 @@ const CmsPageRoute = observer(() => {
                 onClick={handlePublish}
                 disabled={cmsStore.saving || form.status === 'PUBLISHED'}
               >
-                Publish now
+                {t('form.actions.publish')}
               </button>
             )}
           </div>
@@ -322,11 +330,13 @@ const CmsPageRoute = observer(() => {
           {form.id && cmsStore.selectedPage && (
             <div className={styles.metaGrid}>
               <span>
-                Last updated: {new Date(cmsStore.selectedPage.updatedAt).toLocaleString('en-US')}
+                {t('meta.updated_at')}{' '}
+                {new Date(cmsStore.selectedPage.updatedAt).toLocaleString()}
               </span>
               {cmsStore.selectedPage.publishedAt && (
                 <span>
-                  Published at: {new Date(cmsStore.selectedPage.publishedAt).toLocaleString('en-US')}
+                  {t('meta.published_at')}{' '}
+                  {new Date(cmsStore.selectedPage.publishedAt).toLocaleString()}
                 </span>
               )}
             </div>
@@ -339,7 +349,7 @@ const CmsPageRoute = observer(() => {
                 onClick={handleDelete}
                 className={styles.deleteButton}
               >
-                Delete page
+                {t('form.actions.delete')}
               </button>
             </div>
           )}

@@ -1,14 +1,18 @@
 'use client'
 
 import { observer } from 'mobx-react-lite'
+import { useMemo } from 'react'
 import classNames from 'classnames'
 import { DataTable, type Column } from '@/components/DataTable'
 import { ModularImage } from '@/components/ModularImage'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { useProducts } from '@/hooks/useProducts'
+import { useTranslation } from '@/i18n'
 import { Product } from '@/types/domain'
 import styles from './Products.module.scss'
+
+const TRANSLATION_NAMESPACE = 'Page_Admin_Products'
 
 const ProductsPage = observer(() => {
   const {
@@ -38,17 +42,29 @@ const ProductsPage = observer(() => {
     handleDelete,
     feedback,
   } = useProducts()
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
 
   const requestDelete = (productId: string) => {
-    if (!confirm('This will remove the product. Continue?')) {
+    if (!confirm(t('dialogs.confirm_delete'))) {
       return
     }
 
     void handleDelete(productId)
   }
 
+  const activeFilterChips = useMemo(() => {
+    const chips: string[] = []
+    if (activeFilters.name) {
+      chips.push(t('filters.summary.name', { value: activeFilters.name }))
+    }
+    if (activeFilters.categoryId) {
+      chips.push(t('filters.summary.category', { value: activeFilters.categoryId }))
+    }
+    return chips
+  }, [activeFilters.categoryId, activeFilters.name, t])
+
   if (loading && products.length === 0) {
-    return <LoadingState label="Loading catalog…" />
+    return <LoadingState label={t('loading.catalog')} />
   }
 
   if (error) {
@@ -56,10 +72,10 @@ const ProductsPage = observer(() => {
   }
 
   const productColumns: Column<Product>[] = [
-    { key: 'id', header: 'ID' },
+    { key: 'id', header: t('table.columns.id') },
     {
       key: 'image',
-      header: 'Image',
+      header: t('table.columns.image'),
       render: (product) =>
         product.image ? (
           <ModularImage
@@ -71,23 +87,23 @@ const ProductsPage = observer(() => {
             className={styles.thumbnail}
           />
         ) : (
-          <span className={styles.emptyImage}>No image</span>
+          <span className={styles.emptyImage}>{t('table.cells.no_image')}</span>
         ),
     },
-    { key: 'name', header: 'Name' },
+    { key: 'name', header: t('table.columns.name') },
     {
       key: 'price',
-      header: 'Price',
+      header: t('table.columns.price'),
       render: (product) => `$${Number(product.price).toFixed(2)}`,
     },
     {
       key: 'category',
-      header: 'Category',
-      render: (product) => product.category?.name ?? 'Uncategorised',
+      header: t('table.columns.category'),
+      render: (product) => product.category?.name ?? t('table.cells.uncategorised'),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('table.columns.actions'),
       render: (product) => (
         <div className={styles.actionButtons}>
           <button
@@ -95,14 +111,14 @@ const ProductsPage = observer(() => {
             onClick={() => beginEdit(product)}
             className={styles.editButton}
           >
-            Edit
+            {t('table.actions.edit')}
           </button>
           <button
             type="button"
             onClick={() => requestDelete(String(product.id))}
             className={styles.dangerButton}
           >
-            Remove
+            {t('table.actions.remove')}
           </button>
         </div>
       ),
@@ -114,20 +130,20 @@ const ProductsPage = observer(() => {
       <section className={classNames('surface-border', styles.panel)}>
         <form onSubmit={handleFilter} className={styles.filterForm}>
           <div>
-            <label className={styles.fieldLabel}>Name contains</label>
+            <label className={styles.fieldLabel}>{t('filters.fields.name.label')}</label>
             <input
               value={nameFilter}
               onChange={(event) => setNameFilter(event.target.value)}
-              placeholder="Sneakers"
+              placeholder={t('filters.fields.name.placeholder')}
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Category</label>
+            <label className={styles.fieldLabel}>{t('filters.fields.category.label')}</label>
             <select
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value)}
             >
-              <option value="">All categories</option>
+              <option value="">{t('filters.fields.category.any')}</option>
               {categories.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -136,37 +152,32 @@ const ProductsPage = observer(() => {
             </select>
           </div>
           <button type="submit" className={styles.primaryButton}>
-            Filter products
+            {t('filters.actions.apply')}
           </button>
         </form>
 
-        {(activeFilters.name || activeFilters.categoryId) && (
+        {activeFilterChips.length > 0 ? (
           <p className={styles.filterSummary}>
-            Active filters:
-            {activeFilters.name ? ` name contains "${activeFilters.name}"` : ''}
-            {activeFilters.categoryId
-              ? `${activeFilters.name ? ',' : ''} category #${activeFilters.categoryId}`
-              : ''}
+            {t('filters.summary.label')}{' '}
+            {activeFilterChips.join(t('filters.summary.separator'))}
           </p>
-        )}
+        ) : null}
 
         <DataTable<Product>
           columns={productColumns}
           data={products}
-          emptyState={<span>No products matched the current filters.</span>}
+          emptyState={<span>{t('table.empty')}</span>}
         />
       </section>
 
       <section className={classNames('surface-border', styles.panel)}>
         <div>
-          <h3 className={styles.sectionHeading}>Create product</h3>
-          <p className={styles.sectionSubheading}>
-            Draft new items straight into the GraphQL layer. All fields are mandatory except description.
-          </p>
+          <h3 className={styles.sectionHeading}>{t('create.heading')}</h3>
+          <p className={styles.sectionSubheading}>{t('create.subheading')}</p>
         </div>
         <form onSubmit={handleCreate} className={styles.formGrid}>
           <div>
-            <label className={styles.fieldLabel}>Name</label>
+            <label className={styles.fieldLabel}>{t('form.fields.name')}</label>
             <input
               value={createForm.name}
               onChange={(event) => setCreateForm((prev) => ({ ...prev, name: event.target.value }))}
@@ -174,7 +185,7 @@ const ProductsPage = observer(() => {
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Price</label>
+            <label className={styles.fieldLabel}>{t('form.fields.price')}</label>
             <input
               type="number"
               min="0"
@@ -185,7 +196,7 @@ const ProductsPage = observer(() => {
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Category</label>
+            <label className={styles.fieldLabel}>{t('form.fields.category')}</label>
             <select
               value={createForm.categoryId}
               onChange={(event) =>
@@ -193,7 +204,7 @@ const ProductsPage = observer(() => {
               }
               required
             >
-              <option value="">Select category</option>
+              <option value="">{t('form.fields.category_placeholder')}</option>
               {categories.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -202,7 +213,7 @@ const ProductsPage = observer(() => {
             </select>
           </div>
           <div className={styles.wideField}>
-            <label className={styles.fieldLabel}>Description</label>
+            <label className={styles.fieldLabel}>{t('form.fields.description')}</label>
             <textarea
               rows={3}
               value={createForm.description}
@@ -212,7 +223,7 @@ const ProductsPage = observer(() => {
             />
           </div>
           <div className={styles.wideField}>
-            <label className={styles.fieldLabel}>Image</label>
+            <label className={styles.fieldLabel}>{t('form.fields.image')}</label>
             <div className={styles.imageField}>
               <input
                 type="file"
@@ -224,20 +235,20 @@ const ProductsPage = observer(() => {
               {createForm.imageBase64 ? (
                 <ModularImage
                   src={createForm.imageBase64}
-                  alt="Preview"
+                  alt={t('form.image.preview_alt')}
                   width={82}
                   height={82}
                   sizes="82px"
                   className={styles.previewImage}
                 />
               ) : (
-                <span className={styles.emptyImage}>No image selected</span>
+                <span className={styles.emptyImage}>{t('form.image.empty')}</span>
               )}
             </div>
           </div>
           <div className={styles.formFooter}>
             <button type="submit" disabled={creating} className={styles.primaryButton}>
-              {creating ? 'Saving…' : 'Create product'}
+              {creating ? t('create.actions.pending') : t('create.actions.submit')}
             </button>
           </div>
         </form>
@@ -246,21 +257,21 @@ const ProductsPage = observer(() => {
       {editForm.id ? (
         <section className={classNames('surface-border', styles.panel)}>
           <div>
-            <h3 className={styles.sectionHeading}>Update product</h3>
+            <h3 className={styles.sectionHeading}>{t('edit.heading')}</h3>
             <p className={styles.sectionSubheading}>
-              Editing product <code>{editForm.id}</code>
+              {t('edit.subheading', { id: editForm.id })}
             </p>
           </div>
           <form onSubmit={handleUpdate} className={styles.formGrid}>
             <div>
-              <label className={styles.fieldLabel}>Name</label>
+              <label className={styles.fieldLabel}>{t('form.fields.name')}</label>
               <input
                 value={editForm.name}
                 onChange={(event) => setEditForm((prev) => ({ ...prev, name: event.target.value }))}
               />
             </div>
             <div>
-              <label className={styles.fieldLabel}>Price</label>
+              <label className={styles.fieldLabel}>{t('form.fields.price')}</label>
               <input
                 type="number"
                 min="0"
@@ -270,14 +281,14 @@ const ProductsPage = observer(() => {
               />
             </div>
             <div>
-              <label className={styles.fieldLabel}>Category</label>
+              <label className={styles.fieldLabel}>{t('form.fields.category')}</label>
               <select
                 value={editForm.categoryId}
                 onChange={(event) =>
                   setEditForm((prev) => ({ ...prev, categoryId: event.target.value }))
                 }
               >
-                <option value="">Unassigned</option>
+                <option value="">{t('edit.fields.category.unassigned')}</option>
                 {categories.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -286,7 +297,7 @@ const ProductsPage = observer(() => {
               </select>
             </div>
             <div className={styles.wideField}>
-              <label className={styles.fieldLabel}>Description</label>
+              <label className={styles.fieldLabel}>{t('form.fields.description')}</label>
               <textarea
                 rows={3}
                 value={editForm.description}
@@ -296,7 +307,7 @@ const ProductsPage = observer(() => {
               />
             </div>
             <div className={styles.wideField}>
-              <label className={styles.fieldLabel}>Image</label>
+              <label className={styles.fieldLabel}>{t('form.fields.image')}</label>
               <div className={styles.imageField}>
                 <input
                   type="file"
@@ -309,7 +320,7 @@ const ProductsPage = observer(() => {
                 {editForm.imageBase64 ? (
                   <ModularImage
                     src={editForm.imageBase64}
-                    alt="Preview"
+                    alt={t('form.image.preview_alt')}
                     width={82}
                     height={82}
                     sizes="82px"
@@ -318,14 +329,14 @@ const ProductsPage = observer(() => {
                 ) : editForm.existingImageUrl && !editForm.removeImage ? (
                   <ModularImage
                     src={editForm.existingImageUrl}
-                    alt={editForm.existingImageFilename ?? 'Current image'}
+                    alt={editForm.existingImageFilename ?? t('edit.image.current_alt')}
                     width={82}
                     height={82}
                     sizes="82px"
                     className={styles.previewImage}
                   />
                 ) : (
-                  <span className={styles.emptyImage}>No image on record</span>
+                  <span className={styles.emptyImage}>{t('edit.image.absent')}</span>
                 )}
               </div>
               {(editForm.existingImageUrl || editForm.removeImage) && (
@@ -336,16 +347,16 @@ const ProductsPage = observer(() => {
                     onChange={(event) => handleEditRemoveImageToggle(event.target.checked)}
                     disabled={Boolean(editForm.imageBase64)}
                   />
-                  Remove current image
+                  {t('edit.image.remove_toggle')}
                 </label>
               )}
             </div>
             <div className={styles.editActions}>
               <button type="submit" disabled={updating} className={styles.primaryButton}>
-                {updating ? 'Updating…' : 'Save changes'}
+                {updating ? t('edit.actions.pending') : t('edit.actions.submit')}
               </button>
               <button type="button" onClick={resetEdit} className={styles.secondaryButton}>
-                Cancel
+                {t('edit.actions.cancel')}
               </button>
             </div>
           </form>
@@ -353,8 +364,8 @@ const ProductsPage = observer(() => {
       ) : null}
 
       {feedback ? (
-        <span className={feedback.includes('failed') ? styles.feedbackNegative : styles.feedbackPositive}>
-          {feedback}
+        <span className={feedback.tone === 'negative' ? styles.feedbackNegative : styles.feedbackPositive}>
+          {feedback.message}
         </span>
       ) : null}
     </div>

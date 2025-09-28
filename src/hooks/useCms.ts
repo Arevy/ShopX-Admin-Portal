@@ -1,10 +1,13 @@
+"use client";
+
 import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { useStore } from '@/stores/provider'
+import { useRootContext } from '@/stores/provider'
 
 export const useCms = () => {
-  const { cmsStore } = useStore()
+  const rootContext = useRootContext()
+  const { cmsStore } = rootContext
 
   useEffect(() => {
     if (!cmsStore.pages.length && !cmsStore.loading) {

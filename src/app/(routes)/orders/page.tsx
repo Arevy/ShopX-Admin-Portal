@@ -1,14 +1,17 @@
 'use client'
 
 import { observer } from 'mobx-react-lite'
+import classNames from 'classnames'
 import { DataTable, type Column } from '@/components/DataTable'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { StatusBadge } from '@/components/StatusBadge'
 import { useOrders } from '@/hooks/useOrders'
+import { useTranslation } from '@/i18n'
 import { Order } from '@/types/domain'
-import classNames from 'classnames'
 import styles from './Orders.module.scss'
+
+const TRANSLATION_NAMESPACE = 'Page_Admin_Orders'
 
 const OrdersPage = observer(() => {
   const {
@@ -26,9 +29,10 @@ const OrdersPage = observer(() => {
     pending,
     feedback,
   } = useOrders()
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
 
   if (loading) {
-    return <LoadingState label="Syncing orders…" />
+    return <LoadingState label={t('loading.sync')} />
   }
 
   if (error) {
@@ -36,27 +40,27 @@ const OrdersPage = observer(() => {
   }
 
   const orderColumns: Column<Order>[] = [
-    { key: 'id', header: 'Order' },
-    { key: 'userId', header: 'Customer' },
+    { key: 'id', header: t('table.columns.order') },
+    { key: 'userId', header: t('table.columns.customer') },
     {
       key: 'total',
-      header: 'Total',
+      header: t('table.columns.total'),
       render: (order) => `$${Number(order.total).toFixed(2)}`,
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('table.columns.status'),
       render: (order) => <StatusBadge status={String(order.status)} />,
     },
     {
       key: 'createdAt',
-      header: 'Created at',
+      header: t('table.columns.created_at'),
       render: (order) =>
         order.createdAt ? new Date(String(order.createdAt)).toLocaleString() : '—',
     },
     {
       key: 'actions',
-      header: 'Update status',
+      header: t('table.columns.update_status'),
       render: (order) => (
         <select
           className={styles.statusDropdown}
@@ -66,7 +70,7 @@ const OrdersPage = observer(() => {
         >
           {statusOptions.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {t(`statuses.${status.toLowerCase()}`)}
             </option>
           ))}
         </select>
@@ -74,59 +78,64 @@ const OrdersPage = observer(() => {
     },
   ]
 
+  const activeFilterChips: string[] = []
+  if (activeFilters.status) {
+    activeFilterChips.push(t('filters.summary.status', { value: activeFilters.status }))
+  }
+  if (activeFilters.userId) {
+    activeFilterChips.push(t('filters.summary.user', { value: activeFilters.userId }))
+  }
+
   return (
     <div className={styles.container}>
       <section className={classNames('surface-border', styles.panel)}>
         <form onSubmit={handleFilter} className={styles.filterForm}>
           <div>
-            <label className={styles.fieldLabel}>Status</label>
+            <label className={styles.fieldLabel}>{t('filters.fields.status.label')}</label>
             <select
               className={styles.statusSelect}
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
             >
-              <option value="">All statuses</option>
+              <option value="">{t('filters.fields.status.any')}</option>
               {statusOptions.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {t(`statuses.${status.toLowerCase()}`)}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label className={styles.fieldLabel}>Customer ID</label>
+            <label className={styles.fieldLabel}>{t('filters.fields.user.label')}</label>
             <input
-              placeholder="Numeric user ID"
+              placeholder={t('filters.fields.user.placeholder')}
               value={userIdFilter}
               onChange={(event) => setUserIdFilter(event.target.value)}
               className={styles.idInput}
             />
           </div>
           <button type="submit" className={styles.primaryButton}>
-            Apply filters
+            {t('filters.actions.apply')}
           </button>
         </form>
 
-        {(activeFilters.status || activeFilters.userId) && (
+        {activeFilterChips.length > 0 ? (
           <p className={styles.filterSummary}>
-            Active filters:
-            {activeFilters.status ? ` status = ${activeFilters.status}` : ''}
-            {activeFilters.userId
-              ? `${activeFilters.status ? ',' : ''} customer ID = ${activeFilters.userId}`
-              : ''}
+            {t('filters.summary.label')}{' '}
+            {activeFilterChips.join(t('filters.summary.separator'))}
           </p>
-        )}
+        ) : null}
 
         <DataTable<Order>
           columns={orderColumns}
           data={orders}
-          emptyState={<span>No orders yet. Adjust your filter or sync backend.</span>}
+          emptyState={<span>{t('table.empty')}</span>}
         />
         {feedback ? (
           <span
-            className={feedback.includes('updated') ? styles.feedbackPositive : styles.feedbackNegative}
+            className={feedback.tone === 'positive' ? styles.feedbackPositive : styles.feedbackNegative}
           >
-            {feedback}
+            {feedback.message}
           </span>
         ) : null}
       </section>

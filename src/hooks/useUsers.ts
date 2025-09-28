@@ -2,8 +2,9 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useStores } from '@/common/hooks/useStores'
+import { useRootContext } from '@/stores/provider'
 import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
+import { useTranslation } from '@/i18n'
 import { UserRole } from '@/types/domain'
 
 interface CreateUserFormState {
@@ -13,8 +14,14 @@ interface CreateUserFormState {
   role: UserRole
 }
 
+type Feedback = {
+  tone: 'positive' | 'negative'
+  message: string
+} | null
+
 export const useUsers = () => {
-  const { rootContext } = useStores()
+  const rootContext = useRootContext()
+  const { t } = useTranslation('Page_Admin_Users')
   const userStore = rootContext.userStore
   const [emailSearch, setEmailSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState<UserRole | ''>('')
@@ -25,7 +32,7 @@ export const useUsers = () => {
     role: 'SUPPORT',
   })
   const [creating, setCreating] = useState(false)
-  const [feedback, setFeedback] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<Feedback>(null)
 
   useEffect(() => {
     void userStore.fetchUsers()
@@ -47,7 +54,7 @@ export const useUsers = () => {
       event.preventDefault()
       setFeedback(null)
       if (!formState.email || !formState.password) {
-        setFeedback('Email and password are required to create a user.')
+        setFeedback({ tone: 'negative', message: t('feedback.errors.missing_fields') })
         return
       }
 
@@ -55,16 +62,17 @@ export const useUsers = () => {
         setCreating(true)
         await userStore.createUser(formState)
         setFormState({ email: '', name: '', password: '', role: 'SUPPORT' })
-        setFeedback('User created and synced with backend!')
+        setFeedback({ tone: 'positive', message: t('feedback.success.created') })
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(error, 'Failed to create user.'),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.create')),
+        })
       } finally {
         setCreating(false)
       }
     },
-    [userStore, formState],
+    [userStore, formState, t],
   )
 
   const handleForceLogout = useCallback(
@@ -72,21 +80,18 @@ export const useUsers = () => {
       try {
         setFeedback(null)
         const revoked = await userStore.logoutUserSessions(userId)
-        setFeedback(
-          revoked
-            ? 'All active sessions for this user were revoked.'
-            : 'No active sessions were found for this user.',
-        )
+        setFeedback({
+          tone: 'positive',
+          message: revoked ? t('feedback.success.sessions_revoked') : t('feedback.info.no_sessions'),
+        })
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(
-            error,
-            'Failed to revoke user sessions. Please retry.',
-          ),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.sessions_revoke')),
+        })
       }
     },
-    [userStore],
+    [userStore, t],
   )
 
   const handleImpersonate = useCallback(
@@ -95,28 +100,26 @@ export const useUsers = () => {
       try {
         const ticket = await userStore.impersonateUser(userId)
         if (!ticket) {
-          throw new Error('Unable to generate an impersonation ticket.')
+          throw new Error(t('feedback.errors.impersonation_ticket'))
         }
 
         if (typeof window === 'undefined') {
-          throw new Error('Impersonation requires a browser environment.')
+          throw new Error(t('feedback.errors.impersonation_browser'))
         }
 
         const baseUrl =
           process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'http://localhost:3100'
         const impersonateUrl = `${baseUrl.replace(/\/$/, '')}/impersonate?token=${ticket.token}`
         window.open(impersonateUrl, '_blank', 'noopener')
-        setFeedback('Impersonation window opened in a new tab.')
+        setFeedback({ tone: 'positive', message: t('feedback.success.impersonation') })
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(
-            error,
-            'Failed to start impersonation. Please retry.',
-          ),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.impersonation')),
+        })
       }
     },
-    [userStore],
+    [userStore, t],
   )
 
   const roleOptions = useMemo(() => ['CUSTOMER', 'SUPPORT'] as const, [])

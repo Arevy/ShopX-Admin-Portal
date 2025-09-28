@@ -1,0 +1,73 @@
+{
+  "language": {
+    "label": "اللغة",
+    "accessibility_label": "اختر لغة الواجهة",
+    "options": {
+      "en": "English",
+      "ro": "Română",
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "he": "עברית"
+    }
+  },
+  "app_shell": {
+    "brand": {
+      "meta": "تحكم فوري",
+      "title": "ShopX Admin",
+      "subtitle": "منصة دعم وإدارة الكتالوج في ShopX."
+    },
+    "navigation": {
+      "overview": "نظرة عامة",
+      "orders": "الطلبات",
+      "products": "المنتجات",
+      "customers": "العملاء",
+      "support": "الدعم",
+      "cms": "إدارة المحتوى"
+    },
+    "endpoint": {
+      "label": "نقطة نهاية الخلفية",
+      "fallback": "http://localhost:4000/graphql"
+    },
+    "active_area": {
+      "label": "المنطقة النشطة"
+    },
+    "status": {
+      "online": "● متصل"
+    },
+    "badges": {
+      "node_requirement": "يتطلب Node ‎20 أو أحدث"
+    },
+    "footer": {
+      "note": "تطبيق اللغة يتم فورًا على كامل لوحة التحكم."
+    }
+  },
+  "support_session": {
+    "actions": {
+      "sign_out": "تسجيل الخروج",
+      "signing_out": "جارٍ تسجيل الخروج…"
+    },
+    "errors": {
+      "terminate_failed": "تعذّر إنهاء الجلسة.",
+      "unexpected": "حدث خطأ غير متوقع أثناء تسجيل الخروج."
+    }
+  },
+  "common": {
+    "loading": {
+      "default": "جارٍ تحميل البيانات…"
+    },
+    "errors": {
+      "generic_title": "حدث خطأ ما"
+    },
+    "prompts": {
+      "confirm_delete_product": "سيتم حذف المنتج. هل تريد المتابعة؟"
+    }
+  },
+  "order_status": {
+    "pending": "قيد الانتظار",
+    "processing": "قيد المعالجة",
+    "shipped": "تم الشحن",
+    "delivered": "تم التسليم",
+    "cancelled": "أُلغيت"
+  }
+}

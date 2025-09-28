@@ -6,8 +6,11 @@ import { DataTable, type Column } from '@/components/DataTable'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { useUsers } from '@/hooks/useUsers'
+import { useTranslation } from '@/i18n'
 import { User, UserRole } from '@/types/domain'
 import styles from './Users.module.scss'
+
+const TRANSLATION_NAMESPACE = 'Page_Admin_Users'
 
 const UsersPage = observer(() => {
   const {
@@ -16,7 +19,6 @@ const UsersPage = observer(() => {
     error,
     handleSearch,
     handleCreate,
-    activeFilters,
     emailSearch,
     setEmailSearch,
     roleFilter,
@@ -28,24 +30,32 @@ const UsersPage = observer(() => {
     roleOptions,
     handleForceLogout,
     handleImpersonate,
+    activeFilters,
   } = useUsers()
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
 
   if (loading) {
-    return <LoadingState label="Warming up user directory…" />
+    return <LoadingState label={t('loading.directory')} />
   }
 
   if (error) {
     return <ErrorState message={error} />
   }
 
+  const resolveRoleLabel = (role: string) => t(`roles.labels.${role.toLowerCase()}`)
+
   const userColumns: Column<User>[] = [
-    { key: 'id', header: 'ID' },
-    { key: 'email', header: 'Email' },
-    { key: 'name', header: 'Name' },
-    { key: 'role', header: 'Role' },
+    { key: 'id', header: t('table.columns.id') },
+    { key: 'email', header: t('table.columns.email') },
+    { key: 'name', header: t('table.columns.name') },
+    {
+      key: 'role',
+      header: t('table.columns.role'),
+      render: (user) => resolveRoleLabel(String(user.role).toLowerCase()),
+    },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('table.columns.actions'),
       render: (user) => (
         <div className={styles.actionGroup}>
           <button
@@ -53,78 +63,81 @@ const UsersPage = observer(() => {
             className={classNames('badge', styles.actionButton)}
             onClick={() => handleImpersonate(user.id)}
           >
-            Impersonate
+            {t('table.actions.impersonate')}
           </button>
           <button
             type="button"
             className={classNames('badge', styles.dangerButton)}
             onClick={() => handleForceLogout(user.id)}
           >
-            Force logout
+            {t('table.actions.force_logout')}
           </button>
         </div>
       ),
     },
   ]
 
+  const activeFilterChips: string[] = []
+  if (activeFilters.email) {
+    activeFilterChips.push(t('filters.summary.email', { value: activeFilters.email }))
+  }
+  if (activeFilters.role) {
+    activeFilterChips.push(t('filters.summary.role', { value: resolveRoleLabel(activeFilters.role.toLowerCase()) }))
+  }
+
   return (
     <div className={styles.container}>
       <section className={classNames('surface-border', styles.panel)}>
         <form onSubmit={handleSearch} className={styles.filterForm}>
           <div className={styles.filterField}>
-            <label className={styles.fieldLabel}>Email contains</label>
+            <label className={styles.fieldLabel}>{t('filters.fields.email.label')}</label>
             <input
               value={emailSearch}
               onChange={(event) => setEmailSearch(event.target.value)}
-              placeholder="customer@shopx.dev"
+              placeholder={t('filters.fields.email.placeholder')}
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Role</label>
+            <label className={styles.fieldLabel}>{t('filters.fields.role.label')}</label>
             <select
               value={roleFilter}
               onChange={(event) => setRoleFilter(event.target.value as UserRole | '')}
             >
-              <option value="">Any role</option>
+              <option value="">{t('filters.fields.role.any')}</option>
               {roleOptions.map((role) => (
                 <option key={role} value={role}>
-                  {role}
+                  {resolveRoleLabel(role.toLowerCase())}
                 </option>
               ))}
             </select>
           </div>
           <button type="submit" className={styles.primaryButton}>
-            Filter
+            {t('filters.actions.apply')}
           </button>
         </form>
 
-        {(activeFilters.email || activeFilters.role) && (
+        {activeFilterChips.length > 0 ? (
           <p className={styles.filterSummary}>
-            Active filters:
-            {activeFilters.email ? ` email contains "${activeFilters.email}"` : ''}
-            {activeFilters.role
-              ? `${activeFilters.email ? ',' : ''} role = ${activeFilters.role}`
-              : ''}
+            {t('filters.summary.label')}{' '}
+            {activeFilterChips.join(t('filters.summary.separator'))}
           </p>
-        )}
+        ) : null}
 
         <DataTable<User>
           columns={userColumns}
           data={users}
-          emptyState={<span>No users match the current filter.</span>}
+          emptyState={<span>{t('table.empty')}</span>}
         />
       </section>
 
       <section className={classNames('surface-border', styles.panel)}>
         <header>
-          <h3 className={styles.sectionHeading}>Invite support teammate</h3>
-          <p className={styles.sectionSubheading}>
-            Create support or customer accounts directly in the operational GraphQL backend.
-          </p>
+          <h3 className={styles.sectionHeading}>{t('create.heading')}</h3>
+          <p className={styles.sectionSubheading}>{t('create.subheading')}</p>
         </header>
         <form onSubmit={handleCreate} className={styles.formGrid}>
           <div>
-            <label className={styles.fieldLabel}>Email</label>
+            <label className={styles.fieldLabel}>{t('form.fields.email')}</label>
             <input
               type="email"
               value={formState.email}
@@ -133,14 +146,14 @@ const UsersPage = observer(() => {
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Name</label>
+            <label className={styles.fieldLabel}>{t('form.fields.name')}</label>
             <input
               value={formState.name}
               onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Temporary password</label>
+            <label className={styles.fieldLabel}>{t('form.fields.password')}</label>
             <input
               value={formState.password}
               onChange={(event) =>
@@ -150,7 +163,7 @@ const UsersPage = observer(() => {
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>Role</label>
+            <label className={styles.fieldLabel}>{t('form.fields.role')}</label>
             <select
               value={formState.role}
               onChange={(event) =>
@@ -159,22 +172,22 @@ const UsersPage = observer(() => {
             >
               {roleOptions.map((role) => (
                 <option key={role} value={role}>
-                  {role}
+                  {resolveRoleLabel(role.toLowerCase())}
                 </option>
               ))}
             </select>
           </div>
           <div className={styles.formAction}>
             <button type="submit" disabled={creating} className={classNames(styles.primaryButton, styles.fullWidth)}>
-              {creating ? 'Provisioning…' : 'Create user'}
+              {creating ? t('create.actions.pending') : t('create.actions.submit')}
             </button>
           </div>
         </form>
         {feedback ? (
           <span
-            className={feedback.startsWith('User') ? styles.feedbackPositive : styles.feedbackNegative}
+            className={feedback.tone === 'positive' ? styles.feedbackPositive : styles.feedbackNegative}
           >
-            {feedback}
+            {feedback.message}
           </span>
         ) : null}
       </section>

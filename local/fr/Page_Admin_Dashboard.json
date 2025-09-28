@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "metrics": "Chargement des indicateurs…"
+  },
+  "metrics": {
+    "revenue": {
+      "label": "Revenu net (période)",
+      "delta": "+4,5 % vs cycle précédent"
+    },
+    "orders": {
+      "label": "Commandes traitées",
+      "delta": "97 % SLA respecté"
+    },
+    "products": {
+      "label": "Produits actifs",
+      "delta": "12 en attente d’approbation"
+    },
+    "customers": {
+      "label": "Clients actifs"
+    },
+    "rating": {
+      "label": "Note moyenne des produits"
+    }
+  },
+  "sections": {
+    "latest_orders": {
+      "title": "Dernières commandes",
+      "table": {
+        "columns": {
+          "order": "Commande",
+          "total": "Total",
+          "customer": "Client",
+          "status": "Statut",
+          "created_at": "Créé le"
+        },
+        "empty": "Aucune commande pour le moment."
+      }
+    },
+    "top_customers": {
+      "title": "Meilleurs clients",
+      "placeholder": "Aucun client trouvé."
+    }
+  }
+}

@@ -3,10 +3,12 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import classNames from 'classnames'
+import { useTranslation } from '@/i18n'
 import styles from './SupportSessionControls.module.scss'
 
 export const SupportSessionControls = () => {
   const router = useRouter()
+  const { t } = useTranslation('Common')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -19,7 +21,7 @@ export const SupportSessionControls = () => {
         const payload = (await response.json().catch(() => null)) as
           | { message?: string }
           | null
-        setError(payload?.message ?? 'Failed to terminate session.')
+        setError(payload?.message ?? t('support_session.errors.terminate_failed'))
         setLoading(false)
         return
       }
@@ -27,7 +29,7 @@ export const SupportSessionControls = () => {
       router.refresh()
     } catch (err) {
       console.error('Failed to log out', err)
-      setError('Unexpected error while signing out.')
+      setError(t('support_session.errors.unexpected'))
       setLoading(false)
     }
   }
@@ -41,7 +43,7 @@ export const SupportSessionControls = () => {
         onClick={handleLogout}
         disabled={loading}
       >
-        {loading ? 'Signing out…' : 'Sign out'}
+        {loading ? t('support_session.actions.signing_out') : t('support_session.actions.sign_out')}
       </button>
     </div>
   )

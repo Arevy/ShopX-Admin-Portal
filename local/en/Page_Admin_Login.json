@@ -1,0 +1,21 @@
+{
+  "branding": {
+    "title": "ShopX Support Console",
+    "subtitle": "Authenticate with your support credentials to access the admin portal.",
+    "loading_message": "Loading login form…"
+  },
+  "form": {
+    "labels": {
+      "email": "Support email",
+      "password": "Password"
+    },
+    "actions": {
+      "sign_in": "Sign in",
+      "signing_in": "Signing in…"
+    },
+    "errors": {
+      "credentials": "Login failed. Please try again.",
+      "unexpected": "Unexpected error. Please retry."
+    }
+  }
+}

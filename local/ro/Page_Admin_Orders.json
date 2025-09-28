@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "sync": "Se sincronizează comenzile…"
+  },
+  "table": {
+    "columns": {
+      "order": "Comandă",
+      "customer": "Client",
+      "total": "Total",
+      "status": "Status",
+      "created_at": "Creată la",
+      "update_status": "Actualizează statusul"
+    },
+    "empty": "Nu există comenzi. Ajustează filtrele sau sincronizează cu backend-ul."
+  },
+  "filters": {
+    "fields": {
+      "status": {
+        "label": "Status",
+        "any": "Toate statusurile"
+      },
+      "user": {
+        "label": "ID client",
+        "placeholder": "ID numeric client"
+      }
+    },
+    "actions": {
+      "apply": "Aplică filtre"
+    },
+    "summary": {
+      "label": "Filtre active:",
+      "status": " status = {{value}}",
+      "user": " ID client = {{value}}",
+      "separator": ","
+    }
+  },
+  "statuses": {
+    "pending": "În așteptare",
+    "processing": "În procesare",
+    "shipped": "Expediată",
+    "delivered": "Livrată",
+    "cancelled": "Anulată"
+  },
+  "feedback": {
+    "errors": {
+      "update": "Statusul comenzii nu a putut fi actualizat în backend."
+    },
+    "success": {
+      "update": "Comanda {{id}} a fost actualizată la {{status}}."
+    }
+  }
+}

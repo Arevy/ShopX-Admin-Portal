@@ -2,10 +2,10 @@
 
 import { FormEvent, useCallback, useState } from 'react'
 
-import { useStores } from '@/common/hooks/useStores'
+import { useRootContext } from '@/stores/provider'
 
 export const useSupportDesk = () => {
-  const { rootContext } = useStores()
+  const rootContext = useRootContext()
   const supportStore = rootContext.supportStore
   const [userId, setUserId] = useState('')
 

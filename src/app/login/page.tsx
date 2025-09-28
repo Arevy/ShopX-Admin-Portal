@@ -3,11 +3,17 @@
 import { FormEvent, Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import classNames from 'classnames'
+import { LanguageSelector } from '@/components/LanguageSelector'
+import { useRTL, useTranslation } from '@/i18n'
 import styles from './Login.module.scss'
+
+const TRANSLATION_NAMESPACE = 'Page_Admin_Login'
 
 const LoginForm = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
+  const isRtl = useRTL()
   const [email, setEmail] = useState('support@example.com')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -29,7 +35,7 @@ const LoginForm = () => {
         const payload = (await response.json().catch(() => null)) as
           | { message?: string }
           | null
-        setError(payload?.message ?? 'Login failed. Please try again.')
+        setError(payload?.message ?? t('form.errors.credentials'))
         setSubmitting(false)
         return
       }
@@ -39,22 +45,22 @@ const LoginForm = () => {
       router.refresh()
     } catch (err) {
       console.error('Admin login failed', err)
-      setError('Unexpected error. Please retry.')
+      setError(t('form.errors.unexpected'))
       setSubmitting(false)
     }
   }
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
+      <div className={classNames(styles.card, { [styles.cardRtl]: isRtl })}>
         <div className={styles.branding}>
           <span className={styles.brandIndicator} />
-          <h1>ShopX Support Console</h1>
-          <p>Authenticate with your support credentials to access the admin portal.</p>
+          <h1>{t('branding.title')}</h1>
+          <p>{t('branding.subtitle')}</p>
         </div>
         <form className={styles.form} onSubmit={handleSubmit}>
           <label className={styles.label} htmlFor="email">
-            Support email
+            {t('form.labels.email')}
           </label>
           <input
             id="email"
@@ -68,7 +74,7 @@ const LoginForm = () => {
           />
 
           <label className={styles.label} htmlFor="password">
-            Password
+            {t('form.labels.password')}
           </label>
           <input
             id="password"
@@ -84,9 +90,32 @@ const LoginForm = () => {
           {error ? <p className={styles.error}>{error}</p> : null}
 
           <button type="submit" className={classNames('button', styles.submit)} disabled={submitting}>
-            {submitting ? 'Signing in…' : 'Sign in'}
+            {submitting ? t('form.actions.signing_in') : t('form.actions.sign_in')}
           </button>
         </form>
+        <div className={classNames(styles.localeSelector, { [styles.localeSelectorRtl]: isRtl })}>
+          <LanguageSelector />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const LoginFallback = () => {
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
+  const isRtl = useRTL()
+
+  return (
+    <div className={styles.container}>
+      <div className={classNames(styles.card, { [styles.cardRtl]: isRtl })}>
+        <div className={styles.branding}>
+          <span className={styles.brandIndicator} />
+          <h1>{t('branding.title')}</h1>
+          <p>{t('branding.loading_message')}</p>
+        </div>
+        <div className={classNames(styles.localeSelector, { [styles.localeSelectorRtl]: isRtl })}>
+          <LanguageSelector />
+        </div>
       </div>
     </div>
   )
@@ -94,19 +123,7 @@ const LoginForm = () => {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className={styles.container}>
-          <div className={styles.card}>
-            <div className={styles.branding}>
-              <span className={styles.brandIndicator} />
-              <h1>ShopX Support Console</h1>
-              <p>Loading login form…</p>
-            </div>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoginFallback />}>
       <LoginForm />
     </Suspense>
   )

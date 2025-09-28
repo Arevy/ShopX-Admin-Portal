@@ -8,13 +8,17 @@ import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { StatusBadge } from '@/components/StatusBadge'
 import { useDashboard } from '@/hooks/useDashboard'
+import { useTranslation } from '@/i18n'
 import styles from './Dashboard.module.scss'
+
+const TRANSLATION_NAMESPACE = 'Page_Admin_Dashboard'
 
 const DashboardPage = observer(() => {
   const { metrics, recentOrders, topCustomers, loading, error } = useDashboard()
+  const { t } = useTranslation(TRANSLATION_NAMESPACE)
 
   if (loading) {
-    return <LoadingState label="Breathing in metrics…" />
+    return <LoadingState label={t('loading.metrics')} />
   }
 
   if (error) {
@@ -25,30 +29,30 @@ const DashboardPage = observer(() => {
     <div className={styles.container}>
       <section className="grid grid-columns-3">
         <MetricCard
-          label="Net revenue (period)"
+          label={t('metrics.revenue.label')}
           value={metrics ? `$${metrics.totalRevenue.toFixed(2)}` : '—'}
-          delta="+4.5% vs. last cycle"
+          delta={t('metrics.revenue.delta')}
           tone="accent"
         />
         <MetricCard
-          label="Orders processed"
+          label={t('metrics.orders.label')}
           value={metrics ? metrics.orders.toString() : '—'}
-          delta="97% SLA hit"
+          delta={t('metrics.orders.delta')}
           tone="success"
         />
         <MetricCard
-          label="Products live"
+          label={t('metrics.products.label')}
           value={metrics ? metrics.products.toString() : '—'}
-          delta="12 awaiting approval"
+          delta={t('metrics.products.delta')}
           tone="warning"
         />
         <MetricCard
-          label="Active customers"
+          label={t('metrics.customers.label')}
           value={metrics ? metrics.customers.toString() : '—'}
           tone="neutral"
         />
         <MetricCard
-          label="Avg. product rating"
+          label={t('metrics.rating.label')}
           value={metrics?.averageRating ? metrics.averageRating.toFixed(2) : 'N/A'}
           tone="accent"
         />
@@ -56,24 +60,24 @@ const DashboardPage = observer(() => {
 
       <section className={classNames('grid', styles.activityGrid)}>
         <div>
-          <h3 className={styles.sectionTitle}>Latest orders</h3>
+          <h3 className={styles.sectionTitle}>{t('sections.latest_orders.title')}</h3>
           <DataTable
             columns={[
-              { key: 'id', header: 'Order' },
+              { key: 'id', header: t('sections.latest_orders.table.columns.order') },
               {
                 key: 'total',
-                header: 'Total',
+                header: t('sections.latest_orders.table.columns.total'),
                 render: (order) => `$${(order.total as number).toFixed(2)}`,
               },
-              { key: 'userId', header: 'Customer' },
+              { key: 'userId', header: t('sections.latest_orders.table.columns.customer') },
               {
                 key: 'status',
-                header: 'Status',
+                header: t('sections.latest_orders.table.columns.status'),
                 render: (order) => <StatusBadge status={String(order.status)} />,
               },
               {
                 key: 'createdAt',
-                header: 'Created at',
+                header: t('sections.latest_orders.table.columns.created_at'),
                 render: (order) =>
                   order.createdAt
                     ? new Date(String(order.createdAt)).toLocaleString()
@@ -81,14 +85,14 @@ const DashboardPage = observer(() => {
               },
             ]}
             data={recentOrders}
-            emptyState={<span>No orders pulled yet.</span>}
+            emptyState={<span>{t('sections.latest_orders.table.empty')}</span>}
           />
         </div>
         <div>
-          <h3 className={styles.sectionTitle}>Top customer inbox</h3>
+          <h3 className={styles.sectionTitle}>{t('sections.top_customers.title')}</h3>
           <div className={classNames('surface-border', styles.topCustomersCard)}>
             {topCustomers.length === 0 ? (
-              <span className={styles.topCustomersPlaceholder}>No customers found.</span>
+              <span className={styles.topCustomersPlaceholder}>{t('sections.top_customers.placeholder')}</span>
             ) : (
               <ul className={styles.topCustomersList}>
                 {topCustomers.map((customer) => (

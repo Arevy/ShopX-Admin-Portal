@@ -1,0 +1,73 @@
+{
+  "language": {
+    "label": "שפה",
+    "accessibility_label": "בחר את שפת הממשק",
+    "options": {
+      "en": "English",
+      "ro": "Română",
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "he": "עברית"
+    }
+  },
+  "app_shell": {
+    "brand": {
+      "meta": "בקרה בזמן אמת",
+      "title": "ShopX Admin",
+      "subtitle": "מרכז הניהול לתמיכת לקוחות ואוטומציית קטלוג."
+    },
+    "navigation": {
+      "overview": "לוח מחוונים",
+      "orders": "הזמנות",
+      "products": "מוצרים",
+      "customers": "לקוחות",
+      "support": "תמיכה",
+      "cms": "ניהול תוכן"
+    },
+    "endpoint": {
+      "label": "נקודת קצה של השרת",
+      "fallback": "http://localhost:4000/graphql"
+    },
+    "active_area": {
+      "label": "אזור פעיל"
+    },
+    "status": {
+      "online": "● מחובר"
+    },
+    "badges": {
+      "node_requirement": "נדרש Node ‎20 ומעלה"
+    },
+    "footer": {
+      "note": "שפת הממשק מתעדכנת מיד בכל הפאנל."
+    }
+  },
+  "support_session": {
+    "actions": {
+      "sign_out": "התנתק",
+      "signing_out": "מתנתק…"
+    },
+    "errors": {
+      "terminate_failed": "לא ניתן היה לסיים את ההפעלה.",
+      "unexpected": "אירעה שגיאה בלתי צפויה בעת ההתנתקות."
+    }
+  },
+  "common": {
+    "loading": {
+      "default": "טוען נתונים…"
+    },
+    "errors": {
+      "generic_title": "אירעה שגיאה"
+    },
+    "prompts": {
+      "confirm_delete_product": "פעולה זו תמחק את המוצר. האם להמשיך?"
+    }
+  },
+  "order_status": {
+    "pending": "ממתין",
+    "processing": "בעיבוד",
+    "shipped": "נשלח",
+    "delivered": "נמסר",
+    "cancelled": "בוטל"
+  }
+}

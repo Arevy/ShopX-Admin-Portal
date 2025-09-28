@@ -1,0 +1,73 @@
+{
+  "language": {
+    "label": "Sprache",
+    "accessibility_label": "Interface-Sprache auswählen",
+    "options": {
+      "en": "English",
+      "ro": "Română",
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "he": "עברית"
+    }
+  },
+  "app_shell": {
+    "brand": {
+      "meta": "Echtzeit-Steuerung",
+      "title": "ShopX Admin",
+      "subtitle": "Konsole für Support und Katalog-Automatisierung."
+    },
+    "navigation": {
+      "overview": "Übersicht",
+      "orders": "Bestellungen",
+      "products": "Produkte",
+      "customers": "Kunden",
+      "support": "Support",
+      "cms": "CMS"
+    },
+    "endpoint": {
+      "label": "Backend-Endpunkt",
+      "fallback": "http://localhost:4000/graphql"
+    },
+    "active_area": {
+      "label": "Aktiver Bereich"
+    },
+    "status": {
+      "online": "● Online"
+    },
+    "badges": {
+      "node_requirement": "Node >= 20 erforderlich"
+    },
+    "footer": {
+      "note": "Die Sprache der Oberfläche wird sofort in der Konsole übernommen."
+    }
+  },
+  "support_session": {
+    "actions": {
+      "sign_out": "Abmelden",
+      "signing_out": "Abmeldung läuft…"
+    },
+    "errors": {
+      "terminate_failed": "Sitzung konnte nicht beendet werden.",
+      "unexpected": "Unerwarteter Fehler beim Abmelden."
+    }
+  },
+  "common": {
+    "loading": {
+      "default": "Daten werden geladen…"
+    },
+    "errors": {
+      "generic_title": "Es ist ein Fehler aufgetreten"
+    },
+    "prompts": {
+      "confirm_delete_product": "Dieses Produkt wird entfernt. Fortfahren?"
+    }
+  },
+  "order_status": {
+    "pending": "Ausstehend",
+    "processing": "In Bearbeitung",
+    "shipped": "Versendet",
+    "delivered": "Zugestellt",
+    "cancelled": "Storniert"
+  }
+}

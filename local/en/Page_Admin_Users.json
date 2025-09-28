@@ -1,0 +1,80 @@
+{
+  "loading": {
+    "directory": "Warming up user directory…"
+  },
+  "table": {
+    "columns": {
+      "id": "ID",
+      "email": "Email",
+      "name": "Name",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "actions": {
+      "impersonate": "Impersonate",
+      "force_logout": "Force logout"
+    },
+    "empty": "No users match the current filter."
+  },
+  "filters": {
+    "fields": {
+      "email": {
+        "label": "Email contains",
+        "placeholder": "customer@shopx.dev"
+      },
+      "role": {
+        "label": "Role",
+        "any": "Any role"
+      }
+    },
+    "actions": {
+      "apply": "Filter"
+    },
+    "summary": {
+      "label": "Active filters:",
+      "email": " email contains \"{{value}}\"",
+      "role": " role = {{value}}",
+      "separator": ","
+    }
+  },
+  "roles": {
+    "labels": {
+      "customer": "Customer",
+      "support": "Support agent"
+    }
+  },
+  "create": {
+    "heading": "Invite support teammate",
+    "subheading": "Create support or customer accounts directly in the operational GraphQL backend.",
+    "actions": {
+      "submit": "Create user",
+      "pending": "Provisioning…"
+    }
+  },
+  "form": {
+    "fields": {
+      "email": "Email",
+      "name": "Name",
+      "password": "Temporary password",
+      "role": "Role"
+    }
+  },
+  "feedback": {
+    "errors": {
+      "missing_fields": "Email and password are required to create a user.",
+      "create": "Failed to create user.",
+      "sessions_revoke": "Failed to revoke user sessions. Please retry.",
+      "impersonation_ticket": "Unable to generate an impersonation ticket.",
+      "impersonation_browser": "Impersonation requires a browser environment.",
+      "impersonation": "Failed to start impersonation. Please retry."
+    },
+    "success": {
+      "created": "User created and synced with backend!",
+      "sessions_revoked": "All active sessions for this user were revoked.",
+      "impersonation": "Impersonation window opened in a new tab."
+    },
+    "info": {
+      "no_sessions": "No active sessions were found for this user."
+    }
+  }
+}

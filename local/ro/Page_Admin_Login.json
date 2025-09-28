@@ -1,0 +1,21 @@
+{
+  "branding": {
+    "title": "Consola de suport ShopX",
+    "subtitle": "Autentifică-te cu datele tale de suport pentru a accesa panoul de administrare.",
+    "loading_message": "Se încarcă formularul de autentificare…"
+  },
+  "form": {
+    "labels": {
+      "email": "Email de suport",
+      "password": "Parolă"
+    },
+    "actions": {
+      "sign_in": "Autentificare",
+      "signing_in": "Se autentifică…"
+    },
+    "errors": {
+      "credentials": "Autentificarea a eșuat. Încearcă din nou.",
+      "unexpected": "Eroare neașteptată. Reîncearcă."
+    }
+  }
+}

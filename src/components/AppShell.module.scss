@@ -141,3 +141,64 @@
   flex-direction: column;
   gap: 2rem;
 }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem 1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  gap: 1.5rem;
+}
+
+.footerLanguageSelector {
+  min-width: 150px;
+}
+
+.footerNote {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.containerRtl {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+
+.containerRtl .sidebar {
+  border-left: 1px solid var(--border);
+  border-right: none;
+}
+
+.containerRtl .sidebarContent {
+  text-align: right;
+}
+
+.containerRtl .navLink {
+  flex-direction: row-reverse;
+}
+
+.containerRtl .header {
+  flex-direction: row-reverse;
+}
+
+.containerRtl .headerBadges {
+  flex-direction: row-reverse;
+}
+
+.containerRtl .headerBadges > * {
+  direction: ltr;
+}
+
+.containerRtl .endpointCard {
+  text-align: right;
+}
+
+.containerRtl .footer {
+  flex-direction: row-reverse;
+}
+
+.containerRtl .footerNote {
+  text-align: right;
+}

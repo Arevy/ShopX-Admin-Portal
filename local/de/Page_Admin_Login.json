@@ -1,0 +1,21 @@
+{
+  "branding": {
+    "title": "ShopX Support-Konsole",
+    "subtitle": "Melden Sie sich mit Ihren Support-Zugangsdaten an, um das Admin-Portal zu öffnen.",
+    "loading_message": "Anmeldeformular wird geladen…"
+  },
+  "form": {
+    "labels": {
+      "email": "Support-E-Mail",
+      "password": "Passwort"
+    },
+    "actions": {
+      "sign_in": "Anmelden",
+      "signing_in": "Anmeldung läuft…"
+    },
+    "errors": {
+      "credentials": "Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
+      "unexpected": "Unerwarteter Fehler. Bitte erneut versuchen."
+    }
+  }
+}

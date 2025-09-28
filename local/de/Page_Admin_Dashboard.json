@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "metrics": "Kennzahlen werden geladen…"
+  },
+  "metrics": {
+    "revenue": {
+      "label": "Nettoumsatz (Periode)",
+      "delta": "+4,5 % vs. letzter Zyklus"
+    },
+    "orders": {
+      "label": "Bearbeitete Bestellungen",
+      "delta": "97 % SLA erfüllt"
+    },
+    "products": {
+      "label": "Aktive Produkte",
+      "delta": "12 warten auf Freigabe"
+    },
+    "customers": {
+      "label": "Aktive Kunden"
+    },
+    "rating": {
+      "label": "Durchschnittliche Produktbewertung"
+    }
+  },
+  "sections": {
+    "latest_orders": {
+      "title": "Neueste Bestellungen",
+      "table": {
+        "columns": {
+          "order": "Bestellung",
+          "total": "Summe",
+          "customer": "Kunde",
+          "status": "Status",
+          "created_at": "Erstellt am"
+        },
+        "empty": "Noch keine Bestellungen vorhanden."
+      }
+    },
+    "top_customers": {
+      "title": "Top-Kunden",
+      "placeholder": "Keine Kunden gefunden."
+    }
+  }
+}

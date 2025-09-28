@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "metrics": "Breathing in metrics…"
+  },
+  "metrics": {
+    "revenue": {
+      "label": "Net revenue (period)",
+      "delta": "+4.5% vs. last cycle"
+    },
+    "orders": {
+      "label": "Orders processed",
+      "delta": "97% SLA hit"
+    },
+    "products": {
+      "label": "Products live",
+      "delta": "12 awaiting approval"
+    },
+    "customers": {
+      "label": "Active customers"
+    },
+    "rating": {
+      "label": "Avg. product rating"
+    }
+  },
+  "sections": {
+    "latest_orders": {
+      "title": "Latest orders",
+      "table": {
+        "columns": {
+          "order": "Order",
+          "total": "Total",
+          "customer": "Customer",
+          "status": "Status",
+          "created_at": "Created at"
+        },
+        "empty": "No orders pulled yet."
+      }
+    },
+    "top_customers": {
+      "title": "Top customer inbox",
+      "placeholder": "No customers found."
+    }
+  }
+}

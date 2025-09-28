@@ -33,11 +33,40 @@ export const ModularImage = ({
   }
 
   const resolvedAlt = alt.trim() || 'Product image'
-  const bypassOptimization =
-    typeof unoptimized === 'boolean' ? unoptimized : src.startsWith('data:')
+  const derivedUnoptimized = (() => {
+    if (typeof unoptimized === 'boolean') {
+      return unoptimized
+    }
+
+    if (src.startsWith('data:')) {
+      return true
+    }
+
+    if (/^https?:\/\//i.test(src)) {
+      return true
+    }
+
+    return false
+  })()
 
   if (!fill && (!width || !height)) {
     throw new Error('ModularImage requires width and height when fill is false.')
+  }
+
+  const renderImgElement = () => (
+    // eslint-disable-next-line @next/next/no-img-element -- Fallback for remote assets outside Next image allowlist
+    <img
+      src={src}
+      alt={resolvedAlt}
+      className={className}
+      width={fill ? undefined : width}
+      height={fill ? undefined : height}
+      style={fill ? { objectFit: 'cover', width: '100%', height: '100%' } : undefined}
+    />
+  )
+
+  if (derivedUnoptimized && /^https?:\/\//i.test(src)) {
+    return renderImgElement()
   }
 
   if (fill) {
@@ -50,7 +79,7 @@ export const ModularImage = ({
         className={className}
         priority={priority}
         quality={quality}
-        unoptimized={bypassOptimization}
+        unoptimized={derivedUnoptimized}
       />
     )
   }
@@ -65,7 +94,7 @@ export const ModularImage = ({
       className={className}
       priority={priority}
       quality={quality}
-      unoptimized={bypassOptimization}
+      unoptimized={derivedUnoptimized}
     />
   )
 }

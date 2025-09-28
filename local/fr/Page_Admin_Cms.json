@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "title": "CMS pages",
+    "new_page": "+ New page",
+    "empty": "No pages available yet."
+  },
+  "filters": {
+    "slug": {
+      "label": "Slug contains",
+      "placeholder": "gift-guide-holidays"
+    },
+    "status": {
+      "label": "Status",
+      "any": "Any status"
+    },
+    "actions": {
+      "apply": "Apply filters",
+      "clear": "Clear"
+    }
+  },
+  "statuses": {
+    "draft": "Draft",
+    "published": "Published",
+    "archived": "Archived"
+  },
+  "form": {
+    "fields": {
+      "slug": "Slug",
+      "title": "Title",
+      "excerpt": "Short description",
+      "status": "Status",
+      "schedule": "Schedule publish",
+      "body": "Content"
+    },
+    "placeholders": {
+      "slug": "ex: homepage",
+      "excerpt": "Optional – used in previews.",
+      "body": "Write the content for your page..."
+    },
+    "actions": {
+      "update": "Save changes",
+      "create": "Create page",
+      "discard": "Discard",
+      "publish": "Publish now",
+      "delete": "Delete page"
+    },
+    "errors": {
+      "required_fields": "Slug, title, and content are required."
+    },
+    "confirm_delete": "Are you sure you want to delete this page?"
+  },
+  "meta": {
+    "updated_at": "Last updated:",
+    "published_at": "Published at:"
+  }
+}

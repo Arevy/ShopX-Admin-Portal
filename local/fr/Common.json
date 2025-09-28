@@ -1,0 +1,73 @@
+{
+  "language": {
+    "label": "Langue",
+    "accessibility_label": "Choisissez la langue de l’interface",
+    "options": {
+      "en": "English",
+      "ro": "Română",
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "he": "עברית"
+    }
+  },
+  "app_shell": {
+    "brand": {
+      "meta": "Contrôle en temps réel",
+      "title": "ShopX Admin",
+      "subtitle": "Console pour le support client et l’automatisation du catalogue."
+    },
+    "navigation": {
+      "overview": "Vue d’ensemble",
+      "orders": "Commandes",
+      "products": "Produits",
+      "customers": "Clients",
+      "support": "Support",
+      "cms": "CMS"
+    },
+    "endpoint": {
+      "label": "Point de terminaison backend",
+      "fallback": "http://localhost:4000/graphql"
+    },
+    "active_area": {
+      "label": "Zone active"
+    },
+    "status": {
+      "online": "● En ligne"
+    },
+    "badges": {
+      "node_requirement": "Node >= 20 requis"
+    },
+    "footer": {
+      "note": "La langue de l’interface s’applique immédiatement dans la console."
+    }
+  },
+  "support_session": {
+    "actions": {
+      "sign_out": "Déconnexion",
+      "signing_out": "Déconnexion en cours…"
+    },
+    "errors": {
+      "terminate_failed": "Impossible de terminer la session.",
+      "unexpected": "Erreur inattendue lors de la déconnexion."
+    }
+  },
+  "common": {
+    "loading": {
+      "default": "Chargement des données…"
+    },
+    "errors": {
+      "generic_title": "Un problème est survenu"
+    },
+    "prompts": {
+      "confirm_delete_product": "Cette action supprimera le produit. Continuer ?"
+    }
+  },
+  "order_status": {
+    "pending": "En attente",
+    "processing": "En cours de traitement",
+    "shipped": "Expédiée",
+    "delivered": "Livrée",
+    "cancelled": "Annulée"
+  }
+}

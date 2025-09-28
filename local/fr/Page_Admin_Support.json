@@ -1,0 +1,62 @@
+{
+  "form": {
+    "fields": {
+      "customer_id": "Customer ID"
+    },
+    "placeholders": {
+      "customer_id": "uuid"
+    },
+    "actions": {
+      "load": "Load profile",
+      "clear": "Clear"
+    }
+  },
+  "loading": {
+    "profile": "Retrieving customer context…"
+  },
+  "identity": {
+    "title": "Identity snapshot",
+    "labels": {
+      "id": "ID",
+      "email": "Email",
+      "name": "Name",
+      "role": "Role"
+    },
+    "summary": "Orders: {{orders}} · Reviews: {{reviews}}"
+  },
+  "orders": {
+    "title": "Recent orders",
+    "table": {
+      "columns": {
+        "order": "Order",
+        "total": "Total",
+        "status": "Status",
+        "created_at": "Placed at"
+      }
+    },
+    "empty": "No orders yet."
+  },
+  "addresses": {
+    "title": "Addresses",
+    "empty": "No addresses tracked."
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "empty": "Wishlist empty."
+  },
+  "cart": {
+    "title": "Active cart",
+    "empty": "Cart is empty.",
+    "total": "Cart total: ${{total}}"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "product_label": "Product {{id}}",
+    "rating": "Rating {{rating}} / 5",
+    "no_text": "No review text.",
+    "empty": "No reviews submitted."
+  },
+  "errors": {
+    "not_found": "Customer not found."
+  }
+}

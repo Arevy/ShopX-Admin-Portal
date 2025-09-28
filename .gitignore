@@ -21,3 +21,4 @@ jest/cache/
 *.pid.lock
 .cache
 tsconfig.tsbuildinfo
+yarn-error.log

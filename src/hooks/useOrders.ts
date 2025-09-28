@@ -2,18 +2,25 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useStores } from '@/common/hooks/useStores'
+import { useRootContext } from '@/stores/provider'
 import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
+import { useTranslation } from '@/i18n'
 
 const STATUS_OPTIONS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as const
 
+type Feedback = {
+  tone: 'positive' | 'negative'
+  message: string
+} | null
+
 export const useOrders = () => {
-  const { rootContext } = useStores()
+  const rootContext = useRootContext()
+  const { t } = useTranslation('Page_Admin_Orders')
   const orderStore = rootContext.orderStore
   const [statusFilter, setStatusFilter] = useState('')
   const [userIdFilter, setUserIdFilter] = useState('')
   const [pending, setPending] = useState<Record<string, boolean>>({})
-  const [feedback, setFeedback] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<Feedback>(null)
 
   useEffect(() => {
     void orderStore.fetchOrders()
@@ -36,19 +43,24 @@ export const useOrders = () => {
       setFeedback(null)
       try {
         await orderStore.updateOrderStatus(orderId, status)
-        setFeedback(`Order ${orderId} updated to ${status}.`)
+        const statusLabel = t(`statuses.${status.toLowerCase()}`)
+        setFeedback({
+          tone: 'positive',
+          message: t('feedback.success.update', {
+            id: orderId,
+            status: statusLabel === `statuses.${status.toLowerCase()}` ? status : statusLabel,
+          }),
+        })
       } catch (error) {
-        setFeedback(
-          getUserFriendlyMessage(
-            error,
-            'Failed to update order status in backend.',
-          ),
-        )
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('feedback.errors.update')),
+        })
       } finally {
         setPending((prev) => ({ ...prev, [orderId]: false }))
       }
     },
-    [orderStore],
+    [orderStore, t],
   )
 
   const state = useMemo(

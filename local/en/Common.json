@@ -1,0 +1,73 @@
+{
+  "language": {
+    "label": "Language",
+    "accessibility_label": "Select interface language",
+    "options": {
+      "en": "English",
+      "ro": "Română",
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "he": "עברית"
+    }
+  },
+  "app_shell": {
+    "brand": {
+      "meta": "Realtime Control",
+      "title": "ShopX Admin",
+      "subtitle": "Customer success & catalog automation cockpit."
+    },
+    "navigation": {
+      "overview": "Overview",
+      "orders": "Orders",
+      "products": "Products",
+      "customers": "Customers",
+      "support": "Support Desk",
+      "cms": "CMS"
+    },
+    "endpoint": {
+      "label": "Backend endpoint",
+      "fallback": "http://localhost:4000/graphql"
+    },
+    "active_area": {
+      "label": "Active area"
+    },
+    "status": {
+      "online": "● Online"
+    },
+    "badges": {
+      "node_requirement": "Node >= 20 required"
+    },
+    "footer": {
+      "note": "Interface language applies instantly across the console."
+    }
+  },
+  "support_session": {
+    "actions": {
+      "sign_out": "Sign out",
+      "signing_out": "Signing out…"
+    },
+    "errors": {
+      "terminate_failed": "Failed to terminate session.",
+      "unexpected": "Unexpected error while signing out."
+    }
+  },
+  "common": {
+    "loading": {
+      "default": "Loading data…"
+    },
+    "errors": {
+      "generic_title": "Something went wrong"
+    },
+    "prompts": {
+      "confirm_delete_product": "This will remove the product. Continue?"
+    }
+  },
+  "order_status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  }
+}

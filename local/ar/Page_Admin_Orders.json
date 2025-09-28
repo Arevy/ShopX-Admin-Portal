@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "sync": "جارٍ مزامنة الطلبات…"
+  },
+  "table": {
+    "columns": {
+      "order": "طلب",
+      "customer": "عميل",
+      "total": "الإجمالي",
+      "status": "الحالة",
+      "created_at": "تاريخ الإنشاء",
+      "update_status": "تحديث الحالة"
+    },
+    "empty": "لا توجد طلبات بعد. عدّل الفلاتر أو أعد المزامنة مع الخادم."
+  },
+  "filters": {
+    "fields": {
+      "status": {
+        "label": "الحالة",
+        "any": "جميع الحالات"
+      },
+      "user": {
+        "label": "معرّف العميل",
+        "placeholder": "معرّف مستخدم رقمي"
+      }
+    },
+    "actions": {
+      "apply": "تطبيق الفلاتر"
+    },
+    "summary": {
+      "label": "الفلاتر النشطة:",
+      "status": " الحالة = {{value}}",
+      "user": " معرف العميل = {{value}}",
+      "separator": "،"
+    }
+  },
+  "statuses": {
+    "pending": "قيد الانتظار",
+    "processing": "قيد المعالجة",
+    "shipped": "تم الشحن",
+    "delivered": "تم التسليم",
+    "cancelled": "ألغيت"
+  },
+  "feedback": {
+    "errors": {
+      "update": "تعذّر تحديث حالة الطلب في الخادم."
+    },
+    "success": {
+      "update": "تم تحديث الطلب {{id}} إلى {{status}}."
+    }
+  }
+}

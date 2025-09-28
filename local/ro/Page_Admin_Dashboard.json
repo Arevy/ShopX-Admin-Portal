@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "metrics": "Se încarcă indicatorii…"
+  },
+  "metrics": {
+    "revenue": {
+      "label": "Venit net (perioadă)",
+      "delta": "+4,5% față de ciclul anterior"
+    },
+    "orders": {
+      "label": "Comenzi procesate",
+      "delta": "97% SLA respectat"
+    },
+    "products": {
+      "label": "Produse active",
+      "delta": "12 în așteptare pentru aprobare"
+    },
+    "customers": {
+      "label": "Clienți activi"
+    },
+    "rating": {
+      "label": "Rating mediu produse"
+    }
+  },
+  "sections": {
+    "latest_orders": {
+      "title": "Ultimele comenzi",
+      "table": {
+        "columns": {
+          "order": "Comandă",
+          "total": "Total",
+          "customer": "Client",
+          "status": "Status",
+          "created_at": "Creată la"
+        },
+        "empty": "Nu există încă nicio comandă."
+      }
+    },
+    "top_customers": {
+      "title": "Clienți de top",
+      "placeholder": "Nu au fost găsiți clienți."
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "sync": "Bestellungen werden synchronisiert…"
+  },
+  "table": {
+    "columns": {
+      "order": "Bestellung",
+      "customer": "Kunde",
+      "total": "Gesamt",
+      "status": "Status",
+      "created_at": "Erstellt am",
+      "update_status": "Status aktualisieren"
+    },
+    "empty": "Keine Bestellungen. Filter anpassen oder Backend synchronisieren."
+  },
+  "filters": {
+    "fields": {
+      "status": {
+        "label": "Status",
+        "any": "Alle Status"
+      },
+      "user": {
+        "label": "Kunden-ID",
+        "placeholder": "Numerische Benutzer-ID"
+      }
+    },
+    "actions": {
+      "apply": "Filter anwenden"
+    },
+    "summary": {
+      "label": "Aktive Filter:",
+      "status": " Status = {{value}}",
+      "user": " Kunden-ID = {{value}}",
+      "separator": ","
+    }
+  },
+  "statuses": {
+    "pending": "Ausstehend",
+    "processing": "In Bearbeitung",
+    "shipped": "Versendet",
+    "delivered": "Zugestellt",
+    "cancelled": "Storniert"
+  },
+  "feedback": {
+    "errors": {
+      "update": "Bestellstatus konnte im Backend nicht aktualisiert werden."
+    },
+    "success": {
+      "update": "Bestellung {{id}} wurde auf {{status}} aktualisiert."
+    }
+  }
+}

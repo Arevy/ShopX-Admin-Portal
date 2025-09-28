@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "sync": "מסנכרן הזמנות…"
+  },
+  "table": {
+    "columns": {
+      "order": "הזמנה",
+      "customer": "לקוח",
+      "total": "סה\"כ",
+      "status": "סטטוס",
+      "created_at": "נוצר בתאריך",
+      "update_status": "עדכן סטטוס"
+    },
+    "empty": "אין הזמנות להצגה. התאימו את המסננים או סנכרנו מחדש עם השרת."
+  },
+  "filters": {
+    "fields": {
+      "status": {
+        "label": "סטטוס",
+        "any": "כל הסטטוסים"
+      },
+      "user": {
+        "label": "מזהה לקוח",
+        "placeholder": "מזהה משתמש מספרי"
+      }
+    },
+    "actions": {
+      "apply": "החלת מסננים"
+    },
+    "summary": {
+      "label": "מסננים פעילים:",
+      "status": " סטטוס = {{value}}",
+      "user": " מזהה לקוח = {{value}}",
+      "separator": ","
+    }
+  },
+  "statuses": {
+    "pending": "ממתין",
+    "processing": "בעיבוד",
+    "shipped": "נשלח",
+    "delivered": "נמסר",
+    "cancelled": "בוטל"
+  },
+  "feedback": {
+    "errors": {
+      "update": "עדכון הסטטוס בשרת נכשל."
+    },
+    "success": {
+      "update": "הזמנה {{id}} עודכנה ל‑{{status}}."
+    }
+  }
+}

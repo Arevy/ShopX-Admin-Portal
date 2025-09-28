@@ -1,0 +1,21 @@
+{
+  "branding": {
+    "title": "Console de support ShopX",
+    "subtitle": "Connectez-vous avec vos identifiants de support pour accéder au portail d’administration.",
+    "loading_message": "Chargement du formulaire de connexion…"
+  },
+  "form": {
+    "labels": {
+      "email": "E-mail de support",
+      "password": "Mot de passe"
+    },
+    "actions": {
+      "sign_in": "Se connecter",
+      "signing_in": "Connexion en cours…"
+    },
+    "errors": {
+      "credentials": "Échec de la connexion. Veuillez réessayer.",
+      "unexpected": "Erreur inattendue. Réessayez."
+    }
+  }
+}
