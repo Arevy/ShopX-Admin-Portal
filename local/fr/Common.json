@@ -50,6 +50,10 @@
     "errors": {
       "terminate_failed": "Impossible de terminer la session.",
       "unexpected": "Erreur inattendue lors de la déconnexion."
+    },
+    "guard": {
+      "checking": "Vérification de l'accès support…",
+      "failed": "Impossible de vérifier votre accès support. Actualisez la page ou reconnectez-vous."
     }
   },
   "common": {

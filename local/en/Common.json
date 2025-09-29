@@ -50,6 +50,10 @@
     "errors": {
       "terminate_failed": "Failed to terminate session.",
       "unexpected": "Unexpected error while signing out."
+    },
+    "guard": {
+      "checking": "Verifying support access…",
+      "failed": "We couldn't verify your support access. Refresh or sign in again."
     }
   },
   "common": {

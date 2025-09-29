@@ -32,6 +32,12 @@ export interface CustomerSupportProductsResponse {
   }
 }
 
+export interface CustomerSupportSessionResponse {
+  customerSupport: {
+    __typename: string
+  } | null
+}
+
 export interface CustomerSupportOrdersVariables {
   userId?: string
   status?: string

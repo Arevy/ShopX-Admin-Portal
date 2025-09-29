@@ -50,6 +50,10 @@
     "errors": {
       "terminate_failed": "Sitzung konnte nicht beendet werden.",
       "unexpected": "Unerwarteter Fehler beim Abmelden."
+    },
+    "guard": {
+      "checking": "Support-Zugriff wird geprüft…",
+      "failed": "Ihr Support-Zugriff konnte nicht überprüft werden. Bitte Seite aktualisieren oder erneut anmelden."
     }
   },
   "common": {

@@ -50,6 +50,10 @@
     "errors": {
       "terminate_failed": "Nu s-a putut închide sesiunea.",
       "unexpected": "Eroare neașteptată la deconectare."
+    },
+    "guard": {
+      "checking": "Verificăm accesul de suport…",
+      "failed": "Nu am reușit să verificăm accesul de suport. Reîmprospătează pagina sau autentifică-te din nou."
     }
   },
   "common": {
