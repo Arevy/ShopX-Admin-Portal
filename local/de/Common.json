@@ -34,7 +34,10 @@
       "label": "Aktiver Bereich"
     },
     "status": {
-      "online": "● Online"
+      "online": "● Online",
+      "checking": "● Wird geprüft…",
+      "offline": "● Offline",
+      "unauthorized": "● Sitzung abgelaufen"
     },
     "badges": {
       "node_requirement": "Node >= 20 erforderlich"

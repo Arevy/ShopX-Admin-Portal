@@ -34,7 +34,10 @@
       "label": "Zone active"
     },
     "status": {
-      "online": "● En ligne"
+      "online": "● En ligne",
+      "checking": "● Vérification…",
+      "offline": "● Hors ligne",
+      "unauthorized": "● Session expirée"
     },
     "badges": {
       "node_requirement": "Node >= 20 requis"

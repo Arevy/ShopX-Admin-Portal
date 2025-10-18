@@ -34,7 +34,10 @@
       "label": "Active area"
     },
     "status": {
-      "online": "● Online"
+      "online": "● Online",
+      "checking": "● Checking…",
+      "offline": "● Offline",
+      "unauthorized": "● Session expired"
     },
     "badges": {
       "node_requirement": "Node >= 20 required"

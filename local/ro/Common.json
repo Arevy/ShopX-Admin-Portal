@@ -34,7 +34,10 @@
       "label": "Zonă activă"
     },
     "status": {
-      "online": "● Online"
+      "online": "● Online",
+      "checking": "● Verificăm…",
+      "offline": "● Deconectat",
+      "unauthorized": "● Sesiune expirată"
     },
     "badges": {
       "node_requirement": "Necesită Node >= 20"

@@ -34,7 +34,10 @@
       "label": "المنطقة النشطة"
     },
     "status": {
-      "online": "● متصل"
+      "online": "● متصل",
+      "checking": "● جارٍ التحقق…",
+      "offline": "● غير متصل",
+      "unauthorized": "● انتهت الجلسة"
     },
     "badges": {
       "node_requirement": "يتطلب Node ‎20 أو أحدث"

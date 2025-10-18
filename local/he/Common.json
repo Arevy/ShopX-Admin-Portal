@@ -34,7 +34,10 @@
       "label": "אזור פעיל"
     },
     "status": {
-      "online": "● מחובר"
+      "online": "● מחובר",
+      "checking": "● בודק…",
+      "offline": "● לא מקוון",
+      "unauthorized": "● פג תוקף ההתחברות"
     },
     "badges": {
       "node_requirement": "נדרש Node ‎20 ומעלה"

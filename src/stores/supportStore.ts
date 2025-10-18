@@ -25,6 +25,10 @@ export class SupportStore {
   customerProfile: CustomerProfile | null = null
   profileLoading = false
   profileError: string | null = null
+  connectionStatus: 'checking' | 'online' | 'unauthorized' | 'offline' = 'checking'
+  connectionError: string | null = null
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null
+  private heartbeatInFlight = false
 
   constructor(root: RootStore) {
     this.root = root
@@ -202,6 +206,11 @@ export class SupportStore {
   }
 
   async verifySession(): Promise<'authorized' | 'unauthorized'> {
+    runInAction(() => {
+      this.connectionStatus = 'checking'
+      this.connectionError = null
+    })
+
     try {
       const response = await this.root.apiService.executeGraphQL(
         QueryCustomerSupportSession,
@@ -216,6 +225,8 @@ export class SupportStore {
       if (unauthorized || !response.data?.customerSupport) {
         runInAction(() => {
           this.root.userStore.setSessionUser(null)
+          this.connectionStatus = 'unauthorized'
+          this.connectionError = null
         })
         return 'unauthorized'
       }
@@ -232,12 +243,19 @@ export class SupportStore {
         })
       }
 
+      runInAction(() => {
+        this.connectionStatus = 'online'
+        this.connectionError = null
+      })
+
       return 'authorized'
     } catch (error) {
       if (error instanceof ClientError) {
         if (error.response.status === 401 || error.response.status === 403) {
           runInAction(() => {
             this.root.userStore.setSessionUser(null)
+            this.connectionStatus = 'unauthorized'
+            this.connectionError = null
           })
           return 'unauthorized'
         }
@@ -249,12 +267,65 @@ export class SupportStore {
         if (unauthorizedGraphQL) {
           runInAction(() => {
             this.root.userStore.setSessionUser(null)
+            this.connectionStatus = 'unauthorized'
+            this.connectionError = null
           })
           return 'unauthorized'
         }
       }
 
+      const message = getUserFriendlyMessage(
+        error,
+        'Unable to reach the support backend.',
+      )
+
+      runInAction(() => {
+        this.connectionStatus = 'offline'
+        this.connectionError = message
+      })
+
       throw error
+    }
+  }
+
+  startConnectionWatch(intervalMs = 60000) {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    if (this.heartbeatTimer) {
+      return
+    }
+
+    const runCheck = async () => {
+      if (this.heartbeatInFlight) {
+        return
+      }
+
+      this.heartbeatInFlight = true
+      try {
+        await this.verifySession()
+      } catch {
+        // verifySession updates the connection status fields, no extra handling required
+      } finally {
+        this.heartbeatInFlight = false
+      }
+    }
+
+    void runCheck()
+    this.heartbeatTimer = setInterval(() => {
+      void runCheck()
+    }, intervalMs)
+  }
+
+  stopConnectionWatch() {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer)
+      this.heartbeatTimer = null
     }
   }
 

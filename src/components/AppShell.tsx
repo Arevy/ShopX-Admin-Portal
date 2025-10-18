@@ -1,20 +1,40 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import classNames from 'classnames'
+import { observer } from 'mobx-react-lite'
 import { useRTL, useTranslation } from '@/i18n'
 import { getGraphqlDisplayEndpoint } from '@/config/env'
 import { useAdminNavigation } from '@/routes/useAdminNavigation'
+import { useStores } from '@/hooks/useStores'
 import styles from './AppShell.module.scss'
 import { SupportSessionControls } from './SupportSessionControls'
 import { LanguageSelector } from './LanguageSelector'
 import { SidebarNavigation } from './SidebarNavigation'
 
-export const AppShell = ({ children }: { children: ReactNode }) => {
+const AppShellComponent = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation('Common')
   const isRtl = useRTL()
   const { routes, activeLabel, pathname } = useAdminNavigation()
   const graphqlEndpoint = getGraphqlDisplayEndpoint()
+  const { supportStore } = useStores()
+
+  useEffect(() => {
+    supportStore.startConnectionWatch()
+    return () => {
+      supportStore.stopConnectionWatch()
+    }
+  }, [supportStore])
+
+  const statusClassName = classNames('badge', styles.badgeStatus, {
+    [styles.badgeOnline]: supportStore.connectionStatus === 'online',
+    [styles.badgeOffline]: supportStore.connectionStatus === 'offline',
+    [styles.badgeUnauthorized]: supportStore.connectionStatus === 'unauthorized',
+    [styles.badgeChecking]: supportStore.connectionStatus === 'checking',
+  })
+
+  const statusLabel = t(`app_shell.status.${supportStore.connectionStatus}`)
+  const statusTitle = supportStore.connectionError ?? undefined
 
   return (
     <div className={classNames(styles.container, { [styles.containerRtl]: isRtl })}>
@@ -55,7 +75,9 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
             <h2 className={styles.headerTitle}>{activeLabel}</h2>
           </div>
           <div className={styles.headerBadges}>
-            <span className={classNames('badge', styles.badgeOnline)}>{t('app_shell.status.online')}</span>
+            <span className={statusClassName} title={statusTitle}>
+              {statusLabel}
+            </span>
             <span className="badge">{t('app_shell.badges.node_requirement')}</span>
             <SupportSessionControls />
           </div>
@@ -69,3 +91,5 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
     </div>
   )
 }
+
+export const AppShell = observer(AppShellComponent)
