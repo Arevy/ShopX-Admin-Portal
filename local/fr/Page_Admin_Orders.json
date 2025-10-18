@@ -48,5 +48,11 @@
     "success": {
       "update": "Commande {{id}} mise à jour sur {{status}}."
     }
+  },
+  "pagination": {
+    "summary": "Affichage de {{start}}–{{end}} sur {{total}} commandes",
+    "page": "Page {{current}} sur {{total}}",
+    "previous": "Précédent",
+    "next": "Suivant"
   }
 }

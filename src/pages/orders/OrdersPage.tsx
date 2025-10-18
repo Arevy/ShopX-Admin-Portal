@@ -27,6 +27,7 @@ const OrdersPage = observer(() => {
     handleStatusChange,
     pending,
     feedback,
+    pagination,
   } = useOrders()
   const { t } = useTranslation(route.translationNamespace)
 
@@ -130,6 +131,39 @@ const OrdersPage = observer(() => {
           data={orders}
           emptyState={<span>{t('table.empty')}</span>}
         />
+        <div className={styles.pagination}>
+          <span className={styles.paginationSummary}>
+            {t('pagination.summary', {
+              start: pagination.start,
+              end: pagination.end,
+              total: pagination.total,
+            })}
+          </span>
+          <div className={styles.paginationControls}>
+            <button
+              type="button"
+              className={styles.paginationButton}
+              onClick={pagination.goToPreviousPage}
+              disabled={!pagination.hasPreviousPage}
+            >
+              {t('pagination.previous')}
+            </button>
+            <span className={styles.paginationPageIndicator}>
+              {t('pagination.page', {
+                current: pagination.currentPage,
+                total: pagination.totalPages,
+              })}
+            </span>
+            <button
+              type="button"
+              className={styles.paginationButton}
+              onClick={pagination.goToNextPage}
+              disabled={!pagination.hasNextPage}
+            >
+              {t('pagination.next')}
+            </button>
+          </div>
+        </div>
         {feedback ? (
           <span
             className={feedback.tone === 'positive' ? styles.feedbackPositive : styles.feedbackNegative}

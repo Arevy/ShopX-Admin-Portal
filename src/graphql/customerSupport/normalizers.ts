@@ -1,8 +1,6 @@
 import type { CustomerSupportOrdersVariables, CustomerSupportUsersVariables } from '@/types/graphql'
 import type { Order, OrderProduct, User } from '@/types/domain'
 
-const DEFAULT_LIMIT = 20
-const DEFAULT_OFFSET = 0
 export const INVALID_USER_ID_MESSAGE = 'User ID filters accept only numeric identifiers.'
 
 type RawOrder = {
@@ -37,15 +35,13 @@ export const normalizeOrderVariables = (
   sanitized: CustomerSupportOrdersVariables
   errorMessage?: string
 } => {
-  const limit =
-    typeof variables?.limit === 'number' && Number.isFinite(variables.limit)
-      ? variables.limit
-      : DEFAULT_LIMIT
+  const rawLimit = variables?.limit
+  const parsedLimit = Number(rawLimit)
+  const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.min(100, Math.floor(parsedLimit)) : 20
 
-  const offset =
-    typeof variables?.offset === 'number' && Number.isFinite(variables.offset)
-      ? variables.offset
-      : DEFAULT_OFFSET
+  const rawOffset = variables?.offset
+  const parsedOffset = Number(rawOffset)
+  const offset = Number.isFinite(parsedOffset) && parsedOffset > 0 ? Math.floor(parsedOffset) : 0
 
   const status = variables?.status?.trim()
   const normalizedStatus = status ? status.toUpperCase() : undefined
@@ -67,13 +63,21 @@ export const normalizeOrderVariables = (
     }
   }
 
+  const sanitized: CustomerSupportOrdersVariables = {
+    limit,
+    offset,
+  }
+
+  if (normalizedStatus) {
+    sanitized.status = normalizedStatus
+  }
+
+  if (normalizedUserId) {
+    sanitized.userId = normalizedUserId
+  }
+
   return {
-    sanitized: {
-      limit,
-      offset,
-      status: normalizedStatus,
-      userId: normalizedUserId,
-    },
+    sanitized,
   }
 }
 

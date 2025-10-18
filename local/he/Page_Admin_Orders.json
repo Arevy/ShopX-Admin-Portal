@@ -48,5 +48,11 @@
     "success": {
       "update": "הזמנה {{id}} עודכנה ל‑{{status}}."
     }
+  },
+  "pagination": {
+    "summary": "מציג {{start}}–{{end}} מתוך {{total}} הזמנות",
+    "page": "עמוד {{current}} מתוך {{total}}",
+    "previous": "הקודם",
+    "next": "הבא"
   }
 }

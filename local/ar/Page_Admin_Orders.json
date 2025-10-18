@@ -48,5 +48,11 @@
     "success": {
       "update": "تم تحديث الطلب {{id}} إلى {{status}}."
     }
+  },
+  "pagination": {
+    "summary": "يتم عرض {{start}}–{{end}} من أصل {{total}} طلبات",
+    "page": "الصفحة {{current}} من {{total}}",
+    "previous": "السابق",
+    "next": "التالي"
   }
 }

@@ -48,5 +48,11 @@
     "success": {
       "update": "Comanda {{id}} a fost actualizată la {{status}}."
     }
+  },
+  "pagination": {
+    "summary": "Se afișează {{start}}–{{end}} din {{total}} comenzi",
+    "page": "Pagina {{current}} din {{total}}",
+    "previous": "Anterior",
+    "next": "Următor"
   }
 }

@@ -24,10 +24,8 @@ export const QueryCustomerSupportOrders = new QueryFactory<
   postProcess: async (_, response, variables) => {
     const sanitizedVariables = normalizeOrderVariables(variables).sanitized
 
-    const normalizedOrders = normalizeOrdersDataset(
-      response.data?.customerSupport.orders,
-      sanitizedVariables,
-    )
+    const connection = response.data?.customerSupport?.ordersConnection
+    const normalizedOrders = normalizeOrdersDataset(connection?.items, sanitizedVariables)
 
     if (!response.data?.customerSupport) {
       return {
@@ -35,6 +33,7 @@ export const QueryCustomerSupportOrders = new QueryFactory<
         data: {
           customerSupport: {
             orders: normalizedOrders,
+            ordersTotalCount: connection?.totalCount ?? normalizedOrders.length,
           },
         },
       }
@@ -46,6 +45,7 @@ export const QueryCustomerSupportOrders = new QueryFactory<
         customerSupport: {
           ...response.data.customerSupport,
           orders: normalizedOrders,
+          ordersTotalCount: connection?.totalCount ?? normalizedOrders.length,
         },
       },
     }
@@ -53,18 +53,21 @@ export const QueryCustomerSupportOrders = new QueryFactory<
   queryObject: parse(/* GraphQL */ `
     query CustomerSupportOrders($userId: ID, $status: String, $limit: Int, $offset: Int) {
       customerSupport {
-        orders(userId: $userId, status: $status, limit: $limit, offset: $offset) {
-          id
-          userId
-          total
-          status
-          createdAt
-          updatedAt
-          products {
-            productId
-            quantity
-            price
+        ordersConnection(userId: $userId, status: $status, limit: $limit, offset: $offset) {
+          items {
+            id
+            userId
+            total
+            status
+            createdAt
+            updatedAt
+            products {
+              productId
+              quantity
+              price
+            }
           }
+          totalCount
         }
       }
     }

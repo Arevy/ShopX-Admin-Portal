@@ -117,6 +117,11 @@ export interface CustomerSupportOrdersVariables {
 export interface CustomerSupportOrdersResponse {
   customerSupport: {
     orders: Order[]
+    ordersTotalCount?: number
+    ordersConnection?: {
+      items: Order[]
+      totalCount: number
+    }
   }
 }
 

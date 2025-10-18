@@ -48,5 +48,11 @@
     "success": {
       "update": "Order {{id}} updated to {{status}}."
     }
+  },
+  "pagination": {
+    "summary": "Showing {{start}}–{{end}} of {{total}} orders",
+    "page": "Page {{current}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

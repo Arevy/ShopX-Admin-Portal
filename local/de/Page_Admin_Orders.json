@@ -48,5 +48,11 @@
     "success": {
       "update": "Bestellung {{id}} wurde auf {{status}} aktualisiert."
     }
+  },
+  "pagination": {
+    "summary": "Es werden {{start}}–{{end}} von {{total}} Bestellungen angezeigt",
+    "page": "Seite {{current}} von {{total}}",
+    "previous": "Zurück",
+    "next": "Weiter"
   }
 }

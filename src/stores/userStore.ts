@@ -76,7 +76,9 @@ export class UserStore {
 	selectedOrder: Order | null = null;
 	ordersLoading = false;
 	ordersError: string | null = null;
-	orderFilters: OrderFilters = { limit: 20, offset: 0 };
+	orderFilters: OrderFilters = { status: 'PENDING', limit: 20, offset: 0 };
+	ordersTotal = 0;
+	ordersHasMore = false;
 	profileSaving = false;
 	profileError: string | null = null;
 	passwordChanging = false;
@@ -464,6 +466,8 @@ export class UserStore {
 		if (normalized.errorMessage) {
 			runInAction(() => {
 				this.orders = [];
+				this.ordersTotal = 0;
+				this.ordersHasMore = false;
 				this.ordersLoading = false;
 				this.ordersError = normalized.errorMessage ?? null;
 			});
@@ -477,7 +481,12 @@ export class UserStore {
 			);
 
 			runInAction(() => {
-				this.orders = response.data?.customerSupport.orders ?? [];
+				const fetched = response.data?.customerSupport.orders ?? [];
+				const totalCount = response.data?.customerSupport.ordersTotalCount ?? fetched.length;
+				this.orders = fetched;
+				this.ordersTotal = totalCount;
+				const offset = normalized.sanitized.offset ?? 0;
+				this.ordersHasMore = offset + fetched.length < totalCount;
 				this.ordersError = null;
 			});
 		} catch (error) {
@@ -487,12 +496,57 @@ export class UserStore {
 					"Unexpected error fetching orders."
 				);
 				this.orders = [];
+				this.ordersTotal = 0;
+				this.ordersHasMore = false;
 			});
 		} finally {
 			runInAction(() => {
 				this.ordersLoading = false;
 			});
 		}
+	}
+
+	get orderLimit() {
+		return this.orderFilters.limit ?? 20;
+	}
+
+	get orderOffset() {
+		return this.orderFilters.offset ?? 0;
+	}
+
+	get orderCurrentPage() {
+		const limit = this.orderLimit;
+		if (limit <= 0) {
+			return 1;
+		}
+		return Math.floor(this.orderOffset / limit) + 1;
+	}
+
+	get orderTotalPages() {
+		const limit = this.orderLimit;
+		if (limit <= 0) {
+			return 1;
+		}
+		return Math.max(1, Math.ceil(this.ordersTotal / limit));
+	}
+
+	goToOrderPage(page: number) {
+		const limit = this.orderLimit;
+		if (limit <= 0) {
+			throw new Error('Orders page size must be greater than zero');
+		}
+		const totalPages = this.orderTotalPages;
+		const safePage = Math.min(Math.max(page, 1), totalPages);
+		const offset = (safePage - 1) * limit;
+		void this.fetchOrders({ offset });
+	}
+
+	nextOrderPage() {
+		this.goToOrderPage(this.orderCurrentPage + 1);
+	}
+
+	previousOrderPage() {
+		this.goToOrderPage(this.orderCurrentPage - 1);
 	}
 
 	async loadOrder(orderId: string) {

@@ -17,7 +17,7 @@ export const useOrders = () => {
   const rootContext = useRootContext()
   const { t } = useTranslation('Page_Admin_Orders')
   const userStore = rootContext.userStore
-  const [statusFilter, setStatusFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('PENDING')
   const [userIdFilter, setUserIdFilter] = useState('')
   const [pending, setPending] = useState<Record<string, boolean>>({})
   const [feedback, setFeedback] = useState<Feedback>(null)
@@ -32,6 +32,7 @@ export const useOrders = () => {
       void userStore.fetchOrders({
         status: statusFilter || undefined,
         userId: userIdFilter || undefined,
+        offset: 0,
       })
     },
     [userStore, statusFilter, userIdFilter],
@@ -72,6 +73,16 @@ export const useOrders = () => {
     [userStore.orders, userStore.ordersLoading, userStore.ordersError],
   )
 
+  const limit = userStore.orderLimit
+  const offset = userStore.orderOffset
+  const total = userStore.ordersTotal
+  const currentPage = userStore.orderCurrentPage
+  const totalPages = userStore.orderTotalPages
+  const hasPreviousPage = offset > 0
+  const hasNextPage = offset + userStore.orders.length < total
+  const start = total === 0 ? 0 : offset + 1
+  const end = offset + userStore.orders.length
+
   return {
     ...state,
     activeFilters: userStore.orderFilters,
@@ -84,5 +95,19 @@ export const useOrders = () => {
     handleStatusChange,
     pending,
     feedback,
+    pagination: {
+      limit,
+      offset,
+      total,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      start,
+      end,
+      goToPage: (page: number) => userStore.goToOrderPage(page),
+      goToNextPage: () => userStore.nextOrderPage(),
+      goToPreviousPage: () => userStore.previousOrderPage(),
+    },
   }
 }
