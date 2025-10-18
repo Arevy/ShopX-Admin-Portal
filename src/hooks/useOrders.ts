@@ -2,8 +2,8 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useRootContext } from '@/stores/provider'
-import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
+import { useRootContext } from '@/stores/StoreProvider'
+import { getUserFriendlyMessage } from '@/lib/getUserFriendlyMessage'
 import { useTranslation } from '@/i18n'
 
 const STATUS_OPTIONS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as const
@@ -16,25 +16,25 @@ type Feedback = {
 export const useOrders = () => {
   const rootContext = useRootContext()
   const { t } = useTranslation('Page_Admin_Orders')
-  const orderStore = rootContext.orderStore
+  const userStore = rootContext.userStore
   const [statusFilter, setStatusFilter] = useState('')
   const [userIdFilter, setUserIdFilter] = useState('')
   const [pending, setPending] = useState<Record<string, boolean>>({})
   const [feedback, setFeedback] = useState<Feedback>(null)
 
   useEffect(() => {
-    void orderStore.fetchOrders()
-  }, [orderStore])
+    void userStore.fetchOrders()
+  }, [userStore])
 
   const handleFilter = useCallback(
     (event: FormEvent) => {
       event.preventDefault()
-      void orderStore.fetchOrders({
+      void userStore.fetchOrders({
         status: statusFilter || undefined,
         userId: userIdFilter || undefined,
       })
     },
-    [orderStore, statusFilter, userIdFilter],
+    [userStore, statusFilter, userIdFilter],
   )
 
   const handleStatusChange = useCallback(
@@ -42,7 +42,7 @@ export const useOrders = () => {
       setPending((prev) => ({ ...prev, [orderId]: true }))
       setFeedback(null)
       try {
-        await orderStore.updateOrderStatus(orderId, status)
+        await userStore.updateOrderStatus(orderId, status)
         const statusLabel = t(`statuses.${status.toLowerCase()}`)
         setFeedback({
           tone: 'positive',
@@ -60,21 +60,21 @@ export const useOrders = () => {
         setPending((prev) => ({ ...prev, [orderId]: false }))
       }
     },
-    [orderStore, t],
+    [userStore, t],
   )
 
   const state = useMemo(
     () => ({
-      orders: orderStore.orders,
-      loading: orderStore.loading,
-      error: orderStore.error,
+      orders: userStore.orders,
+      loading: userStore.ordersLoading,
+      error: userStore.ordersError,
     }),
-    [orderStore.orders, orderStore.loading, orderStore.error],
+    [userStore.orders, userStore.ordersLoading, userStore.ordersError],
   )
 
   return {
     ...state,
-    activeFilters: orderStore.filters,
+    activeFilters: userStore.orderFilters,
     statusOptions: STATUS_OPTIONS,
     statusFilter,
     setStatusFilter,

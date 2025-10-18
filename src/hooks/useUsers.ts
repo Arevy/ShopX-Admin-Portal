@@ -2,10 +2,11 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useRootContext } from '@/stores/provider'
-import { getUserFriendlyMessage } from '@/common/utils/getUserFriendlyMessage'
+import { useRootContext } from '@/stores/StoreProvider'
+import { getUserFriendlyMessage } from '@/lib/getUserFriendlyMessage'
 import { useTranslation } from '@/i18n'
 import { UserRole } from '@/types/domain'
+import { getStorefrontUrl } from '@/config/env'
 
 interface CreateUserFormState {
   email: string
@@ -107,9 +108,8 @@ export const useUsers = () => {
           throw new Error(t('feedback.errors.impersonation_browser'))
         }
 
-        const baseUrl =
-          process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'http://localhost:3100'
-        const impersonateUrl = `${baseUrl.replace(/\/$/, '')}/impersonate?token=${ticket.token}`
+        const baseUrl = getStorefrontUrl().replace(/\/$/, '')
+        const impersonateUrl = `${baseUrl}/impersonate?token=${ticket.token}`
         window.open(impersonateUrl, '_blank', 'noopener')
         setFeedback({ tone: 'positive', message: t('feedback.success.impersonation') })
       } catch (error) {

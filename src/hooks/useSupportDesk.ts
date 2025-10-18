@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useState } from 'react'
 
-import { useRootContext } from '@/stores/provider'
+import { useRootContext } from '@/stores/StoreProvider'
 
 export const useSupportDesk = () => {
   const rootContext = useRootContext()

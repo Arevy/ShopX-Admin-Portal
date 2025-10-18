@@ -1,46 +1,22 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ClientError } from 'graphql-request'
+import { useRouter } from 'next/router'
 
-import { QueryCustomerSupportSession } from '@/common/queries/customerSupport/QueryCustomerSupportSession'
-import getUserFriendlyMessage from '@/common/utils/getUserFriendlyMessage'
+import getUserFriendlyMessage from '@/lib/getUserFriendlyMessage'
 import { useTranslation } from '@/i18n'
-import { useRootContext } from '@/stores/provider'
+import { useRootContext } from '@/stores/StoreProvider'
 
 import { ErrorState } from './ErrorState'
 import { LoadingState } from './LoadingState'
 import styles from './SupportSessionGuard.module.scss'
 
-const SUPPORT_AUTH_ERROR = /support authentication required/i
-
 type GuardStatus = 'checking' | 'ready' | 'error' | 'redirecting'
-
-const isUnauthorizedError = (error: unknown): boolean => {
-  if (error instanceof ClientError) {
-    if (error.response.status === 401 || error.response.status === 403) {
-      return true
-    }
-
-    return Boolean(
-      error.response.errors?.some((graphQLError) =>
-        SUPPORT_AUTH_ERROR.test(graphQLError.message ?? ''),
-      ),
-    )
-  }
-
-  if (error instanceof Error) {
-    return SUPPORT_AUTH_ERROR.test(error.message)
-  }
-
-  return false
-}
 
 export const SupportSessionGuard = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const { t } = useTranslation('Common')
-  const rootContext = useRootContext()
+  const { supportStore } = useRootContext()
 
   const [status, setStatus] = useState<GuardStatus>('checking')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -68,21 +44,13 @@ export const SupportSessionGuard = ({ children }: { children: ReactNode }) => {
 
     const verifySession = async () => {
       try {
-        const response = await rootContext.apiService.executeGraphQL(
-          QueryCustomerSupportSession,
-        )
+        const result = await supportStore.verifySession()
 
         if (cancelled) {
           return
         }
 
-        const unauthorized = Boolean(
-          response.errors?.some((graphQLError) =>
-            SUPPORT_AUTH_ERROR.test(graphQLError.message ?? ''),
-          ),
-        )
-
-        if (unauthorized || !response.data?.customerSupport) {
+        if (result === 'unauthorized') {
           redirectToLogin()
           return
         }
@@ -93,20 +61,8 @@ export const SupportSessionGuard = ({ children }: { children: ReactNode }) => {
           return
         }
 
-        if (isUnauthorizedError(error)) {
-          redirectToLogin()
-          return
-        }
-
         const fallback = t('support_session.guard.failed')
-        const message = getUserFriendlyMessage(error, fallback, {
-          knownMessages: [
-            {
-              match: SUPPORT_AUTH_ERROR,
-              value: fallback,
-            },
-          ],
-        })
+        const message = getUserFriendlyMessage(error, fallback)
 
         setErrorMessage(message)
         setStatus('error')
@@ -118,7 +74,7 @@ export const SupportSessionGuard = ({ children }: { children: ReactNode }) => {
     return () => {
       cancelled = true
     }
-  }, [rootContext, router, t])
+  }, [router, supportStore, t])
 
   if (status === 'checking' || status === 'redirecting') {
     return (

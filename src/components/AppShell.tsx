@@ -1,41 +1,20 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import classNames from 'classnames'
 import { useRTL, useTranslation } from '@/i18n'
+import { getGraphqlDisplayEndpoint } from '@/config/env'
+import { useAdminNavigation } from '@/routes/useAdminNavigation'
 import styles from './AppShell.module.scss'
 import { SupportSessionControls } from './SupportSessionControls'
 import { LanguageSelector } from './LanguageSelector'
-
-const navigation = [
-  { key: 'overview', href: '/dashboard', emoji: '📊' },
-  { key: 'orders', href: '/orders', emoji: '🧾' },
-  { key: 'products', href: '/products', emoji: '🛒' },
-  { key: 'customers', href: '/users', emoji: '👤' },
-  { key: 'support', href: '/support', emoji: '💬' },
-  { key: 'cms', href: '/cms', emoji: '📝' },
-] as const
+import { SidebarNavigation } from './SidebarNavigation'
 
 export const AppShell = ({ children }: { children: ReactNode }) => {
-  const pathname = usePathname()
   const { t } = useTranslation('Common')
   const isRtl = useRTL()
-
-  const translatedNavigation = useMemo(
-    () =>
-      navigation.map((item) => ({
-        ...item,
-        label: t(`app_shell.navigation.${item.key}`),
-      })),
-    [t],
-  )
-
-  const activeSection = useMemo(() => {
-    const activeItem = translatedNavigation.find((item) => pathname.startsWith(item.href))
-    return activeItem?.label ?? t('app_shell.navigation.overview')
-  }, [pathname, translatedNavigation, t])
+  const { routes, activeLabel, pathname } = useAdminNavigation()
+  const graphqlEndpoint = getGraphqlDisplayEndpoint()
 
   return (
     <div className={classNames(styles.container, { [styles.containerRtl]: isRtl })}>
@@ -50,25 +29,20 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
             <p className={styles.brandSubtitle}>{t('app_shell.brand.subtitle')}</p>
           </div>
 
-          <nav className={styles.navList}>
-            {translatedNavigation.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
-              return (
-                <Link key={item.href} href={item.href} legacyBehavior>
-                  <a className={classNames(styles.navLink, { [styles.navLinkActive]: active })}>
-                    <span className={styles.navEmoji}>{item.emoji}</span>
-                    {item.label}
-                  </a>
-                </Link>
-              )
-            })}
-          </nav>
+          <SidebarNavigation
+            routes={routes}
+            pathname={pathname}
+            className={styles.navList}
+            linkClassName={styles.navLink}
+            activeLinkClassName={styles.navLinkActive}
+            emojiClassName={styles.navEmoji}
+          />
 
           <div className={classNames('card', styles.endpointCard)}>
             <p className={styles.endpointLabel}>{t('app_shell.endpoint.label')}</p>
             <p className={styles.endpointValue}>
               <span>
-                {process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? t('app_shell.endpoint.fallback')}
+                {graphqlEndpoint ?? t('app_shell.endpoint.fallback')}
               </span>
             </p>
           </div>
@@ -78,7 +52,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         <header className={styles.header}>
           <div>
             <p className={styles.headerMeta}>{t('app_shell.active_area.label')}</p>
-            <h2 className={styles.headerTitle}>{activeSection}</h2>
+            <h2 className={styles.headerTitle}>{activeLabel}</h2>
           </div>
           <div className={styles.headerBadges}>
             <span className={classNames('badge', styles.badgeOnline)}>{t('app_shell.status.online')}</span>

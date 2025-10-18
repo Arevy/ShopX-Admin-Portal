@@ -1,14 +1,16 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import classNames from 'classnames'
+import { useStores } from '@/hooks/useStores'
 import { useTranslation } from '@/i18n'
 import styles from './SupportSessionControls.module.scss'
 
 export const SupportSessionControls = () => {
   const router = useRouter()
   const { t } = useTranslation('Common')
+  const { userStore } = useStores()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -16,22 +18,18 @@ export const SupportSessionControls = () => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('/api/auth/logout', { method: 'POST' })
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as
-          | { message?: string }
-          | null
-        setError(payload?.message ?? t('support_session.errors.terminate_failed'))
-        setLoading(false)
-        return
-      }
+      await userStore.logout()
       router.replace('/login')
-      router.refresh()
+      router.reload()
     } catch (err) {
       console.error('Failed to log out', err)
-      setError(t('support_session.errors.unexpected'))
-      setLoading(false)
+      const message =
+        err instanceof Error
+          ? err.message || t('support_session.errors.terminate_failed')
+          : t('support_session.errors.terminate_failed')
+      setError(message)
     }
+    setLoading(false)
   }
 
   return (

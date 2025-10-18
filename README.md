@@ -1,6 +1,6 @@
 # ShopX Admin Portal
 
-ShopX Admin is the internal control centre for the ShopX commerce stack. It gives merchandising, marketing, and support teams a browser-based UI to manage the same GraphQL domain that powers the store front: inventory, pricing, customer accounts, order lifecycles, and CMS pages. The app is built with **Next.js 14 (App Router)**, **React 18**, **TypeScript**, **MobX**, and **graphql-request** to provide reactive data views and optimistic workflows over the `e-commerce-backend` service.
+ShopX Admin is the internal control centre for the ShopX commerce stack. It gives merchandising, marketing, and support teams a browser-based UI to manage the same GraphQL domain that powers the store front: inventory, pricing, customer accounts, order lifecycles, and CMS pages. The app is built with **Next.js 14 (Pages Router)**, **React 18**, **TypeScript**, **MobX**, and **graphql-request** to provide reactive data views and optimistic workflows over the `e-commerce-backend` service.
 
 ---
 
@@ -69,7 +69,7 @@ npm run dev                  # launches http://localhost:3000
 ## Authentication Flow
 
 1. Navigate to `/login` and sign in with a support credential. The API route forwards the backend `login` mutation and returns the HTTP-only `support_sid` cookie set by the GraphQL server.
-2. Authenticated pages live under `src/app/(routes)`. Middleware blocks unauthenticated users and redirects them back to `/login` while preserving their intended destination.
+2. Authenticated pages live under `src/pages` (dashboard, orders, products, support, users, cms). The shared layout now sits in `_app.page.tsx`, so middleware still blocks unauthenticated users and redirects them back to `/login` while preserving their intended destination.
 3. The header’s “Sign out” action posts to `/api/auth/logout`, which clears the session in Redis and expires the cookie for the browser.
 4. From the **Customers** area you can revoke shopper sessions (`Force logout`) or generate an impersonation ticket. Impersonation opens the storefront’s `/impersonate` route in a new tab, sets a fresh cookie for the target user, and refreshes their context automatically.
 
@@ -82,15 +82,16 @@ npm run dev                  # launches http://localhost:3000
 ```
 admin-portal/
 ├── src/
-│   ├── app/
-│   │   ├── (routes)/          # Authenticated app sections (dashboard, orders, products, support, users, cms)
-│   │   └── layout.tsx         # Global layout + providers (MobX, theme)
-│   ├── common/
-│   │   ├── queries/           # QueryFactory definitions for every GraphQL operation
-│   │   ├── services/          # ApiService wrapper around graphql-request
-│   │   └── stores/            # RootContext + MobX domain stores (orders, products, cms, etc.)
 │   ├── components/            # Shared UI (AppShell, tables, forms, widgets)
+│   ├── config/                # Environment helpers and constants
+│   ├── graphql/               # QueryFactory definitions for every GraphQL operation
 │   ├── hooks/                 # Custom hooks to access stores (`useCms`, `useOrders`, etc.)
+│   ├── i18n/                  # Translation setup
+│   ├── lib/                   # ApiService, error helpers, misc utilities
+│   ├── pages/                 # Next.js routes (`_app`, `_document`, login, dashboard, etc.)
+│   ├── routes/                # Navigation metadata + utilities
+│   ├── stores/                # RootStore + MobX stores (user/auth/orders, products, support, cms)
+│   ├── styles/                # Global styles and shared Sass tokens
 │   └── types/                 # Shared TypeScript contracts mirroring GraphQL schema
 ├── Dockerfile                 # Multi-stage build for production deployments
 ├── next.config.mjs
@@ -98,19 +99,20 @@ admin-portal/
 └── README.md
 ```
 
-MobX powers client-side state. `RootContext` instantiates all stores and the `ApiService`, exposing them via React context. Each route consumes a specific store through hooks, keeping data logic and presentation tightly scoped.
+MobX powers client-side state. `RootStore` instantiates all stores and the `ApiService`, exposing them via React context. The consolidated `userStore` now represents support-agent session state, customer administration, and order workflows, while the remaining stores keep their product/support/CMS responsibilities. Each route consumes the slice it needs through hooks, keeping data logic and presentation tightly scoped.
 
 ---
 
 ## Data Integration Details
 
-- **GraphQL Client**: `ApiService` centralises authentication headers, error formatting, and post-processing logic. Operations are defined as `QueryFactory` instances for reuse on both server and client components. All requests flow through `/api/support-graphql`, which forwards the browser’s `sid` cookie to the backend to satisfy support-only resolvers.
+- **GraphQL Client**: `ApiService` centralises authentication headers, error formatting, and post-processing logic. Operations are defined as `QueryFactory` instances for reuse on both server and client components. All requests flow through `/api/support-graphql`, which forwards the browser’s session cookie to the backend to satisfy support-only resolvers.
+- **User & Order Management**: A single `userStore` now owns support-agent authentication, customer administration, and order lifecycle updates. Hooks such as `useOrders` and `useDashboard` pull from that store so UI pieces no longer juggle separate auth/order abstractions.
 - **User context aggregate**: Support-desk flows call `customerSupport.userContext` to hydrate carts, wishlists, addresses, and identity in a single round trip, mirroring the shopper-facing `getUserContext` query.
 - **Error Handling**: Stores capture GraphQL/API errors and expose user-friendly messages displayed through toast notifications or inline alerts.
 - **CMS Editor**: Uses `react-quill` in a client component; content is persisted through the customer support namespace in the backend GraphQL schema. Redis caching is invalidated automatically after publish/delete mutations.
 - **Product imagery**: Upload widgets convert selected files to base64, call the `ProductImageUploadInput`
   GraphQL argument, and rely on the backend-hosted `/products/:id/image` URL for live previews.
-- **Session handling**: Support staff authenticate with `/api/auth/login`, which proxies the backend `login` mutation and forwards the issued HTTP-only `sid` cookie back to the browser. Middleware gates all routes based on that cookie, and the shared `ApiService` always sends credentials so GraphQL calls execute under the active session. Logging out clears both the Redis session and the browser cookie.
+- **Session handling**: Support staff authenticate with `/api/auth/login`, which proxies the backend `login` mutation and forwards the issued HTTP-only `sid` cookie back to the browser. Middleware gates all routes based on that cookie, and the shared `ApiService` always sends credentials so GraphQL calls execute under the active session. `userStore.login` also mirrors the session user locally so hooks/components can render immediately. Logging out clears both the Redis session and the browser cookie.
 - **Impersonation & forced logout**: User management pages expose actions that call `customerSupport.logoutUserSessions` and `customerSupport.impersonateUser`. The first revokes Redis sessions so the customer is logged out on their next request; the second generates a short-lived token that opens the storefront’s `/impersonate` route with a fresh cookie for the selected customer.
 
 ---

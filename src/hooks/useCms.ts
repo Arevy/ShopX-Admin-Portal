@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { useRootContext } from '@/stores/provider'
+import { useRootContext } from '@/stores/StoreProvider'
 
 export const useCms = () => {
   const rootContext = useRootContext()

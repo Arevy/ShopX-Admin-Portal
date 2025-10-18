@@ -18,6 +18,29 @@ export interface ProductImageInput {
   base64Data: string
 }
 
+export interface AdminPortalLoginVariables {
+  email: string
+  password: string
+}
+
+export interface AdminPortalLoginResponse {
+  login: {
+    token: string
+    user: {
+      id: number
+      email: string
+      name?: string | null
+      role: UserRole
+    }
+  } | null
+}
+
+export type AdminPortalLogoutVariables = Record<string, never>
+
+export interface AdminPortalLogoutResponse {
+  logout: boolean
+}
+
 export interface CustomerSupportProductsVariables {
   limit?: number
   offset?: number
