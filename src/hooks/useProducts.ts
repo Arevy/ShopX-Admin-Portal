@@ -4,7 +4,6 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { getUserFriendlyMessage } from '@/lib/getUserFriendlyMessage'
 import { useTranslation } from '@/i18n'
-import type { Product } from '@/types/domain'
 import type { ProductImageInput } from '@/types/graphql'
 import { useRootContext } from '@/stores/StoreProvider'
 
@@ -15,13 +14,6 @@ interface ProductFormState {
   categoryId: string
   imageFile: File | null
   imageBase64: string | null
-}
-
-interface EditFormState extends ProductFormState {
-  id: string
-  removeImage: boolean
-  existingImageUrl: string | null
-  existingImageFilename: string | null
 }
 
 type Feedback = {
@@ -38,19 +30,6 @@ const EMPTY_CREATE_FORM: ProductFormState = {
   imageBase64: null,
 }
 
-const EMPTY_EDIT_FORM: EditFormState = {
-  id: '',
-  name: '',
-  price: '',
-  description: '',
-  categoryId: '',
-  imageFile: null,
-  imageBase64: null,
-  removeImage: false,
-  existingImageUrl: null,
-  existingImageFilename: null,
-}
-
 export const useProducts = () => {
   const { productStore } = useRootContext()
   const { t } = useTranslation('Page_Admin_Products')
@@ -58,9 +37,7 @@ export const useProducts = () => {
   const [nameFilter, setNameFilter] = useState(productStore.filters.name ?? '')
   const [categoryFilter, setCategoryFilter] = useState(productStore.filters.categoryId ?? '')
   const [createForm, setCreateForm] = useState<ProductFormState>(EMPTY_CREATE_FORM)
-  const [editForm, setEditForm] = useState<EditFormState>(EMPTY_EDIT_FORM)
   const [creating, setCreating] = useState(false)
-  const [updating, setUpdating] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
 
   useEffect(() => {
@@ -107,11 +84,11 @@ export const useProducts = () => {
       if (!file) {
         setCreateForm((prev) => ({ ...prev, imageFile: null, imageBase64: null }))
         return
-      }
+    }
 
-      try {
-        const base64 = await readFileAsDataUrl(file)
-        setCreateForm((prev) => ({
+    try {
+      const base64 = await readFileAsDataUrl(file)
+      setCreateForm((prev) => ({
           ...prev,
           imageFile: file,
           imageBase64: base64,
@@ -125,44 +102,6 @@ export const useProducts = () => {
     },
     [readFileAsDataUrl, t],
   )
-
-  const handleEditImageChange = useCallback(
-    async (file: File | null) => {
-      if (!file) {
-        setEditForm((prev) => ({
-          ...prev,
-          imageFile: null,
-          imageBase64: null,
-        }))
-        return
-      }
-
-      try {
-        const base64 = await readFileAsDataUrl(file)
-        setEditForm((prev) => ({
-          ...prev,
-          imageFile: file,
-          imageBase64: base64,
-          removeImage: false,
-        }))
-      } catch (error) {
-        setFeedback({
-          tone: 'negative',
-          message: getUserFriendlyMessage(error, t('feedback.errors.image_load')),
-        })
-      }
-    },
-    [readFileAsDataUrl, t],
-  )
-
-  const handleEditRemoveImageToggle = useCallback((checked: boolean) => {
-    setEditForm((prev) => ({
-      ...prev,
-      removeImage: checked,
-      imageFile: checked ? null : prev.imageFile,
-      imageBase64: checked ? null : prev.imageBase64,
-    }))
-  }, [])
 
   const handleFilter = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -212,62 +151,6 @@ export const useProducts = () => {
     [buildImagePayload, createForm, productStore, t],
   )
 
-  const beginEdit = useCallback((product: Product) => {
-    setEditForm({
-      id: product.id,
-      name: product.name,
-      price: product.price.toString(),
-      description: product.description ?? '',
-      categoryId: product.categoryId ?? '',
-      imageFile: null,
-      imageBase64: null,
-      removeImage: false,
-      existingImageUrl: product.image?.url ?? null,
-      existingImageFilename: product.image?.filename ?? null,
-    })
-    setFeedback(null)
-  }, [])
-
-  const resetEdit = useCallback(() => {
-    setEditForm(EMPTY_EDIT_FORM)
-  }, [])
-
-  const handleUpdate = useCallback(
-    async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      if (!editForm.id) {
-        return
-      }
-
-      const price = editForm.price ? Number(editForm.price) : undefined
-
-      setFeedback(null)
-      setUpdating(true)
-
-      try {
-        await productStore.updateProduct(editForm.id, {
-          name: editForm.name || undefined,
-          price,
-          description: editForm.description || undefined,
-          categoryId: editForm.categoryId || undefined,
-          image: buildImagePayload(editForm.imageFile, editForm.imageBase64),
-          removeImage: editForm.removeImage || undefined,
-        })
-
-        setFeedback({ tone: 'positive', message: t('feedback.success.update', { id: editForm.id }) })
-        resetEdit()
-      } catch (error) {
-        setFeedback({
-          tone: 'negative',
-          message: getUserFriendlyMessage(error, t('feedback.errors.update')),
-        })
-      } finally {
-        setUpdating(false)
-      }
-    },
-    [buildImagePayload, editForm, productStore, resetEdit, t],
-  )
-
   const handleDelete = useCallback(
     async (productId: string) => {
       setFeedback(null)
@@ -308,14 +191,6 @@ export const useProducts = () => {
     handleCreate,
     handleCreateImageChange,
     creating,
-    editForm,
-    setEditForm,
-    beginEdit,
-    resetEdit,
-    handleUpdate,
-    handleEditImageChange,
-    handleEditRemoveImageToggle,
-    updating,
     handleDelete,
     feedback,
   }

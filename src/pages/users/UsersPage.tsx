@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { observer } from 'mobx-react-lite'
 import classNames from 'classnames'
 import { DataTable, type Column } from '@/components/DataTable'
@@ -57,6 +58,9 @@ const UsersPage = observer(() => {
       header: t('table.columns.actions'),
       render: (user) => (
         <div className={styles.actionGroup}>
+          <Link href={`/users/${user.id}`} className={classNames('badge', styles.manageButton)}>
+            {t('table.actions.manage')}
+          </Link>
           <button
             type="button"
             className={classNames('badge', styles.actionButton)}

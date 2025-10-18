@@ -1,0 +1,85 @@
+{
+  "navigation": {
+    "back": "← Back to users"
+  },
+  "header": {
+    "title": "Account management",
+    "subtitle": "Review and update the profile for user #{{id}}."
+  },
+  "loading": "Loading user profile…",
+  "errors": {
+    "missing_user": "No user identifier was provided."
+  },
+  "meta": {
+    "user_id": "User ID: {{id}}",
+    "email": "Email: {{email}}",
+    "role": "Role: {{role}}"
+  },
+  "profile": {
+    "title": "Profile details",
+    "subtitle": "Edit the user name, email address, or role. Changes apply immediately across the platform.",
+    "form": {
+      "name_label": "Name",
+      "name_placeholder": "Full name",
+      "email_label": "Email",
+      "email_placeholder": "name@example.com",
+      "role_label": "Role",
+      "submit": "Save profile",
+      "submitting": "Saving…"
+    },
+    "feedback": {
+      "email_required": "Email is required to update the profile.",
+      "nothing_to_update": "No changes detected.",
+      "success": "Profile updated successfully.",
+      "error": "Failed to update the profile."
+    }
+  },
+  "password": {
+    "title": "Reset password",
+    "subtitle": "Set a new password for the user. Share it securely after saving.",
+    "form": {
+      "new_label": "New password",
+      "new_placeholder": "Enter a new password",
+      "confirm_label": "Confirm password",
+      "confirm_placeholder": "Repeat the password",
+      "submit": "Update password",
+      "submitting": "Updating…"
+    },
+    "feedback": {
+      "missing": "Enter a password before saving.",
+      "mismatch": "The passwords do not match.",
+      "length": "Password must be at least 8 characters long.",
+      "success": "Password updated successfully.",
+      "error": "Failed to update the password."
+    }
+  },
+  "orders": {
+    "title": "Recent orders",
+    "subtitle": "Adjust order statuses when operational workflows require manual intervention.",
+    "empty": "No orders found for this user.",
+    "meta": {
+      "id": "Order #{{id}}",
+      "total": "Total: ${{total}}",
+      "created": "Placed: {{value}}"
+    },
+    "actions": {
+      "apply": "Apply status",
+      "pending": "Updating…"
+    },
+    "feedback": {
+      "success": "Order {{id}} updated to {{status}}.",
+      "error": "Failed to update the order."
+    }
+  },
+  "addresses": {
+    "title": "Saved addresses",
+    "subtitle": "Addresses synced from the storefront checkout.",
+    "empty": "No saved addresses."
+  },
+  "actions": {
+    "title": "Advanced actions",
+    "subtitle": "Control the user session or open an impersonated storefront window.",
+    "force_logout": "Revoke active sessions",
+    "impersonate": "Impersonate in storefront"
+  }
+}

@@ -1,21 +1,22 @@
 import { parse } from 'graphql'
 
 import { QueryFactory } from '@/graphql/utils/QueryFactory'
-import type { CustomerSupportProductsResponse, CustomerSupportProductsVariables } from '@/types/graphql'
+import type {
+  CustomerSupportProductDetailResponse,
+  CustomerSupportProductDetailVariables,
+} from '@/types/graphql'
 
-export const QueryCustomerSupportProducts = new QueryFactory<
-  CustomerSupportProductsResponse,
-  CustomerSupportProductsVariables
+export const QueryCustomerSupportProductDetail = new QueryFactory<
+  CustomerSupportProductDetailResponse,
+  CustomerSupportProductDetailVariables
 >({
-  queryName: 'CustomerSupportProducts',
+  queryName: 'CustomerSupportProductDetail',
   operationType: 'query',
-  cacheOptions: {
-    cacheable: false,
-  },
+  cacheOptions: { cacheable: false },
   queryObject: parse(/* GraphQL */ `
-    query CustomerSupportProducts($limit: Int, $offset: Int, $name: String, $categoryId: ID) {
+    query CustomerSupportProductDetail($id: ID!) {
       customerSupport {
-        products(limit: $limit, offset: $offset, name: $name, categoryId: $categoryId) {
+        product(id: $id) {
           id
           name
           price

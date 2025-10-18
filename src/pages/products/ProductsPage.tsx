@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import classNames from 'classnames'
@@ -30,14 +31,6 @@ const ProductsPage = observer(() => {
     handleCreate,
     handleCreateImageChange,
     creating,
-    editForm,
-    setEditForm,
-    beginEdit,
-    resetEdit,
-    handleUpdate,
-    handleEditImageChange,
-    handleEditRemoveImageToggle,
-    updating,
     handleDelete,
     feedback,
   } = useProducts()
@@ -105,13 +98,9 @@ const ProductsPage = observer(() => {
       header: t('table.columns.actions'),
       render: (product) => (
         <div className={styles.actionButtons}>
-          <button
-            type="button"
-            onClick={() => beginEdit(product)}
-            className={styles.editButton}
-          >
+          <Link href={`/products/${product.id}`} className={styles.editButton}>
             {t('table.actions.edit')}
-          </button>
+          </Link>
           <button
             type="button"
             onClick={() => requestDelete(String(product.id))}
@@ -252,115 +241,6 @@ const ProductsPage = observer(() => {
           </div>
         </form>
       </section>
-
-      {editForm.id ? (
-        <section className={classNames('surface-border', styles.panel)}>
-          <div>
-            <h3 className={styles.sectionHeading}>{t('edit.heading')}</h3>
-            <p className={styles.sectionSubheading}>
-              {t('edit.subheading', { id: editForm.id })}
-            </p>
-          </div>
-          <form onSubmit={handleUpdate} className={styles.formGrid}>
-            <div>
-              <label className={styles.fieldLabel}>{t('form.fields.name')}</label>
-              <input
-                value={editForm.name}
-                onChange={(event) => setEditForm((prev) => ({ ...prev, name: event.target.value }))}
-              />
-            </div>
-            <div>
-              <label className={styles.fieldLabel}>{t('form.fields.price')}</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={editForm.price}
-                onChange={(event) => setEditForm((prev) => ({ ...prev, price: event.target.value }))}
-              />
-            </div>
-            <div>
-              <label className={styles.fieldLabel}>{t('form.fields.category')}</label>
-              <select
-                value={editForm.categoryId}
-                onChange={(event) =>
-                  setEditForm((prev) => ({ ...prev, categoryId: event.target.value }))
-                }
-              >
-                <option value="">{t('edit.fields.category.unassigned')}</option>
-                {categories.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.wideField}>
-              <label className={styles.fieldLabel}>{t('form.fields.description')}</label>
-              <textarea
-                rows={3}
-                value={editForm.description}
-                onChange={(event) =>
-                  setEditForm((prev) => ({ ...prev, description: event.target.value }))
-                }
-              />
-            </div>
-            <div className={styles.wideField}>
-              <label className={styles.fieldLabel}>{t('form.fields.image')}</label>
-              <div className={styles.imageField}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  disabled={editForm.removeImage}
-                  onChange={(event) =>
-                    void handleEditImageChange(event.target.files?.[0] ?? null)
-                  }
-                />
-                {editForm.imageBase64 ? (
-                  <ModularImage
-                    src={editForm.imageBase64}
-                    alt={t('form.image.preview_alt')}
-                    width={82}
-                    height={82}
-                    sizes="82px"
-                    className={styles.previewImage}
-                  />
-                ) : editForm.existingImageUrl && !editForm.removeImage ? (
-                  <ModularImage
-                    src={editForm.existingImageUrl}
-                    alt={editForm.existingImageFilename ?? t('edit.image.current_alt')}
-                    width={82}
-                    height={82}
-                    sizes="82px"
-                    className={styles.previewImage}
-                  />
-                ) : (
-                  <span className={styles.emptyImage}>{t('edit.image.absent')}</span>
-                )}
-              </div>
-              {(editForm.existingImageUrl || editForm.removeImage) && (
-                <label className={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    checked={editForm.removeImage}
-                    onChange={(event) => handleEditRemoveImageToggle(event.target.checked)}
-                    disabled={Boolean(editForm.imageBase64)}
-                  />
-                  {t('edit.image.remove_toggle')}
-                </label>
-              )}
-            </div>
-            <div className={styles.editActions}>
-              <button type="submit" disabled={updating} className={styles.primaryButton}>
-                {updating ? t('edit.actions.pending') : t('edit.actions.submit')}
-              </button>
-              <button type="button" onClick={resetEdit} className={styles.secondaryButton}>
-                {t('edit.actions.cancel')}
-              </button>
-            </div>
-          </form>
-        </section>
-      ) : null}
 
       {feedback ? (
         <span className={feedback.tone === 'negative' ? styles.feedbackNegative : styles.feedbackPositive}>

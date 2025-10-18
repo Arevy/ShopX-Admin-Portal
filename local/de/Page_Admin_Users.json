@@ -11,6 +11,7 @@
       "actions": "Actions"
     },
     "actions": {
+      "manage": "Manage profile",
       "impersonate": "Impersonate",
       "force_logout": "Force logout"
     },

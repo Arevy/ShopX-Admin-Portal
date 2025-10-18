@@ -84,6 +84,17 @@ export interface CustomerSupportProductsResponse {
   }
 }
 
+export interface CustomerSupportProductDetailVariables {
+  id: string
+}
+
+export interface CustomerSupportProductDetailResponse {
+  customerSupport: {
+    product: Product | null
+    categories: Array<Pick<Category, 'id' | 'name'>>
+  }
+}
+
 export interface CustomerSupportSessionResponse {
   customerSupport: {
     __typename: string

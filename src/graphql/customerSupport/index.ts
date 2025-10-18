@@ -5,6 +5,7 @@ export { QueryCustomerSupportProducts } from './QueryCustomerSupportProducts'
 export { QueryCustomerSupportUsers } from './QueryCustomerSupportUsers'
 export { QueryCustomerSupportCustomerProfile } from './QueryCustomerSupportCustomerProfile'
 export { QueryCustomerSupportOverview } from './QueryCustomerSupportOverview'
+export { QueryCustomerSupportProductDetail } from './QueryCustomerSupportProductDetail'
 
 export { MutationCustomerSupportCreateProduct } from './mutations/MutationCustomerSupportCreateProduct'
 export { MutationCustomerSupportUpdateProduct } from './mutations/MutationCustomerSupportUpdateProduct'

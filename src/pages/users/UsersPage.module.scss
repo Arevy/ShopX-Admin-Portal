@@ -94,6 +94,19 @@
   flex-wrap: wrap;
 }
 
+.manageButton {
+  cursor: pointer;
+  border: none;
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--text-secondary);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(148, 163, 184, 0.25);
+  }
+}
+
 .actionButton {
   cursor: pointer;
   border: none;

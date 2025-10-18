@@ -1,0 +1,59 @@
+{
+  "navigation": {
+    "back": "← Back to products"
+  },
+  "header": {
+    "title": "Product management",
+    "subtitle": "Update the catalog entry for product #{{id}}."
+  },
+  "loading": "Loading product…",
+  "errors": {
+    "missing_product": "Product identifier is missing."
+  },
+  "meta": {
+    "id": "Product ID: {{id}}",
+    "price": "Price: ${{price}}",
+    "category": "Category: {{category}}"
+  },
+  "form": {
+    "title": "General information",
+    "subtitle": "Update core product attributes. All fields are optional—only changes will be applied.",
+    "fields": {
+      "name": "Name",
+      "name_placeholder": "Product name",
+      "price": "Price",
+      "description": "Description",
+      "category": "Category",
+      "category_placeholder": "Select category"
+    },
+    "actions": {
+      "save": "Save changes",
+      "saving": "Updating…",
+      "reset": "Reset"
+    },
+    "feedback": {
+      "missing_name": "Name is required.",
+      "invalid_price": "Please provide a valid price.",
+      "success": "Product updated successfully.",
+      "error": "Failed to update the product."
+    }
+  },
+  "image": {
+    "title": "Media",
+    "subtitle": "Replace the cover image or remove the existing one.",
+    "current": "Current image",
+    "empty": "No image on record",
+    "preview_alt": "Selected image preview",
+    "remove_toggle": "Remove current image",
+    "choose": "Choose image"
+  },
+  "actions": {
+    "title": "Advanced actions",
+    "subtitle": "Danger zone — irreversible operations.",
+    "delete": "Delete product",
+    "delete_confirm": "This will permanently remove the product. Continue?",
+    "delete_success": "Product deleted. Redirecting…",
+    "delete_error": "Failed to delete product.",
+    "open_storefront": "View in storefront"
+  }
+}

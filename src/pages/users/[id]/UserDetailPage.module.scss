@@ -1,0 +1,195 @@
+.page {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  max-width: 620px;
+}
+
+.metaGrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.metaItem {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.contentGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.card {
+  display: grid;
+  gap: 1rem;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.sectionDescription {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.formGrid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.fieldLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.primaryButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.primaryButton:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.3);
+}
+
+.secondaryButton {
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.errorMessage {
+  color: #fecaca;
+  font-size: 0.85rem;
+}
+
+.successMessage {
+  color: #bbf7d0;
+  font-size: 0.85rem;
+}
+
+.ordersList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.orderItem {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  display: grid;
+  gap: 0.6rem;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.orderMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.orderActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.statusSelect {
+  min-width: 140px;
+}
+
+.list {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: var(--text-secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.actionsInline {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.orderFeedback {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.loadingState {
+  display: grid;
+  gap: 0.85rem;
+  align-items: center;
+  justify-items: flex-start;
+}
+
+.backLink {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
