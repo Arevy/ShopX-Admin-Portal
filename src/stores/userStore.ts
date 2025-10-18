@@ -18,6 +18,8 @@ import {
 import {
 	MutationAdminPortalLogin,
 	MutationAdminPortalLogout,
+	MutationUpdateUserProfile,
+	MutationChangeUserPassword,
 } from "@/graphql/auth";
 import type { RootStore } from "@/stores/rootStore";
 import { getUserFriendlyMessage } from "@/lib/getUserFriendlyMessage";
@@ -75,6 +77,10 @@ export class UserStore {
 	ordersLoading = false;
 	ordersError: string | null = null;
 	orderFilters: OrderFilters = { limit: 20, offset: 0 };
+	profileSaving = false;
+	profileError: string | null = null;
+	passwordChanging = false;
+	passwordError: string | null = null;
 
 	constructor(root: RootStore) {
 		this.root = root;
@@ -206,6 +212,11 @@ export class UserStore {
 		this.sessionUser = user;
 	}
 
+	clearProfileFeedback() {
+		this.profileError = null;
+		this.passwordError = null;
+	}
+
 	async login(email: string, password: string) {
 		this.authLoading = true;
 		this.authError = null;
@@ -236,6 +247,10 @@ export class UserStore {
 			runInAction(() => {
 				this.sessionUser = authenticatedUser;
 				this.lastLoginAt = Date.now();
+				this.profileSaving = false;
+				this.profileError = null;
+				this.passwordChanging = false;
+				this.passwordError = null;
 			});
 
 			this.root.setAuthToken(session.token);
@@ -278,11 +293,159 @@ export class UserStore {
 				this.orderFilters = { limit: 20, offset: 0 };
 				this.ordersError = null;
 				this.ordersLoading = false;
+				this.profileSaving = false;
+				this.profileError = null;
+				this.passwordChanging = false;
+				this.passwordError = null;
 			});
 			this.root.setAuthToken(undefined);
 		} catch (error) {
 			const message = getUserFriendlyMessage(error, "Failed to sign out.");
 			throw new Error(message);
+		}
+	}
+
+	async updateProfile(input: {
+		name?: string | null;
+		email?: string;
+		currentPassword: string;
+	}): Promise<{ user: User; message: string } | null> {
+		if (!this.sessionUser) {
+			throw new Error("Authentication required.");
+		}
+
+		const currentName = this.sessionUser.name ?? "";
+		const currentEmail = this.sessionUser.email ?? "";
+		const trimmedName = input.name?.trim() ?? "";
+		const trimmedEmail = input.email?.trim() ?? "";
+		const trimmedPassword = input.currentPassword.trim();
+
+		const payload: {
+			name?: string | null;
+			email?: string;
+			currentPassword: string;
+		} = {
+			currentPassword: trimmedPassword,
+		};
+
+		if (!trimmedPassword) {
+			this.profileError = "Please confirm the change with your password.";
+			return null;
+		}
+
+		if (Object.prototype.hasOwnProperty.call(input, "name") && trimmedName !== currentName) {
+			payload.name = trimmedName.length ? trimmedName : null;
+		}
+
+		if (Object.prototype.hasOwnProperty.call(input, "email")) {
+			if (!trimmedEmail) {
+				this.profileError = "Email address cannot be empty.";
+				return null;
+			}
+			if (trimmedEmail !== currentEmail) {
+				payload.email = trimmedEmail;
+			}
+		}
+
+    if (payload.name === undefined && payload.email === undefined) {
+      return null;
+    }
+
+		this.profileSaving = true;
+		this.profileError = null;
+
+		try {
+			const response = await this.root.apiService.executeGraphQL(
+				MutationUpdateUserProfile,
+				{ input: payload }
+			);
+
+			const updated = response.data?.updateUserProfile;
+			if (!updated?.user) {
+				throw new Error("Profile update did not return user details.");
+			}
+
+			const normalized: User = {
+				id: String(updated.user.id),
+				email: updated.user.email,
+				name: updated.user.name ?? null,
+				role: updated.user.role,
+			};
+
+			runInAction(() => {
+				this.sessionUser = normalized;
+				this.profileError = null;
+			});
+
+			return {
+				user: normalized,
+				message: updated.message ?? 'Profile updated successfully.',
+			};
+		} catch (error) {
+			const message = getUserFriendlyMessage(
+				error,
+				"We couldn't update your profile. Please try again.",
+				{
+					knownMessages: [
+						{
+							match: /email already registered/i,
+							value: "Another account already uses this email address.",
+						},
+						{
+							match: /password confirmation is required/i,
+							value: "Please enter your password to confirm these changes.",
+						},
+						{
+							match: /current password is incorrect/i,
+							value: "The password you provided is incorrect.",
+						},
+					],
+				}
+			);
+
+			this.profileError = message;
+			return null;
+		} finally {
+			this.profileSaving = false;
+		}
+	}
+
+	async changePassword(currentPassword: string, newPassword: string) {
+		if (!this.sessionUser) {
+			throw new Error("Authentication required.");
+		}
+
+		this.passwordChanging = true;
+		this.passwordError = null;
+
+		try {
+			await this.root.apiService.executeGraphQL(
+				MutationChangeUserPassword,
+				{ currentPassword, newPassword }
+			);
+
+			return true;
+		} catch (error) {
+			const message = getUserFriendlyMessage(
+				error,
+				"We couldn't update your password. Please try again.",
+				{
+					knownMessages: [
+						{
+							match: /incorrect/i,
+							value: "The current password you entered is incorrect.",
+						},
+						{
+							match: /at least 8/i,
+							value: "Password should be at least 8 characters long.",
+						},
+					],
+				}
+			);
+			this.passwordError = message;
+			return false;
+		} finally {
+			this.passwordChanging = false;
 		}
 	}
 

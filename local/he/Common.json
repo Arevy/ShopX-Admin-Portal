@@ -23,7 +23,8 @@
       "products": "מוצרים",
       "customers": "לקוחות",
       "support": "תמיכה",
-      "cms": "ניהול תוכן"
+      "cms": "ניהול תוכן",
+      "profile": "פרופיל"
     },
     "endpoint": {
       "label": "נקודת קצה של השרת",
@@ -46,6 +47,9 @@
     "actions": {
       "sign_out": "התנתק",
       "signing_out": "מתנתק…"
+    },
+    "user": {
+      "label": "מחובר בשם"
     },
     "errors": {
       "terminate_failed": "לא ניתן היה לסיים את ההפעלה.",

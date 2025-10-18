@@ -214,13 +214,31 @@ export class SupportStore {
       )
 
       if (unauthorized || !response.data?.customerSupport) {
+        runInAction(() => {
+          this.root.userStore.setSessionUser(null)
+        })
         return 'unauthorized'
+      }
+
+      const viewer = response.data.customerSupport.viewer
+      if (viewer) {
+        runInAction(() => {
+          this.root.userStore.setSessionUser({
+            id: String(viewer.id),
+            email: viewer.email,
+            name: viewer.name ?? null,
+            role: viewer.role,
+          })
+        })
       }
 
       return 'authorized'
     } catch (error) {
       if (error instanceof ClientError) {
         if (error.response.status === 401 || error.response.status === 403) {
+          runInAction(() => {
+            this.root.userStore.setSessionUser(null)
+          })
           return 'unauthorized'
         }
 
@@ -229,6 +247,9 @@ export class SupportStore {
         )
 
         if (unauthorizedGraphQL) {
+          runInAction(() => {
+            this.root.userStore.setSessionUser(null)
+          })
           return 'unauthorized'
         }
       }

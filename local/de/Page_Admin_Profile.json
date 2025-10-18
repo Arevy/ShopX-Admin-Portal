@@ -1,0 +1,45 @@
+{
+  "title": "Ihr Administratorprofil",
+  "subtitle": "Verwalten Sie, wie Ihr Operator-Konto angezeigt wird, und sichern Sie Ihre Zugangsdaten ab.",
+  "sections": {
+    "overview": {
+      "title": "Profildaten",
+      "description": "Aktualisieren Sie Name oder E-Mail-Adresse. Aus Sicherheitsgründen ist eine Passwortbestätigung erforderlich.",
+      "form": {
+        "name_label": "Vollständiger Name",
+        "name_placeholder": "Vollständigen Namen eingeben",
+        "email_label": "E-Mail-Adresse",
+        "email_placeholder": "name@beispiel.de",
+        "enable_edit": "Profilbearbeitung aktivieren",
+        "password_label": "Mit Passwort bestätigen",
+        "password_placeholder": "Aktuelles Passwort eingeben",
+        "submit": "Änderungen speichern",
+        "submitting": "Speichern…",
+        "success": "Profil wurde erfolgreich aktualisiert."
+      }
+    },
+    "security": {
+      "title": "Sicherheit",
+      "description": "Wählen Sie ein starkes Passwort, um den Zugriff auf die Konsole zu schützen.",
+      "form": {
+        "current_label": "Aktuelles Passwort",
+        "current_placeholder": "Aktuelles Passwort eingeben",
+        "new_label": "Neues Passwort",
+        "new_placeholder": "Neues Passwort eingeben",
+        "confirm_label": "Passwort bestätigen",
+        "confirm_placeholder": "Neues Passwort wiederholen",
+        "mismatch": "Die neuen Passwörter stimmen nicht überein.",
+        "submit": "Passwort aktualisieren",
+        "submitting": "Aktualisiere…",
+        "success": "Passwort wurde erfolgreich aktualisiert."
+      }
+    }
+  },
+  "guard": {
+    "title": "Melden Sie sich an, um Ihr Profil zu verwalten",
+    "subtitle": "Für das Anzeigen und Ändern der Daten ist eine aktive Support-Sitzung erforderlich.",
+    "actions": {
+      "sign_in": "Zum Login"
+    }
+  }
+}

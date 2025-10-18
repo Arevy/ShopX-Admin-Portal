@@ -23,7 +23,8 @@
       "products": "Products",
       "customers": "Customers",
       "support": "Support Desk",
-      "cms": "CMS"
+      "cms": "CMS",
+      "profile": "Profile"
     },
     "endpoint": {
       "label": "Backend endpoint",
@@ -46,6 +47,9 @@
     "actions": {
       "sign_out": "Sign out",
       "signing_out": "Signing out…"
+    },
+    "user": {
+      "label": "Signed in as"
     },
     "errors": {
       "terminate_failed": "Failed to terminate session.",

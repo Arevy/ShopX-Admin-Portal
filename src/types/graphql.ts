@@ -41,6 +41,35 @@ export interface AdminPortalLogoutResponse {
   logout: boolean
 }
 
+export interface AdminUpdateProfileVariables {
+  input: {
+    name?: string | null
+    email?: string | null
+    currentPassword: string
+  }
+}
+
+export interface AdminUpdateProfileResponse {
+  updateUserProfile: {
+    user: {
+      id: number
+      email: string
+      name?: string | null
+      role: UserRole
+    }
+    message: string
+  }
+}
+
+export interface AdminChangePasswordVariables {
+  currentPassword: string
+  newPassword: string
+}
+
+export interface AdminChangePasswordResponse {
+  changeUserPassword: boolean
+}
+
 export interface CustomerSupportProductsVariables {
   limit?: number
   offset?: number
@@ -58,6 +87,12 @@ export interface CustomerSupportProductsResponse {
 export interface CustomerSupportSessionResponse {
   customerSupport: {
     __typename: string
+    viewer: {
+      id: number
+      email: string
+      name?: string | null
+      role: UserRole
+    }
   } | null
 }
 

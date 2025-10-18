@@ -23,7 +23,8 @@
       "products": "Produkte",
       "customers": "Kunden",
       "support": "Support",
-      "cms": "CMS"
+      "cms": "CMS",
+      "profile": "Profil"
     },
     "endpoint": {
       "label": "Backend-Endpunkt",
@@ -46,6 +47,9 @@
     "actions": {
       "sign_out": "Abmelden",
       "signing_out": "Abmeldung läuft…"
+    },
+    "user": {
+      "label": "Angemeldet als"
     },
     "errors": {
       "terminate_failed": "Sitzung konnte nicht beendet werden.",

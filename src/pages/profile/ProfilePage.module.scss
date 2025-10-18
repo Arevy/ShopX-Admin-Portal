@@ -1,0 +1,148 @@
+.page {
+  display: grid;
+  gap: 2rem;
+}
+
+.header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  max-width: 640px;
+}
+
+.sections {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.card {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.sectionDescription {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.formGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.editToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.toggleLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+
+.toggleLabel input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(56, 189, 248, 0.2));
+  color: #e0f2fe;
+  font-weight: 600;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.primaryButton:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
+}
+
+.errorMessage {
+  color: #fca5a5;
+  font-size: 0.85rem;
+}
+
+.successMessage {
+  color: #bbf7d0;
+  font-size: 0.85rem;
+}
+
+.guard {
+  display: grid;
+  gap: 0.9rem;
+  padding: 2rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: var(--radius-lg);
+  background: rgba(15, 23, 42, 0.6);
+  text-align: center;
+}
+
+.guardTitle {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.guardSubtitle {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.guardActions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.guardButton {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.65);
+  color: inherit;
+}
+
+.guardButtonPrimary {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(56, 189, 248, 0.15));
+}

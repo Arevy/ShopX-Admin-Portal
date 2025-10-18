@@ -5,6 +5,7 @@ import usersRoute from '@/pages/users/Route'
 import supportRoute from '@/pages/support/Route'
 import cmsRoute from '@/pages/cms/Route'
 import loginRoute from '@/pages/login/Route'
+import profileRoute from '@/pages/profile/Route'
 import type { NavigationRoute, RouteDefinition } from './types'
 
 const toOrderKey = (route: RouteDefinition) => route.order ?? Number.MAX_SAFE_INTEGER
@@ -20,7 +21,7 @@ const rawNavigationRoutes: NavigationRoute[] = [
 
 export const navigationRoutes = [...rawNavigationRoutes].sort((a, b) => toOrderKey(a) - toOrderKey(b))
 
-const additionalRoutes: RouteDefinition[] = [loginRoute]
+const additionalRoutes: RouteDefinition[] = [loginRoute, profileRoute]
 
 export const allRoutes: RouteDefinition[] = [...navigationRoutes, ...additionalRoutes].sort(
   (a, b) => toOrderKey(a) - toOrderKey(b),
@@ -41,5 +42,5 @@ const matchesRoute = (route: RouteDefinition, pathname: string): boolean => {
 
 export const findRouteForPath = (pathname: string): RouteDefinition | undefined => {
   const normalizedPath = normalize(pathname)
-  return navigationRoutes.find((route) => matchesRoute(route, normalizedPath))
+  return allRoutes.find((route) => matchesRoute(route, normalizedPath))
 }

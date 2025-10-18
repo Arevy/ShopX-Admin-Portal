@@ -1,0 +1,45 @@
+{
+  "title": "Votre profil administrateur",
+  "subtitle": "Gérez la façon dont votre compte opérateur apparaît et sécurisez vos identifiants.",
+  "sections": {
+    "overview": {
+      "title": "Informations de profil",
+      "description": "Mettez à jour votre nom ou votre adresse e-mail. Par sécurité, chaque modification doit être confirmée avec votre mot de passe.",
+      "form": {
+        "name_label": "Nom complet",
+        "name_placeholder": "Saisissez votre nom complet",
+        "email_label": "Adresse e-mail",
+        "email_placeholder": "nom@exemple.com",
+        "enable_edit": "Activer la modification du profil",
+        "password_label": "Confirmer avec le mot de passe",
+        "password_placeholder": "Entrez votre mot de passe actuel",
+        "submit": "Enregistrer",
+        "submitting": "Enregistrement…",
+        "success": "Profil mis à jour avec succès."
+      }
+    },
+    "security": {
+      "title": "Sécurité",
+      "description": "Choisissez un mot de passe robuste pour protéger l'accès à la console.",
+      "form": {
+        "current_label": "Mot de passe actuel",
+        "current_placeholder": "Entrez votre mot de passe actuel",
+        "new_label": "Nouveau mot de passe",
+        "new_placeholder": "Entrez un nouveau mot de passe",
+        "confirm_label": "Confirmer le mot de passe",
+        "confirm_placeholder": "Répétez le nouveau mot de passe",
+        "mismatch": "Les nouveaux mots de passe ne correspondent pas.",
+        "submit": "Mettre à jour le mot de passe",
+        "submitting": "Mise à jour…",
+        "success": "Mot de passe mis à jour avec succès."
+      }
+    }
+  },
+  "guard": {
+    "title": "Connectez-vous pour gérer votre profil",
+    "subtitle": "Une session de support active est requise pour afficher et modifier vos informations.",
+    "actions": {
+      "sign_in": "Aller à la connexion"
+    }
+  }
+}

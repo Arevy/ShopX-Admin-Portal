@@ -1,0 +1,45 @@
+{
+  "title": "הפרופיל הניהולי שלך",
+  "subtitle": "נהל את אופן ההצגה של חשבון המפעיל שלך ושמור על פרטי הכניסה מוגנים.",
+  "sections": {
+    "overview": {
+      "title": "פרטי פרופיל",
+      "description": "עדכן שם או כתובת דוא\"ל. מטעמי אבטחה יש לאשר את השינויים באמצעות הסיסמה.",
+      "form": {
+        "name_label": "שם מלא",
+        "name_placeholder": "הזן שם מלא",
+        "email_label": "כתובת דוא\"ל",
+        "email_placeholder": "name@example.com",
+        "enable_edit": "אפשר עריכת פרופיל",
+        "password_label": "אימות באמצעות סיסמה",
+        "password_placeholder": "הזן את הסיסמה הנוכחית",
+        "submit": "שמירת שינויים",
+        "submitting": "שומר…",
+        "success": "הפרופיל עודכן בהצלחה."
+      }
+    },
+    "security": {
+      "title": "אבטחה",
+      "description": "בחר סיסמה חזקה לשמירה על גישה ללוח הניהול.",
+      "form": {
+        "current_label": "סיסמה נוכחית",
+        "current_placeholder": "הזן את הסיסמה הנוכחית",
+        "new_label": "סיסמה חדשה",
+        "new_placeholder": "הזן סיסמה חדשה",
+        "confirm_label": "אישור סיסמה",
+        "confirm_placeholder": "חזור על הסיסמה החדשה",
+        "mismatch": "הסיסמאות החדשות אינן תואמות.",
+        "submit": "עדכן סיסמה",
+        "submitting": "מעדכן…",
+        "success": "הסיסמה עודכנה בהצלחה."
+      }
+    }
+  },
+  "guard": {
+    "title": "התחבר כדי לנהל את הפרופיל",
+    "subtitle": "נדרשת הפעלת תמיכה פעילה כדי לצפות ולעדכן את הפרטים.",
+    "actions": {
+      "sign_in": "עבור למסך ההתחברות"
+    }
+  }
+}

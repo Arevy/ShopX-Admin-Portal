@@ -23,7 +23,8 @@
       "products": "Produits",
       "customers": "Clients",
       "support": "Support",
-      "cms": "CMS"
+      "cms": "CMS",
+      "profile": "Profil"
     },
     "endpoint": {
       "label": "Point de terminaison backend",
@@ -46,6 +47,9 @@
     "actions": {
       "sign_out": "Déconnexion",
       "signing_out": "Déconnexion en cours…"
+    },
+    "user": {
+      "label": "Connecté en tant que"
     },
     "errors": {
       "terminate_failed": "Impossible de terminer la session.",

@@ -27,16 +27,17 @@ export const useAdminNavigation = () => {
     [t],
   )
 
+  const matchedRoute = useMemo(() => findRouteForPath(pathname), [pathname])
+
   const activeRoute = useMemo(() => {
-    const match = findRouteForPath(pathname)
-    if (!match) {
+    if (!matchedRoute) {
       return undefined
     }
 
-    return translatedRoutes.find((route) => route.id === match.id)
-  }, [pathname, translatedRoutes])
+    return translatedRoutes.find((route) => route.id === matchedRoute.id)
+  }, [matchedRoute, translatedRoutes])
 
-  const activeLabel = activeRoute?.label ?? t('app_shell.navigation.overview')
+  const activeLabel = matchedRoute ? t(matchedRoute.translationKey) : t('app_shell.navigation.overview')
 
   return {
     routes: translatedRoutes,

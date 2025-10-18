@@ -23,7 +23,8 @@
       "products": "Produse",
       "customers": "Clienți",
       "support": "Asistență",
-      "cms": "CMS"
+      "cms": "CMS",
+      "profile": "Profil"
     },
     "endpoint": {
       "label": "Endpoint backend",
@@ -46,6 +47,9 @@
     "actions": {
       "sign_out": "Deconectare",
       "signing_out": "Se deconectează…"
+    },
+    "user": {
+      "label": "Autentificat ca"
     },
     "errors": {
       "terminate_failed": "Nu s-a putut închide sesiunea.",

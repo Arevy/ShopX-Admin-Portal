@@ -6,6 +6,7 @@ import Page_Admin_Orders from './Page_Admin_Orders.json'
 import Page_Admin_Users from './Page_Admin_Users.json'
 import Page_Admin_Support from './Page_Admin_Support.json'
 import Page_Admin_Cms from './Page_Admin_Cms.json'
+import Page_Admin_Profile from './Page_Admin_Profile.json'
 
 const en = {
   Common,
@@ -16,6 +17,7 @@ const en = {
   Page_Admin_Users,
   Page_Admin_Support,
   Page_Admin_Cms,
+  Page_Admin_Profile,
 }
 
 export default en

@@ -1,0 +1,45 @@
+{
+  "title": "Your admin profile",
+  "subtitle": "Control how your operator account is presented and keep your credentials protected.",
+  "sections": {
+    "overview": {
+      "title": "Profile details",
+      "description": "Update your name or email. Changes require a password confirmation to keep the console secure.",
+      "form": {
+        "name_label": "Full name",
+        "name_placeholder": "Add your full name",
+        "email_label": "Email address",
+        "email_placeholder": "name@example.com",
+        "enable_edit": "Enable profile editing",
+        "password_label": "Confirm with password",
+        "password_placeholder": "Enter your current password",
+        "submit": "Save changes",
+        "submitting": "Saving…",
+        "success": "Profile updated successfully."
+      }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Choose a strong password to protect access to the admin console.",
+      "form": {
+        "current_label": "Current password",
+        "current_placeholder": "Enter your current password",
+        "new_label": "New password",
+        "new_placeholder": "Enter a new password",
+        "confirm_label": "Confirm new password",
+        "confirm_placeholder": "Repeat the new password",
+        "mismatch": "The new passwords do not match.",
+        "submit": "Update password",
+        "submitting": "Updating…",
+        "success": "Password updated successfully."
+      }
+    }
+  },
+  "guard": {
+    "title": "Sign in to manage your profile",
+    "subtitle": "You need an active support session to view and update your details.",
+    "actions": {
+      "sign_in": "Go to login"
+    }
+  }
+}

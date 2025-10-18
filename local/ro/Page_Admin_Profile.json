@@ -1,0 +1,45 @@
+{
+  "title": "Profilul tău de administrator",
+  "subtitle": "Gestionează modul în care apar datele tale de operator și păstrează credențialele în siguranță.",
+  "sections": {
+    "overview": {
+      "title": "Detalii de profil",
+      "description": "Actualizează numele sau adresa de e-mail. Pentru siguranță, modificările necesită confirmarea parolei.",
+      "form": {
+        "name_label": "Nume complet",
+        "name_placeholder": "Adaugă numele complet",
+        "email_label": "Adresă de e-mail",
+        "email_placeholder": "nume@exemplu.com",
+        "enable_edit": "Activează editarea profilului",
+        "password_label": "Confirmă cu parola",
+        "password_placeholder": "Introdu parola curentă",
+        "submit": "Salvează modificările",
+        "submitting": "Se salvează…",
+        "success": "Profilul a fost actualizat cu succes."
+      }
+    },
+    "security": {
+      "title": "Securitate",
+      "description": "Alege o parolă puternică pentru a proteja accesul la consola de administrare.",
+      "form": {
+        "current_label": "Parola actuală",
+        "current_placeholder": "Introdu parola actuală",
+        "new_label": "Parolă nouă",
+        "new_placeholder": "Introdu o parolă nouă",
+        "confirm_label": "Confirmă parola nouă",
+        "confirm_placeholder": "Repetă parola nouă",
+        "mismatch": "Parolele noi nu coincid.",
+        "submit": "Actualizează parola",
+        "submitting": "Se actualizează…",
+        "success": "Parola a fost actualizată cu succes."
+      }
+    }
+  },
+  "guard": {
+    "title": "Autentifică-te pentru a-ți gestiona profilul",
+    "subtitle": "Este necesară o sesiune de suport activă pentru a vedea și actualiza detaliile contului.",
+    "actions": {
+      "sign_in": "Mergi la autentificare"
+    }
+  }
+}

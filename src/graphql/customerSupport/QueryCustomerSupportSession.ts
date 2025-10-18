@@ -7,6 +7,12 @@ const SUPPORT_SESSION_OPERATION = parse(/* GraphQL */ `
   query CustomerSupportSession {
     customerSupport {
       __typename
+      viewer {
+        id
+        email
+        name
+        role
+      }
     }
   }
 `)
