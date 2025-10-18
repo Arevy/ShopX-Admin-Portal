@@ -1,6 +1,7 @@
 import { parse } from 'graphql'
 
 import { QueryFactory } from '@/graphql/utils/QueryFactory'
+import { createCacheKey } from '@/lib/cacheKeys'
 import type { CustomerSupportProductsResponse, CustomerSupportProductsVariables } from '@/types/graphql'
 
 export const QueryCustomerSupportProducts = new QueryFactory<
@@ -9,7 +10,12 @@ export const QueryCustomerSupportProducts = new QueryFactory<
 >({
   queryName: 'CustomerSupportProducts',
   operationType: 'query',
-  cacheOptions: { cacheable: false },
+  cacheOptions: {
+    cacheable: true,
+    cacheTTL: 300,
+    cacheKey: (variables) =>
+      createCacheKey('support:products', variables ? { ...variables } : undefined),
+  },
   queryObject: parse(/* GraphQL */ `
     query CustomerSupportProducts($limit: Int, $offset: Int, $name: String, $categoryId: ID) {
       customerSupport {

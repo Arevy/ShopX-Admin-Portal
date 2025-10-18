@@ -6,7 +6,7 @@ import type { GraphQLResponse } from './GraphQLResponse'
 export type CacheOptions<V> = {
   cacheable: boolean
   cacheTTL?: number
-  cacheKey?: (variables: V) => string | string
+  cacheKey?: string | ((variables: V | undefined) => string)
 }
 
 export interface QueryFactoryConfig<R, V> {

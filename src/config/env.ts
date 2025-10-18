@@ -23,6 +23,11 @@ const DEFAULT_GRAPHQL_UPSTREAM = 'http://localhost:4000/graphql'
 const DEFAULT_STOREFRONT_URL = 'http://localhost:3100'
 const DEFAULT_PROXY_PATH = '/api/support-graphql'
 const DEFAULT_APP_BASE = 'http://localhost:3000'
+const DEFAULT_SUPPORT_SERVICES_BASE = '/api/support-services'
+const DEFAULT_REDIS_URL = 'redis://127.0.0.1:6379'
+const DEFAULT_CACHE_PREFIX = 'shopx:admin'
+const DEFAULT_CACHE_TTL_SECONDS = 60
+const DEFAULT_SERVER_SERVICES_TOKEN = 'development'
 
 const resolveAppBaseUrl = () => {
   const configured =
@@ -110,6 +115,29 @@ export const getGraphqlDisplayEndpoint = () => getPublicGraphqlEndpoint()
 
 export const getStorefrontUrl = () => sanitizeEnv(process.env.NEXT_PUBLIC_STOREFRONT_URL) ?? DEFAULT_STOREFRONT_URL
 
+export const getSupportServicesBasePath = () =>
+  sanitizeEnv(process.env.NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH) ?? DEFAULT_SUPPORT_SERVICES_BASE
+
+export const getRedisUrl = () => sanitizeEnv(process.env.REDIS_URL) ?? DEFAULT_REDIS_URL
+
+export const getRedisCachePrefix = () =>
+  sanitizeEnv(process.env.REDIS_CACHE_PREFIX) ?? DEFAULT_CACHE_PREFIX
+
+export const getRedisDefaultTtl = () => {
+  const raw = sanitizeEnv(process.env.REDIS_CACHE_TTL)
+  if (!raw) return DEFAULT_CACHE_TTL_SECONDS
+
+  const parsed = Number(raw)
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return DEFAULT_CACHE_TTL_SECONDS
+  }
+
+  return Math.floor(parsed)
+}
+
+export const getServerServicesToken = () =>
+  sanitizeEnv(process.env.SERVER_SERVICES_TOKEN) ?? DEFAULT_SERVER_SERVICES_TOKEN
+
 export const envUtils = {
   sanitizeEnv,
   getPublicGraphqlEndpoint,
@@ -119,4 +147,9 @@ export const envUtils = {
   getGraphqlDisplayEndpoint,
   getStorefrontUrl,
   resolveAppBaseUrl,
+  getSupportServicesBasePath,
+  getRedisUrl,
+  getRedisCachePrefix,
+  getRedisDefaultTtl,
+  getServerServicesToken,
 }

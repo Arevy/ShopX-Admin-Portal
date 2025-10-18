@@ -37,6 +37,11 @@ NEXT_PUBLIC_SITE_NAME=ShopX Admin
 NEXT_PUBLIC_STOREFRONT_URL=http://localhost:3100
 GRAPHQL_UPSTREAM_ENDPOINT=http://localhost:4000/graphql
 GRAPHQL_PROXY_ORIGIN=http://localhost:3000
+NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH=/api/support-services
+SERVER_SERVICES_TOKEN=development
+REDIS_URL=redis://127.0.0.1:6379
+REDIS_CACHE_PREFIX=shopx:admin
+REDIS_CACHE_TTL=300
 ```
 
 > **Note:** Inline comments appended to `.env` values (for example `GRAPHQL_PROXY_ORIGIN=http://localhost:3000 # comment`) are treated as part of the value and will produce invalid URLs. Keep comments on their own lines.
@@ -48,6 +53,9 @@ The `NEXT_PUBLIC_` prefix is required for values that must be available on the c
 - `NEXT_PUBLIC_SITE_NAME` — Optional label rendered in metadata and select UI components.
 - `GRAPHQL_UPSTREAM_ENDPOINT` — Actual GraphQL endpoint exposed by `e-commerce-backend`. Defaults to `http://localhost:4000/graphql` if unspecified.
 - `GRAPHQL_PROXY_ORIGIN` — Origin used to turn relative proxy paths into absolute URLs during server-side rendering. Defaults to `http://localhost:3000`.
+- `NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH` — Base path for the admin cache tooling (defaults to `/api/support-services`).
+- `SERVER_SERVICES_TOKEN` — Shared secret appended as `?api=<token>` when calling cache tooling endpoints.
+- `REDIS_URL`, `REDIS_CACHE_PREFIX`, `REDIS_CACHE_TTL` — Redis connection and default TTL (seconds) for cached GraphQL responses.
 
 ---
 
@@ -74,6 +82,53 @@ npm run dev                  # launches http://localhost:3000
 4. From the **Customers** area you can revoke shopper sessions (`Force logout`) or generate an impersonation ticket. Impersonation opens the storefront’s `/impersonate` route in a new tab, sets a fresh cookie for the target user, and refreshes their context automatically.
 
 > Support logins use a dedicated `support_sid` cookie while shopper sessions keep using `sid`, so admins can stay signed in while impersonating storefront users in the same browser.
+
+---
+
+## GraphQL Cache (Support Services)
+
+The admin proxy (`/api/support-graphql`) now shares the same Redis-backed caching strategy introduced in the storefront. Read-heavy operations such as the support product catalogue reuse the result for 60 seconds to keep the dashboard responsive.
+
+- Product catalogue (`CustomerSupportProducts`) → namespace `support:products` (TTL 300s).
+- All other queries retain live behaviour; user/order/customer lookups always bypass the cache.
+
+When a product or CMS entry is changed you can invalidate cache entries instantly via the support-services API (token required):
+
+```bash
+API_TOKEN=${SERVER_SERVICES_TOKEN:-development}
+
+# list every cached key
+curl "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
+
+# flush the entire admin cache
+curl -X DELETE "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
+
+# view + TTL for a single key (URL-encode when needed)
+curl "http://localhost:3000/api/support-services/cache/$(python3 - <<'PY'
+from urllib.parse import quote
+print(quote('support:products'))
+PY)?api=${API_TOKEN}"
+
+# namespace flush helpers
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"action":"flushNamespace","namespace":"support:products"}' \
+  "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
+
+# delete a precise cache key
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"action":"flushKey","namespace":"support:products"}' \
+  "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
+```
+
+| Route | Method(s) | Description |
+|-------|-----------|-------------|
+| `/api/support-services/cache?api=<token>` | GET | Lists cached keys scoped to the admin prefix |
+| `/api/support-services/cache?api=<token>` | DELETE | Flushes all admin cache entries |
+| `/api/support-services/cache?api=<token>` | POST | Supports `flushAll`, `flushNamespace`, `flushKey` actions |
+| `/api/support-services/cache/[key]?api=<token>` | GET / DELETE | Inspect or remove a single cache key |
+| `/api/support-services/cache/namespace/[namespace]?api=<token>` | GET / DELETE | List or purge by namespace/pattern |
+
+> Use the same token across admin and storefront when running via `docker-compose`. When developing locally without Docker, the default `development` token works out of the box.
 
 ---
 

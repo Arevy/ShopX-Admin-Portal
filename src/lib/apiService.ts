@@ -5,6 +5,7 @@ import type { QueryFactory } from '@/graphql/utils/QueryFactory'
 import type { GraphQLResponse, GraphQLResponseError } from '@/graphql/utils/GraphQLResponse'
 import type { RootStore } from '@/stores/rootStore'
 import { getGraphqlClientEndpoint } from '@/config/env'
+import { createCacheKey } from '@/lib/cacheKeys'
 
 export class ApiService {
   private readonly client: GraphQLClient
@@ -53,9 +54,40 @@ export class ApiService {
 
     try {
       const requestVariables = (processedVariables ?? undefined) as Variables | undefined
+      const cacheOptions = queryFactory.cacheOptions
+      const cacheable =
+        queryFactory.operationType === 'query' && Boolean(cacheOptions?.cacheable)
+
+      const resolvedVariables = processedVariables as V | undefined
+      let computedCacheKey: string | undefined
+
+      if (cacheable) {
+        if (typeof cacheOptions?.cacheKey === 'function') {
+          computedCacheKey = cacheOptions.cacheKey(resolvedVariables)
+        } else if (typeof cacheOptions?.cacheKey === 'string') {
+          computedCacheKey = cacheOptions.cacheKey
+        } else {
+        computedCacheKey = createCacheKey(
+          queryFactory.queryName,
+          resolvedVariables as unknown as Record<string, unknown> | undefined,
+        )
+        }
+      }
+
+      const cacheHeaders: Record<string, string> = {}
+
+      if (cacheable && computedCacheKey) {
+        cacheHeaders['x-cache-key'] = computedCacheKey
+        if (cacheOptions?.cacheTTL) {
+          cacheHeaders['x-cache-ttl'] = `${cacheOptions.cacheTTL}`
+        }
+      } else {
+        cacheHeaders['x-cache-skip'] = '1'
+      }
+
       const data = requestVariables
-        ? await this.client.request<R>(queryFactory.queryString, requestVariables)
-        : await this.client.request<R>(queryFactory.queryString)
+        ? await this.client.request<R>(queryFactory.queryString, requestVariables, cacheHeaders)
+        : await this.client.request<R>(queryFactory.queryString, undefined, cacheHeaders)
 
       let response: GraphQLResponse<R> = { data }
 
