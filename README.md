@@ -37,6 +37,7 @@ NEXT_PUBLIC_SITE_NAME=ShopX Admin
 NEXT_PUBLIC_STOREFRONT_URL=http://localhost:3100
 GRAPHQL_UPSTREAM_ENDPOINT=http://localhost:4000/graphql
 GRAPHQL_PROXY_ORIGIN=http://localhost:3000
+NEXT_PUBLIC_USE_SUPPORT_SERVICES=true
 NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH=/api/support-services
 SERVER_SERVICES_TOKEN=development
 REDIS_URL=redis://127.0.0.1:6379
@@ -53,6 +54,7 @@ The `NEXT_PUBLIC_` prefix is required for values that must be available on the c
 - `NEXT_PUBLIC_SITE_NAME` — Optional label rendered in metadata and select UI components.
 - `GRAPHQL_UPSTREAM_ENDPOINT` — Actual GraphQL endpoint exposed by `e-commerce-backend`. Defaults to `http://localhost:4000/graphql` if unspecified.
 - `GRAPHQL_PROXY_ORIGIN` — Origin used to turn relative proxy paths into absolute URLs during server-side rendering. Defaults to `http://localhost:3000`.
+- `NEXT_PUBLIC_USE_SUPPORT_SERVICES` — Toggle for routing through `/api/support-graphql` (true by default). Set to `false` if you need the UI to hit the backend GraphQL endpoint directly (useful in local setups without the proxy).
 - `NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH` — Base path for the admin cache tooling (defaults to `/api/support-services`).
 - `SERVER_SERVICES_TOKEN` — Shared secret appended as `?api=<token>` when calling cache tooling endpoints.
 - `REDIS_URL`, `REDIS_CACHE_PREFIX`, `REDIS_CACHE_TTL` — Redis connection and default TTL (seconds) for cached GraphQL responses.

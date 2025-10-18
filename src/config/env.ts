@@ -26,8 +26,9 @@ const DEFAULT_APP_BASE = 'http://localhost:3000'
 const DEFAULT_SUPPORT_SERVICES_BASE = '/api/support-services'
 const DEFAULT_REDIS_URL = 'redis://127.0.0.1:6379'
 const DEFAULT_CACHE_PREFIX = 'shopx:admin'
-const DEFAULT_CACHE_TTL_SECONDS = 60
+const DEFAULT_CACHE_TTL_SECONDS = 300
 const DEFAULT_SERVER_SERVICES_TOKEN = 'development'
+const DEFAULT_USE_SUPPORT_SERVICES = true
 
 const resolveAppBaseUrl = () => {
   const configured =
@@ -138,6 +139,20 @@ export const getRedisDefaultTtl = () => {
 export const getServerServicesToken = () =>
   sanitizeEnv(process.env.SERVER_SERVICES_TOKEN) ?? DEFAULT_SERVER_SERVICES_TOKEN
 
+const parseBoolean = (value: string | undefined, fallback: boolean) => {
+  if (!value) return fallback
+  const normalized = value.trim().toLowerCase()
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) return true
+  if (['0', 'false', 'no', 'off'].includes(normalized)) return false
+  return fallback
+}
+
+export const getUseSupportServices = () =>
+  parseBoolean(
+    sanitizeEnv(process.env.NEXT_PUBLIC_USE_SUPPORT_SERVICES),
+    DEFAULT_USE_SUPPORT_SERVICES,
+  )
+
 export const envUtils = {
   sanitizeEnv,
   getPublicGraphqlEndpoint,
@@ -152,4 +167,5 @@ export const envUtils = {
   getRedisCachePrefix,
   getRedisDefaultTtl,
   getServerServicesToken,
+  getUseSupportServices,
 }
