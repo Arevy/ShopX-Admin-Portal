@@ -35,8 +35,11 @@ export const useProducts = () => {
   const { t } = useTranslation('Page_Admin_Products')
 
   const [nameFilter, setNameFilter] = useState(productStore.filters.name ?? '')
-  const [categoryFilter, setCategoryFilter] = useState(productStore.filters.categoryId ?? '')
-  const [createForm, setCreateForm] = useState<ProductFormState>(EMPTY_CREATE_FORM)
+  const [categoryFilter, setCategoryFilter] = useState(
+    productStore.filters.categoryId ?? '',
+  )
+  const [createForm, setCreateForm] =
+    useState<ProductFormState>(EMPTY_CREATE_FORM)
   const [creating, setCreating] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
 
@@ -65,7 +68,10 @@ export const useProducts = () => {
   )
 
   const buildImagePayload = useCallback(
-    (file: File | null, base64: string | null): ProductImageInput | undefined => {
+    (
+      file: File | null,
+      base64: string | null,
+    ): ProductImageInput | undefined => {
       if (!file || !base64) {
         return undefined
       }
@@ -82,13 +88,17 @@ export const useProducts = () => {
   const handleCreateImageChange = useCallback(
     async (file: File | null) => {
       if (!file) {
-        setCreateForm((prev) => ({ ...prev, imageFile: null, imageBase64: null }))
+        setCreateForm((prev) => ({
+          ...prev,
+          imageFile: null,
+          imageBase64: null,
+        }))
         return
-    }
+      }
 
-    try {
-      const base64 = await readFileAsDataUrl(file)
-      setCreateForm((prev) => ({
+      try {
+        const base64 = await readFileAsDataUrl(file)
+        setCreateForm((prev) => ({
           ...prev,
           imageFile: file,
           imageBase64: base64,
@@ -96,7 +106,10 @@ export const useProducts = () => {
       } catch (error) {
         setFeedback({
           tone: 'negative',
-          message: getUserFriendlyMessage(error, t('feedback.errors.image_load')),
+          message: getUserFriendlyMessage(
+            error,
+            t('feedback.errors.image_load'),
+          ),
         })
       }
     },
@@ -108,6 +121,7 @@ export const useProducts = () => {
       event.preventDefault()
       setFeedback(null)
       void productStore.fetchProducts({
+        offset: 0,
         name: nameFilter.trim() || undefined,
         categoryId: categoryFilter.trim() || undefined,
       })
@@ -119,7 +133,10 @@ export const useProducts = () => {
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
       if (!createForm.name || !createForm.price || !createForm.categoryId) {
-        setFeedback({ tone: 'negative', message: t('feedback.errors.missing_required_fields') })
+        setFeedback({
+          tone: 'negative',
+          message: t('feedback.errors.missing_required_fields'),
+        })
         return
       }
 
@@ -134,7 +151,10 @@ export const useProducts = () => {
           price,
           description: createForm.description || undefined,
           categoryId: createForm.categoryId,
-          image: buildImagePayload(createForm.imageFile, createForm.imageBase64),
+          image: buildImagePayload(
+            createForm.imageFile,
+            createForm.imageBase64,
+          ),
         })
 
         setCreateForm(EMPTY_CREATE_FORM)
@@ -156,7 +176,10 @@ export const useProducts = () => {
       setFeedback(null)
       try {
         await productStore.deleteProduct(productId)
-        setFeedback({ tone: 'positive', message: t('feedback.success.delete', { id: productId }) })
+        setFeedback({
+          tone: 'positive',
+          message: t('feedback.success.delete', { id: productId }),
+        })
       } catch (error) {
         setFeedback({
           tone: 'negative',
@@ -181,6 +204,20 @@ export const useProducts = () => {
     loading: productStore.loading,
     error: productStore.error,
     activeFilters,
+    page:
+      Math.floor(
+        (productStore.filters.offset ?? 0) / (productStore.filters.limit ?? 20),
+      ) + 1,
+    canNext:
+      productStore.products.length === (productStore.filters.limit ?? 20),
+    changePage: (direction: number) =>
+      productStore.fetchProducts({
+        offset: Math.max(
+          0,
+          (productStore.filters.offset ?? 0) +
+            direction * (productStore.filters.limit ?? 20),
+        ),
+      }),
     nameFilter,
     setNameFilter,
     categoryFilter,

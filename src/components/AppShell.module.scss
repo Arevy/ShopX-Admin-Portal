@@ -7,7 +7,7 @@
   width: 240px;
   padding: 2rem 1.5rem;
   border-right: 1px solid var(--border);
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--surface);
   backdrop-filter: blur(14px);
 }
 
@@ -63,11 +63,14 @@
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
-  transition: background 120ms ease, transform 120ms ease, color 120ms ease;
+  transition:
+    background 120ms ease,
+    transform 120ms ease,
+    color 120ms ease;
 }
 
 .navLinkActive {
-  color: #fff;
+  color: #101112;
   background: var(--accent);
   transform: scale(1.01);
 }
@@ -109,7 +112,7 @@
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
-  background: rgba(15, 23, 42, 0.55);
+  background: var(--surface);
 }
 
 .headerMeta {
@@ -224,4 +227,88 @@
 
 .containerRtl .footerNote {
   text-align: right;
+}
+
+.sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  border-inline-end: 1px solid var(--border);
+  padding: 28px 18px;
+}
+.sidebarContent {
+  position: sticky;
+  top: 28px;
+  height: auto;
+}
+.brandIndicator {
+  box-shadow: none;
+  border-radius: 2px;
+}
+.brandTitle {
+  font-size: 1.8rem;
+  letter-spacing: -0.06em;
+}
+.navLinkActive {
+  transform: none;
+}
+.contentArea {
+  min-width: 0;
+}
+.main {
+  min-width: 0;
+  width: 100%;
+  max-width: 1500px;
+  margin-inline: auto;
+}
+.header {
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.headerTitle {
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+}
+@media (max-width: 950px) {
+  .container,
+  .containerRtl {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebarContent {
+    position: static;
+    gap: 16px;
+  }
+  .brandMeta,
+  .brandSubtitle {
+    display: none;
+  }
+  .brandTitle {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  .navList {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .navLink {
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: 44px;
+  }
+  .header,
+  .main {
+    padding: 20px;
+  }
+  .headerBadges {
+    flex-wrap: wrap;
+  }
+  .footer {
+    padding: 20px;
+    flex-wrap: wrap;
+  }
 }

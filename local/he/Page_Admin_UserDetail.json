@@ -59,7 +59,7 @@
     "empty": "No orders found for this user.",
     "meta": {
       "id": "Order #{{id}}",
-      "total": "Total: ${{total}}",
+      "total": "Total: {{total}}",
       "created": "Placed: {{value}}"
     },
     "actions": {

@@ -47,7 +47,7 @@
   "cart": {
     "title": "Active cart",
     "empty": "Cart is empty.",
-    "total": "Cart total: ${{total}}"
+    "total": "Cart total: {{total}}"
   },
   "reviews": {
     "title": "Reviews",

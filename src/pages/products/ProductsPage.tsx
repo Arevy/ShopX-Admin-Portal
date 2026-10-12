@@ -1,5 +1,7 @@
 'use client'
 
+import { formatCurrency } from '@/lib/formatCurrency'
+
 import Link from 'next/link'
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
@@ -21,6 +23,9 @@ const ProductsPage = observer(() => {
     loading,
     error,
     activeFilters,
+    page,
+    canNext,
+    changePage,
     nameFilter,
     setNameFilter,
     categoryFilter,
@@ -50,7 +55,9 @@ const ProductsPage = observer(() => {
       chips.push(t('filters.summary.name', { value: activeFilters.name }))
     }
     if (activeFilters.categoryId) {
-      chips.push(t('filters.summary.category', { value: activeFilters.categoryId }))
+      chips.push(
+        t('filters.summary.category', { value: activeFilters.categoryId }),
+      )
     }
     return chips
   }, [activeFilters.categoryId, activeFilters.name, t])
@@ -72,7 +79,7 @@ const ProductsPage = observer(() => {
         product.image ? (
           <ModularImage
             src={product.image.url}
-            alt={product.image.filename ?? product.name}
+            alt={product.name}
             width={48}
             height={48}
             sizes="48px"
@@ -86,12 +93,13 @@ const ProductsPage = observer(() => {
     {
       key: 'price',
       header: t('table.columns.price'),
-      render: (product) => `$${Number(product.price).toFixed(2)}`,
+      render: (product) => formatCurrency(Number(product.price)),
     },
     {
       key: 'category',
       header: t('table.columns.category'),
-      render: (product) => product.category?.name ?? t('table.cells.uncategorised'),
+      render: (product) =>
+        product.category?.name ?? t('table.cells.uncategorised'),
     },
     {
       key: 'actions',
@@ -118,16 +126,25 @@ const ProductsPage = observer(() => {
       <section className={classNames('surface-border', styles.panel)}>
         <form onSubmit={handleFilter} className={styles.filterForm}>
           <div>
-            <label className={styles.fieldLabel}>{t('filters.fields.name.label')}</label>
+            <label htmlFor="product-filter-name" className={styles.fieldLabel}>
+              {t('filters.fields.name.label')}
+            </label>
             <input
+              id="product-filter-name"
               value={nameFilter}
               onChange={(event) => setNameFilter(event.target.value)}
               placeholder={t('filters.fields.name.placeholder')}
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>{t('filters.fields.category.label')}</label>
+            <label
+              htmlFor="product-filter-category"
+              className={styles.fieldLabel}
+            >
+              {t('filters.fields.category.label')}
+            </label>
             <select
+              id="product-filter-category"
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value)}
             >
@@ -156,6 +173,21 @@ const ProductsPage = observer(() => {
           data={products}
           emptyState={<span>{t('table.empty')}</span>}
         />
+        <nav className={styles.pagination} aria-label={t('pagination.label')}>
+          <button
+            disabled={loading || page === 1}
+            onClick={() => void changePage(-1)}
+          >
+            {t('pagination.previous')}
+          </button>
+          <span aria-live="polite">{t('pagination.page', { page })}</span>
+          <button
+            disabled={loading || !canNext}
+            onClick={() => void changePage(1)}
+          >
+            {t('pagination.next')}
+          </button>
+        </nav>
       </section>
 
       <section className={classNames('surface-border', styles.panel)}>
@@ -165,30 +197,52 @@ const ProductsPage = observer(() => {
         </div>
         <form onSubmit={handleCreate} className={styles.formGrid}>
           <div>
-            <label className={styles.fieldLabel}>{t('form.fields.name')}</label>
+            <label htmlFor="product-create-name" className={styles.fieldLabel}>
+              {t('form.fields.name')}
+            </label>
             <input
+              id="product-create-name"
               value={createForm.name}
-              onChange={(event) => setCreateForm((prev) => ({ ...prev, name: event.target.value }))}
+              onChange={(event) =>
+                setCreateForm((prev) => ({ ...prev, name: event.target.value }))
+              }
               required
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>{t('form.fields.price')}</label>
+            <label htmlFor="product-create-price" className={styles.fieldLabel}>
+              {t('form.fields.price')}
+            </label>
             <input
+              id="product-create-price"
               type="number"
               min="0"
               step="0.01"
               value={createForm.price}
-              onChange={(event) => setCreateForm((prev) => ({ ...prev, price: event.target.value }))}
+              onChange={(event) =>
+                setCreateForm((prev) => ({
+                  ...prev,
+                  price: event.target.value,
+                }))
+              }
               required
             />
           </div>
           <div>
-            <label className={styles.fieldLabel}>{t('form.fields.category')}</label>
+            <label
+              htmlFor="product-create-category"
+              className={styles.fieldLabel}
+            >
+              {t('form.fields.category')}
+            </label>
             <select
+              id="product-create-category"
               value={createForm.categoryId}
               onChange={(event) =>
-                setCreateForm((prev) => ({ ...prev, categoryId: event.target.value }))
+                setCreateForm((prev) => ({
+                  ...prev,
+                  categoryId: event.target.value,
+                }))
               }
               required
             >
@@ -201,19 +255,31 @@ const ProductsPage = observer(() => {
             </select>
           </div>
           <div className={styles.wideField}>
-            <label className={styles.fieldLabel}>{t('form.fields.description')}</label>
+            <label
+              htmlFor="product-create-description"
+              className={styles.fieldLabel}
+            >
+              {t('form.fields.description')}
+            </label>
             <textarea
+              id="product-create-description"
               rows={3}
               value={createForm.description}
               onChange={(event) =>
-                setCreateForm((prev) => ({ ...prev, description: event.target.value }))
+                setCreateForm((prev) => ({
+                  ...prev,
+                  description: event.target.value,
+                }))
               }
             />
           </div>
           <div className={styles.wideField}>
-            <label className={styles.fieldLabel}>{t('form.fields.image')}</label>
+            <label htmlFor="product-create-image" className={styles.fieldLabel}>
+              {t('form.fields.image')}
+            </label>
             <div className={styles.imageField}>
               <input
+                id="product-create-image"
                 type="file"
                 accept="image/*"
                 onChange={(event) =>
@@ -230,20 +296,34 @@ const ProductsPage = observer(() => {
                   className={styles.previewImage}
                 />
               ) : (
-                <span className={styles.emptyImage}>{t('form.image.empty')}</span>
+                <span className={styles.emptyImage}>
+                  {t('form.image.empty')}
+                </span>
               )}
             </div>
           </div>
           <div className={styles.formFooter}>
-            <button type="submit" disabled={creating} className={styles.primaryButton}>
-              {creating ? t('create.actions.pending') : t('create.actions.submit')}
+            <button
+              type="submit"
+              disabled={creating}
+              className={styles.primaryButton}
+            >
+              {creating
+                ? t('create.actions.pending')
+                : t('create.actions.submit')}
             </button>
           </div>
         </form>
       </section>
 
       {feedback ? (
-        <span className={feedback.tone === 'negative' ? styles.feedbackNegative : styles.feedbackPositive}>
+        <span
+          className={
+            feedback.tone === 'negative'
+              ? styles.feedbackNegative
+              : styles.feedbackPositive
+          }
+        >
           {feedback.message}
         </span>
       ) : null}

@@ -85,9 +85,11 @@
   border-radius: 10px;
   border: none;
   background: var(--accent);
-  color: #fff;
+  color: #101112;
   font-weight: 600;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .primaryButton:disabled {

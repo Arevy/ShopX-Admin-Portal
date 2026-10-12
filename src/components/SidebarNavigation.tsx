@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import classNames from 'classnames'
 
+import { NavigationIcon } from './NavigationIcon'
+
 import type { NavigationItem } from '@/routes/useAdminNavigation'
 
 interface SidebarNavigationProps {
@@ -22,12 +24,18 @@ export const SidebarNavigation = ({
 }: SidebarNavigationProps) => (
   <nav className={className}>
     {routes.map((route) => {
-      const active = pathname === route.path || pathname.startsWith(`${route.path}/`)
+      const active =
+        pathname === route.path || pathname.startsWith(`${route.path}/`)
 
       return (
         <Link key={route.path} href={route.path} legacyBehavior>
-          <a className={classNames(linkClassName, active && activeLinkClassName)}>
-            {route.emoji ? <span className={emojiClassName}>{route.emoji}</span> : null}
+          <a
+            aria-current={active ? 'page' : undefined}
+            className={classNames(linkClassName, active && activeLinkClassName)}
+          >
+            <span className={emojiClassName}>
+              <NavigationIcon path={route.path} />
+            </span>
             {route.label}
           </a>
         </Link>
@@ -35,4 +43,3 @@ export const SidebarNavigation = ({
     })}
   </nav>
 )
-

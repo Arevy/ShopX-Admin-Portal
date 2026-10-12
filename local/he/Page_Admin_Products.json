@@ -100,5 +100,11 @@
       "update": "Product {{id}} updated.",
       "delete": "Product {{id}} removed."
     }
+  },
+  "pagination": {
+    "label": "עמודי הקטלוג",
+    "previous": "הקודם",
+    "next": "הבא",
+    "page": "עמוד {{page}}"
   }
 }
