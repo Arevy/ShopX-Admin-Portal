@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+const publicApiOrigin = new URL(process.env.SHOPX_PUBLIC_API_ORIGIN || 'http://localhost:4000')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -9,6 +11,12 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
+      {
+        protocol: publicApiOrigin.protocol.replace(':', ''),
+        hostname: publicApiOrigin.hostname,
+        port: publicApiOrigin.port,
+        pathname: '/products/**',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',

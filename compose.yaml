@@ -1,0 +1,41 @@
+# Standalone development: no parent checkout or sibling repository is required.
+# Supply external service connections with --env-file .env.docker.
+name: shopx-admin-standalone
+
+services:
+  admin:
+    image: shopx-admin:latest
+    build: {context: ., target: development}
+    init: true
+    restart: unless-stopped
+    mem_limit: ${APP_MEMORY_LIMIT:-1280m}
+    cpus: ${APP_CPUS:-2}
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    ports: ["${BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-3000}:3000"]
+    environment:
+      NODE_ENV: "development"
+      NODE_OPTIONS: "--max-old-space-size=768"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_GRAPHQL_ENDPOINT: "${NEXT_PUBLIC_GRAPHQL_ENDPOINT:-/api/support-graphql}"
+      GRAPHQL_UPSTREAM_ENDPOINT: "${GRAPHQL_UPSTREAM_ENDPOINT:-http://host.docker.internal:4000/graphql}"
+      SHOPX_PUBLIC_API_ORIGIN: "${SHOPX_PUBLIC_API_ORIGIN:-http://host.docker.internal:4000}"
+      SERVER_SERVICES_TOKEN: "${SERVER_SERVICES_TOKEN:?Set SERVER_SERVICES_TOKEN in .env.docker}"
+      REDIS_URL: "${REDIS_URL:-redis://host.docker.internal:6379/1}"
+      REDIS_CACHE_PREFIX: "${REDIS_CACHE_PREFIX:-shopx:admin}"
+      REDIS_CACHE_TTL: "${REDIS_CACHE_TTL:-300}"
+      GRAPHQL_PROXY_ORIGIN: "http://127.0.0.1:3000"
+      NEXT_PUBLIC_STOREFRONT_URL: "${NEXT_PUBLIC_STOREFRONT_URL:-http://localhost:3100}"
+      NEXT_PUBLIC_USE_SUPPORT_SERVICES: "true"
+      NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH: "/api/support-services"
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/login').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+      start_period: 90s

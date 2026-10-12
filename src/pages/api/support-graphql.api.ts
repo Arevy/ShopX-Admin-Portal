@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { getGraphqlUpstream } from '@/pages/api/_lib/getGraphqlUpstream'
 import { getRedisDefaultTtl } from '@/config/env'
 import { redisCache } from '@/server/redis/cacheRepository'
-import { getOperationMetadata } from '@/server/graphql/operationMetadata'
+import { getOperationMetadata, isPublicCacheableQuery } from '@/server/graphql/operationMetadata'
 import { createGraphqlCacheKey } from '@/server/graphql/executeWithCache'
 
 const upstream = getGraphqlUpstream()
@@ -17,6 +17,9 @@ const hopByHopHeaders = new Set([
   'trailer',
   'transfer-encoding',
   'upgrade',
+  'content-encoding',
+  'content-length',
+  'cache-control',
 ])
 
 const copyUpstreamHeaders = (response: Response, target: NextApiResponse) => {
@@ -83,6 +86,8 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
     return
   }
 
+  response.setHeader('Cache-Control', 'no-store')
+
   const payloadBody = parseBody(request.body)
   const { query, variables, operationName } = payloadBody
 
@@ -91,11 +96,9 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
     return
   }
 
-  const cacheKeyHeader = request.headers['x-cache-key']
   const ttlHeader = request.headers['x-cache-ttl']
   const skipHeader = request.headers['x-cache-skip']
 
-  const cacheKey = Array.isArray(cacheKeyHeader) ? cacheKeyHeader[0] : cacheKeyHeader
   const ttlSecondsRaw = Array.isArray(ttlHeader) ? ttlHeader[0] : ttlHeader
   const skipCacheFlag = Array.isArray(skipHeader) ? skipHeader[0] : skipHeader
 
@@ -106,10 +109,9 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
     skipCacheFlag === 'yes'
 
   const metadata = getOperationMetadata(query)
-  const shouldCache = metadata.type === 'query' && !skipCache
+  const shouldCache = isPublicCacheableQuery(query, request.headers) && !skipCache
 
   const derivedCacheKey =
-    cacheKey ??
     (shouldCache ? createGraphqlCacheKey(metadata.name, metadata.type, query, variables) : undefined)
 
   if (derivedCacheKey && shouldCache) {
@@ -171,7 +173,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   if (derivedCacheKey && shouldCache && backendResponse.ok) {
     try {
       const parsed = JSON.parse(text) as CachedGraphQLPayload
-      if (!parsed.errors) {
+      if (!parsed.errors && !backendResponse.headers.has('set-cookie')) {
         const ttl =
           Number.isFinite(ttlSeconds) && ttlSeconds && ttlSeconds > 0
             ? Number(ttlSeconds)

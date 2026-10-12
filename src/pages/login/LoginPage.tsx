@@ -24,8 +24,7 @@ const LoginForm = observer(() => {
       await userStore.login(email, password)
       const redirect =
         typeof router.query.redirect === 'string' ? router.query.redirect : '/dashboard'
-      router.replace(redirect)
-      router.reload()
+      await router.replace(redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/dashboard')
     } catch (err) {
       console.error('Admin login failed', err)
     }
