@@ -1,197 +1,185 @@
-# ShopX Admin Portal
+# ShopX admin portal
 
-ShopX Admin is the internal control centre for the ShopX commerce stack. It gives merchandising, marketing, and support teams a browser-based UI to manage the same GraphQL domain that powers the store front: inventory, pricing, customer accounts, order lifecycles, and CMS pages. The app is built with **Next.js 14 (Pages Router)**, **React 18**, **TypeScript**, **MobX**, and **graphql-request** to provide reactive data views and optimistic workflows over the `e-commerce-backend` service.
+The administration and support interface for ShopX, built with **Next.js 14.2.18 (Pages Router), React 18.3.1, TypeScript, and MobX**. It runs at **http://localhost:3000** by default and requires an account with the `SUPPORT` role.
 
----
+This is an independent Git repository. Oracle, the backend, storefront, and RN app live in other workspace repositories/directories.
 
-## Capabilities at a Glance
+## Run this repository independently
 
-| Area            | What you can do                                                                 |
-|-----------------|----------------------------------------------------------------------------------|
-| Dashboard       | Review revenue, order velocity, and inventory KPIs in a single snapshot.        |
-| Orders          | Search, filter, and update orders (status changes, payment verification, notes). |
-| Products        | Create/edit products, adjust pricing, manage imagery, toggle availability, and manage categories.|
-| Users           | Manage customer/support accounts, revoke sessions, and launch customer impersonation. |
-| Support         | Look up a customer’s entire context (orders, carts, wishlists) for issue resolution. |
-| CMS             | Author and publish marketing pages via a WYSIWYG editor; schedule or archive content. |
+This repository owns its source, lockfile, Dockerfile, tests, and [standalone Compose configuration](compose.yaml). It does not require the parent ShopX directory or sibling checkouts. Other services are accessed through configurable network endpoints and must implement the expected GraphQL/API contract; a different API schema requires a client adapter.
 
-Every feature uses the GraphQL endpoints provided by `e-commerce-backend`, so any mutation performed in the portal is immediately reflected in the store front.
+From this repository, create the private container configuration only if it does not already exist:
 
----
+```bash
+cp .env.docker.example .env.docker
+```
 
-## Runtime Requirements
+Edit `.env.docker` for your external services, then run:
 
-- **Node.js 20+** (aligns with the backend’s minimum runtime). Use `nvm use` if the repo includes an `.nvmrc`.
-- **npm 9+** (Yarn Classic is also supported; adjust commands to your tooling preference).
-- A running instance of **`e-commerce-backend`** reachable at `http://localhost:4000/graphql` (overrideable via env).
+```bash
+docker compose --env-file .env.docker up -d --build --wait
+docker compose --env-file .env.docker ps
+docker compose --env-file .env.docker logs --tail 80
+docker compose --env-file .env.docker down
+```
 
----
+The standalone project has its own Compose name. Change `APP_PORT` if the workspace stack already occupies the default host port. `host.docker.internal` reaches services published on the host; `localhost` inside a container refers to that container. Use a reachable hostname for remote APIs/databases. Do not copy private environment files into images.
 
-## Environment Configuration
+Set `GRAPHQL_UPSTREAM_ENDPOINT` to the backend and `REDIS_URL` to the desired cache instance. Set `SERVER_SERVICES_TOKEN` privately for cache tools. Product-image URLs and `SHOPX_PUBLIC_API_ORIGIN` must use an origin reachable by both the browser and the Next.js process; a backend returning `localhost` image URLs will not work with container-side image optimization unless that origin is routed appropriately. Use a shared public/LAN hostname for standalone deployments.
 
-Create `.env.local` (or `.env`) from the template and update the GraphQL settings if they differ:
+In the full local workspace, use the parent `docker-compose.yml` / `node scripts/compose.mjs up` instead. It orchestrates shared dependencies and configures service DNS centrally; it does not merge these Git repositories or require their standalone Compose projects to run alongside it.
+
+## Local startup
+
+Compose uses **Node 22.x** and installs Linux dependencies from `yarn.lock`. For standalone development on the Mac, run `yarn install --frozen-lockfile`. The admin manifest allows Node 20+, but the workspace is aligned on 22.x.
+
+From this repository:
+
+```bash
+cd ..
+node scripts/compose.mjs up
+```
+
+The [workspace README](../README.md) covers containers and local configuration. `../scripts/` is not included in a standalone clone. Compose mounts `src/` and `public/` for live recompilation. Open `http://localhost:3000` or `http://admin.shopx.localhost`. To run `npm run dev` on the Mac instead, stop Compose's `admin` service first to free port 3000. The storefront uses port 3100.
+
+On this Mac, the backend uses recovered **`oracle19 / ORCLCDB / AREVY`** and persistent Compose Redis at `redis:6379/1`. `clever_wilson` remains separate for the legacy workflow. Use a SUPPORT account in the active database. `../.local/admin-access.json` now selects the new general-store administrator in `AREVY`; the old test-database configuration was backed up privately. Sign in again after changing databases.
+
+The backend documents the [SQL reset and its isolated tests](../e-commerce-backend/README.md#schema-and-sql-script). A demo reset deletes users too; it is not an access-recovery procedure. SQL corrections were tested in a temporary schema; existing `AREVY` accounts and business-table definitions were preserved.
+
+### Starter data and local access
+
+The backend owns the [general-store dataset and additive installer](../e-commerce-backend/docs/data-seeding.md). It adds persisted tech, home and lifestyle catalog/CMS content plus demonstration commerce scenarios. This portal consumes the configured API; it does not seed Oracle or substitute mock responses. A standalone deployment can use its own compatible backend and independent data.
+
+In this workspace, `../docs/local-accounts.private.md` contains the generated general-administrator and support-operator accounts, URLs and passwords. Both profiles have the existing `SUPPORT` role and the same permissions. `CUSTOMER` accounts belong in the storefront/RN account flows. A global administrator, platform owner and restricted staff roles are not yet implemented. Keep this private guide outside repository history; standalone clones must provision credentials through their own backend.
+
+## Configuration
+
+Compose injects `GRAPHQL_UPSTREAM_ENDPOINT=http://backend:4000/graphql`, `GRAPHQL_PROXY_ORIGIN=http://admin:3000`, and `REDIS_URL=redis://redis:6379/1`. Browsers use `/api/support-graphql` on their own origin. `SHOPX_PUBLIC_API_ORIGIN` configures the image origin allowed by Next.js.
+
+For standalone host development or a new checkout, copy `.env.example` to `.env.local` only if it does not already exist, then adjust values. The legacy setup preserves existing configuration while updating connections. Keep environment comments on separate lines for clarity.
 
 ```dotenv
 NEXT_PUBLIC_GRAPHQL_ENDPOINT=/api/support-graphql
 NEXT_PUBLIC_SITE_NAME=ShopX Admin
 NEXT_PUBLIC_STOREFRONT_URL=http://localhost:3100
-GRAPHQL_UPSTREAM_ENDPOINT=http://localhost:4000/graphql
+GRAPHQL_UPSTREAM_ENDPOINT=http://127.0.0.1:4000/graphql
 GRAPHQL_PROXY_ORIGIN=http://localhost:3000
 NEXT_PUBLIC_USE_SUPPORT_SERVICES=true
 NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH=/api/support-services
-SERVER_SERVICES_TOKEN=development
-REDIS_URL=redis://127.0.0.1:6379
 REDIS_CACHE_PREFIX=shopx:admin
 REDIS_CACHE_TTL=300
 ```
 
-> **Note:** Inline comments appended to `.env` values (for example `GRAPHQL_PROXY_ORIGIN=http://localhost:3000 # comment`) are treated as part of the value and will produce invalid URLs. Keep comments on their own lines.
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_GRAPHQL_ENDPOINT` | Client endpoint; locally the `/api/support-graphql` proxy |
+| `NEXT_PUBLIC_GRAPHQL_PROXY_ENDPOINT` | Explicit client endpoint override, when configured |
+| `GRAPHQL_UPSTREAM_ENDPOINT` | Real backend API reachable by Next.js |
+| `GRAPHQL_PROXY_ORIGIN` | Admin origin used to resolve relative server-side URLs |
+| `NEXT_PUBLIC_STOREFRONT_URL` | Destination for customer impersonation |
+| `NEXT_PUBLIC_SITE_NAME` | Label used in metadata/UI |
+| `NEXT_PUBLIC_USE_SUPPORT_SERVICES` | Controls cache options sent by ApiService; does not itself change the endpoint URL |
+| `NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH` | Cache-tool path, default `/api/support-services` |
+| `REDIS_URL` | Compose uses Docker DNS; standalone mode requires the actual host port and logical database |
+| `REDIS_CACHE_PREFIX`, `REDIS_CACHE_TTL` | Admin prefix and default 300-second TTL for eligible public queries |
+| `SERVER_SERVICES_TOKEN` | Private cache-tool credential; never expose through `NEXT_PUBLIC_*` |
 
-The `NEXT_PUBLIC_` prefix is required for values that must be available on the client. Any sensitive server-only secrets should live in the backend service instead.
+[env.ts](src/config/env.ts) defines defaults and URL resolution. `NEXT_PUBLIC_*` values are embedded in browser builds; changing them for production requires rebuilding. Oracle is not configured in this repository.
 
-- `NEXT_PUBLIC_GRAPHQL_ENDPOINT` — Client-facing proxy path. The admin app posts here and the API route forwards the request (along with the session cookie) to the backend.
-- `NEXT_PUBLIC_STOREFRONT_URL` — Base URL for the customer-facing app. Used when opening impersonation sessions in a new tab.
-- `NEXT_PUBLIC_SITE_NAME` — Optional label rendered in metadata and select UI components.
-- `GRAPHQL_UPSTREAM_ENDPOINT` — Actual GraphQL endpoint exposed by `e-commerce-backend`. Defaults to `http://localhost:4000/graphql` if unspecified.
-- `GRAPHQL_PROXY_ORIGIN` — Origin used to turn relative proxy paths into absolute URLs during server-side rendering. Defaults to `http://localhost:3000`.
-- `NEXT_PUBLIC_USE_SUPPORT_SERVICES` — Toggle for routing through `/api/support-graphql` (true by default). Set to `false` if you need the UI to hit the backend GraphQL endpoint directly (useful in local setups without the proxy).
-- `NEXT_PUBLIC_SUPPORT_SERVICES_BASE_PATH` — Base path for the admin cache tooling (defaults to `/api/support-services`).
-- `SERVER_SERVICES_TOKEN` — Shared secret appended as `?api=<token>` when calling cache tooling endpoints.
-- `REDIS_URL`, `REDIS_CACHE_PREFIX`, `REDIS_CACHE_TTL` — Redis connection and default TTL (seconds) for cached GraphQL responses.
+## Existing features
 
----
+| Route | Implementation |
+| --- | --- |
+| `/dashboard` | Aggregated order/product/customer metrics, recent orders, and customer list |
+| `/products`, `/products/[id]` | Catalog, product creation/editing, prices, categories, and images |
+| `/orders` | Listing, filtering, and order status updates |
+| `/users`, `/users/[id]` | User management, session revocation, and impersonation |
+| `/support` | Aggregated customer context for support operations |
+| `/cms` | Rich-text editing, creation/update/publication/archive, and publication-date input |
+| `/profile` | Signed-in agent profile |
+| `/login` | SUPPORT authentication |
 
-## Getting Started
+The UI does not establish physical inventory, product-availability toggles, order notes, or real payment/refund processing. Displayed revenue aggregates order records rather than reconciling bank receipts. A CMS publication-date field does not establish the existence of a scheduled publishing worker.
+
+Translations exist for **en, ro, fr, de, ar, he**, with RTL direction in language configuration. Full translation parity and RTL behavior still need UI verification.
+
+## Authentication and authorization
+
+1. `/login` submits to `POST /api/auth/login`, which forwards login to the backend and rejects users without `SUPPORT`.
+2. The backend issues the HttpOnly `support_sid` cookie by default; customers use `sid`. The admin proxy forwards cookies and requests support-session preference.
+3. Sign out posts to `/api/auth/logout`, revoking the backend session and clearing the browser cookie.
+4. Customer management can revoke sessions with `customerSupport.logoutUserSessions` or generate a short-lived ticket with `customerSupport.impersonateUser`. The storefront's `/impersonate` route redeems the ticket and refreshes customer context; the customer's password is not passed to the browser.
+
+Separate support/customer cookies allow admin and shopper sessions to coexist. [SupportSessionGuard](src/components/SupportSessionGuard.tsx) controls UI navigation. Data authorization is enforced in the backend through `customerSupport` and resolver checks; the mere presence of a cookie is not authorization.
+
+[middleware.ts](middleware.ts) still checks `sid`, not `support_sid`, and the inspected local Next.js build manifest had no active middleware. Older claims that middleware protects all routes are not verified behavior; this needs separate alignment.
+
+## Data integration
+
+[RootStore and MobX stores](src/stores) expose shared state through React context. The consolidated `userStore` owns agent authentication, customer administration, and order workflows; products, support, and CMS retain their own stores. Hooks consume these stores without duplicating API logic.
+
+[QueryFactory operations](src/graphql) feed [ApiService](src/lib/apiService.ts), which centralizes transport and error handling. Support uses `customerSupport.userContext` for identity, cart, wishlist, and addresses in one request. Stores expose errors through inline feedback/toasts.
+
+The CMS editor uses `react-quill` on the client. Image inputs convert files to base64 for `ProductImageUploadInput`; previews use the backend's `/products/:id/image` URL. Backend writes invalidate their own caches, but this does not imply immediate invalidation of every Next.js/browser cache.
+
+## Proxy and caching
+
+`/api/support-graphql` forwards requests to `GRAPHQL_UPSTREAM_ENDPOINT`. Authenticated requests, `customerSupport` queries, and mutations **are not cached**. Older references to caching the SUPPORT product catalog no longer describe the implementation.
+
+Only anonymous public queries allowed by [operationMetadata.ts](src/server/graphql/operationMetadata.ts) can use the cache. The server derives `graphql:public-v2:...` keys from query/variables under the `shopx:admin` prefix. Client-supplied keys are not authoritative.
+
+## Cache tools
+
+All routes require `?api=<SERVER_SERVICES_TOKEN>` and are scoped to the admin prefix. Keep this token private. The development fallback is not the random token generated for Compose.
+
+| Route, relative to admin | Methods | Behavior |
+| --- | --- | --- |
+| `/api/support-services/cache` | GET | List actual keys without the application prefix |
+| `/api/support-services/cache` | DELETE | Clear all admin-prefixed cache entries |
+| `/api/support-services/cache` | POST | `flushAll`, `flushNamespace`, or `flushKey` |
+| `/api/support-services/cache/[key]` | GET / DELETE | Inspect value/TTL or remove one URL-encoded key |
+| `/api/support-services/cache/namespace/[namespace]` | GET / DELETE | List/remove by namespace or pattern |
+
+With `SERVER_SERVICES_TOKEN` already set in your local shell:
 
 ```bash
-cd admin-portal
-cp .env.example .env.local   # adjust values as needed
-npm install
-npm run dev                  # launches http://localhost:3000
+curl -sS --get --data-urlencode "api=$SERVER_SERVICES_TOKEN" http://localhost:3000/api/support-services/cache
 ```
 
-- **Port 3000** is reserved for the admin portal. The store front runs on port 3100 to avoid conflicts.
-- When deploying, use `npm run build` followed by `npm start` (or the provided Dockerfile; see below).
-- Seed data ships with a support agent account: `support@example.com` / `Password123!`.
+For a POST to `/api/support-services/cache?api=<token>`, use an exact key returned by listing, without adding `shopx:admin:`:
 
----
-
-## Authentication Flow
-
-1. Navigate to `/login` and sign in with a support credential. The API route forwards the backend `login` mutation and returns the HTTP-only `support_sid` cookie set by the GraphQL server.
-2. Authenticated pages live under `src/pages` (dashboard, orders, products, support, users, cms). The shared layout now sits in `_app.page.tsx`, so middleware still blocks unauthenticated users and redirects them back to `/login` while preserving their intended destination.
-3. The header’s “Sign out” action posts to `/api/auth/logout`, which clears the session in Redis and expires the cookie for the browser.
-4. From the **Customers** area you can revoke shopper sessions (`Force logout`) or generate an impersonation ticket. Impersonation opens the storefront’s `/impersonate` route in a new tab, sets a fresh cookie for the target user, and refreshes their context automatically.
-
-> Support logins use a dedicated `support_sid` cookie while shopper sessions keep using `sid`, so admins can stay signed in while impersonating storefront users in the same browser.
-
----
-
-## GraphQL Cache (Support Services)
-
-The admin proxy (`/api/support-graphql`) now shares the same Redis-backed caching strategy introduced in the storefront. Read-heavy operations such as the support product catalogue reuse the result for 60 seconds to keep the dashboard responsive.
-
-- Product catalogue (`CustomerSupportProducts`) → namespace `support:products` (TTL 300s).
-- All other queries retain live behaviour; user/order/customer lookups always bypass the cache.
-
-When a product or CMS entry is changed you can invalidate cache entries instantly via the support-services API (token required):
-
-```bash
-API_TOKEN=${SERVER_SERVICES_TOKEN:-development}
-
-# list every cached key
-curl "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
-
-# flush the entire admin cache
-curl -X DELETE "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
-
-# view + TTL for a single key (URL-encode when needed)
-curl "http://localhost:3000/api/support-services/cache/$(python3 - <<'PY'
-from urllib.parse import quote
-print(quote('support:products'))
-PY)?api=${API_TOKEN}"
-
-# namespace flush helpers
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"action":"flushNamespace","namespace":"support:products"}' \
-  "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
-
-# delete a precise cache key
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"action":"flushKey","namespace":"support:products"}' \
-  "http://localhost:3000/api/support-services/cache?api=${API_TOKEN}"
+```json
+{"action":"flushKey","namespace":"<exact-key-from-listing>"}
 ```
 
-| Route | Method(s) | Description |
-|-------|-----------|-------------|
-| `/api/support-services/cache?api=<token>` | GET | Lists cached keys scoped to the admin prefix |
-| `/api/support-services/cache?api=<token>` | DELETE | Flushes all admin cache entries |
-| `/api/support-services/cache?api=<token>` | POST | Supports `flushAll`, `flushNamespace`, `flushKey` actions |
-| `/api/support-services/cache/[key]?api=<token>` | GET / DELETE | Inspect or remove a single cache key |
-| `/api/support-services/cache/namespace/[namespace]?api=<token>` | GET / DELETE | List or purge by namespace/pattern |
+The field is named `namespace` even for single-key deletion. `{"action":"flushNamespace","namespace":"graphql:public-v2"}` removes the current public-query namespace; `{"action":"flushAll"}` clears the admin prefix. The storefront has [separate cache tools](../shopx-frontend/README.md#cache-tools): clearing admin cache does not clear storefront responses, which can remain until TTL expiry or explicit invalidation.
 
-> Use the same token across admin and storefront when running via `docker-compose`. When developing locally without Docker, the default `development` token works out of the box.
+## Commands and verification
 
----
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Next.js development on port 3000 |
+| `npm run build` | Production Next.js build |
+| `npm start` | Executes `prestart` (`next build`), then `next start` |
+| `npx tsc --noEmit` | Separate TypeScript check |
+| `npm run lint` | ESLint through `next lint` |
+| `npm run test:contracts` | Two tests for cache eligibility and private-data isolation |
 
-## Project Structure
+Both contract tests and TypeScript passed again on October 12; lint passed during the October 11 checks. Workspace starter-data verification checked both SUPPORT accounts through the admin proxy against `AREVY`, including session cookies, role-restricted viewer/users/orders access and customer denial. Chrome also passed login, dashboard and product filtering against `AREVY`, using temporary QA records that were removed afterward. The catalog initially requests 20 products; use the name/category filter to find later records. See the [workspace verification record](../docs/development-status.md) for scope; this is not coverage of every administrative operation.
 
-```
-admin-portal/
-├── src/
-│   ├── components/            # Shared UI (AppShell, tables, forms, widgets)
-│   ├── config/                # Environment helpers and constants
-│   ├── graphql/               # QueryFactory definitions for every GraphQL operation
-│   ├── hooks/                 # Custom hooks to access stores (`useCms`, `useOrders`, etc.)
-│   ├── i18n/                  # Translation setup
-│   ├── lib/                   # ApiService, error helpers, misc utilities
-│   ├── pages/                 # Next.js routes (`_app`, `_document`, login, dashboard, etc.)
-│   ├── routes/                # Navigation metadata + utilities
-│   ├── stores/                # RootStore + MobX stores (user/auth/orders, products, support, cms)
-│   ├── styles/                # Global styles and shared Sass tokens
-│   └── types/                 # Shared TypeScript contracts mirroring GraphQL schema
-├── Dockerfile                 # Multi-stage build for production deployments
-├── next.config.mjs
-├── package.json
-└── README.md
-```
+Stop this repository's development server before `next build`: both use `.next`. The [shared status](../docs/development-status.md) separates builds, automated tests, and UI evidence.
 
-MobX powers client-side state. `RootStore` instantiates all stores and the `ApiService`, exposing them via React context. The consolidated `userStore` now represents support-agent session state, customer administration, and order workflows, while the remaining stores keep their product/support/CMS responsibilities. Each route consumes the slice it needs through hooks, keeping data logic and presentation tightly scoped.
+## Code organization and Docker
 
----
+- [src/pages](src/pages): `*.page.tsx` routes and `*.api.ts` API routes; `_app.page.tsx` hosts the shared layout/providers. `experimental.typedRoutes` is currently disabled.
+- [src/stores](src/stores), [src/hooks](src/hooks): state ownership and store access.
+- [src/graphql](src/graphql), [ApiService](src/lib/apiService.ts): API operations and transport.
+- [src/server](src/server): Redis cache, proxy, and cache-tool token validation.
+- [src/components](src/components), [src/routes](src/routes): reusable UI and navigation metadata.
+- [src/i18n](src/i18n), [local](local), [src/styles](src/styles): translations and presentation.
 
-## Data Integration Details
+The Dockerfile uses Node 22 bookworm-slim. Compose selects `development` with `next dev`; `production` builds the app and starts Next CLI on 3000 without rebuilding at startup. Compose uses recovered `AREVY` and its own persistent Redis. The login page and public proxy queries were checked in Chrome at `admin.shopx.localhost`; SUPPORT login against the recovered database remains a separate check.
 
-- **GraphQL Client**: `ApiService` centralises authentication headers, error formatting, and post-processing logic. Operations are defined as `QueryFactory` instances for reuse on both server and client components. All requests flow through `/api/support-graphql`, which forwards the browser’s session cookie to the backend to satisfy support-only resolvers.
-- **User & Order Management**: A single `userStore` now owns support-agent authentication, customer administration, and order lifecycle updates. Hooks such as `useOrders` and `useDashboard` pull from that store so UI pieces no longer juggle separate auth/order abstractions.
-- **User context aggregate**: Support-desk flows call `customerSupport.userContext` to hydrate carts, wishlists, addresses, and identity in a single round trip, mirroring the shopper-facing `getUserContext` query.
-- **Error Handling**: Stores capture GraphQL/API errors and expose user-friendly messages displayed through toast notifications or inline alerts.
-- **CMS Editor**: Uses `react-quill` in a client component; content is persisted through the customer support namespace in the backend GraphQL schema. Redis caching is invalidated automatically after publish/delete mutations.
-- **Product imagery**: Upload widgets convert selected files to base64, call the `ProductImageUploadInput`
-  GraphQL argument, and rely on the backend-hosted `/products/:id/image` URL for live previews.
-- **Session handling**: Support staff authenticate with `/api/auth/login`, which proxies the backend `login` mutation and forwards the issued HTTP-only `sid` cookie back to the browser. Middleware gates all routes based on that cookie, and the shared `ApiService` always sends credentials so GraphQL calls execute under the active session. `userStore.login` also mirrors the session user locally so hooks/components can render immediately. Logging out clears both the Redis session and the browser cookie.
-- **Impersonation & forced logout**: User management pages expose actions that call `customerSupport.logoutUserSessions` and `customerSupport.impersonateUser`. The first revokes Redis sessions so the customer is logged out on their next request; the second generates a short-lived token that opens the storefront’s `/impersonate` route with a fresh cookie for the selected customer.
+## Remaining work
 
----
-
-## Production & Ops
-
-- **Docker**: The provided `Dockerfile` installs dependencies, runs `npm run build`, and ships a lightweight runtime image exposing port 3000. Coordinate with the root `docker-compose.yml` (service name `admin`) to run alongside the backend and store front.
-- **CI Recommendations**: Add `npm run lint` and `npm run build` to CI workflows to enforce type safety and Next.js constraints before deploying.
-- **Caching**: The backend invalidates Redis keys whenever CMS pages mutate. No additional cache busting is required on the admin side.
-
----
-
-## Roadmap Suggestions
-
-1. **Advanced authentication** – layer SSO or MFA on top of the session-based login to align with enterprise identity policies.
-2. **Granular Permissions** – extend the GraphQL schema and UI to support role-based access (merchandising vs. support vs. marketing).
-3. **Bulk Operations** – add mass actions for catalog or order management (bulk price updates, status changes).
-4. **Realtime Metrics** – layer in GraphQL subscriptions or polling for dashboards that require live SLA adherence.
-5. **Testing** – employ Playwright or Testing Library for critical paths (publishing CMS pages, processing a refund, etc.).
-
----
-
-## Support & License
-
-For licensing, refer to the monorepo’s root LICENSE file. Raise issues or improvements through the team’s established workflow (GitHub issues, Jira, etc.).
+SSO/MFA, granular merchandising/marketing roles, bulk catalog/order operations, live dashboard updates, and broader CMS/account/browser regression coverage remain possible next steps. Refund UI tests must wait for a real refund implementation. Add lint/type/build checks to CI where appropriate rather than assuming local checks already constitute a pipeline. No workspace license file is present; the older claim of an inherited monorepo license was not substantiated.

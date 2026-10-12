@@ -6,7 +6,7 @@ import { GraphQLClient } from 'graphql-request'
 import { redisCache } from '@/server/redis/cacheRepository'
 import { getRedisDefaultTtl } from '@/config/env'
 
-import { getOperationMetadata } from './operationMetadata'
+import { getOperationMetadata, isPublicCacheableQuery } from './operationMetadata'
 
 export type ExecuteWithCacheOptions = {
   cacheKey?: string
@@ -39,7 +39,7 @@ export const createGraphqlCacheKey = (
   const normalizedName = operationName ?? 'anonymous'
   const normalizedType = operationType || 'unknown'
 
-  return `graphql:${normalizedType}:${normalizedName}:${digest}`
+  return `graphql:public-v2:${normalizedType}:${normalizedName}:${digest}`
 }
 
 const sanitizeHeaders = (headers?: Record<string, string | undefined>) => {
@@ -63,8 +63,8 @@ export const executeWithCache = async <TData>(
   options: ExecuteWithCacheOptions = {},
 ): Promise<TData> => {
   const metadata = getOperationMetadata(query)
-  const shouldCache = metadata.type === 'query' && !options.skipCache
-  const cacheKey = options.cacheKey ?? (shouldCache
+  const shouldCache = isPublicCacheableQuery(query, options.requestHeaders) && !options.skipCache
+  const cacheKey = (shouldCache
     ? createGraphqlCacheKey(metadata.name, metadata.type, query, variables)
     : undefined)
 
