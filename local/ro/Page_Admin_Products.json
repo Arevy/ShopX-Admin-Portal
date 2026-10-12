@@ -100,5 +100,11 @@
       "update": "Product {{id}} updated.",
       "delete": "Product {{id}} removed."
     }
+  },
+  "pagination": {
+    "label": "Paginile catalogului",
+    "previous": "Înapoi",
+    "next": "Înainte",
+    "page": "Pagina {{page}}"
   }
 }

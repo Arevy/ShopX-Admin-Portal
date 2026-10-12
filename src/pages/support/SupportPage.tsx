@@ -1,5 +1,7 @@
 'use client'
 
+import { formatCurrency } from '@/lib/formatCurrency'
+
 import { observer } from 'mobx-react-lite'
 import classNames from 'classnames'
 import { LoadingState } from '@/components/LoadingState'
@@ -13,7 +15,15 @@ import type { Order } from '@/types/domain'
 import styles from './SupportPage.module.scss'
 
 const SupportPage = observer(() => {
-  const { userId, setUserId, handleLookup, clearProfile, customer, loading, error } = useSupportDesk()
+  const {
+    userId,
+    setUserId,
+    handleLookup,
+    clearProfile,
+    customer,
+    loading,
+    error,
+  } = useSupportDesk()
   const { t } = useTranslation(route.translationNamespace)
 
   const orderColumns: Column<Order>[] = [
@@ -21,7 +31,7 @@ const SupportPage = observer(() => {
     {
       key: 'total',
       header: t('orders.table.columns.total'),
-      render: (order) => `$${Number(order.total).toFixed(2)}`,
+      render: (order) => formatCurrency(Number(order.total)),
     },
     {
       key: 'status',
@@ -31,7 +41,10 @@ const SupportPage = observer(() => {
     {
       key: 'createdAt',
       header: t('orders.table.columns.created_at'),
-      render: (order) => (order.createdAt ? new Date(String(order.createdAt)).toLocaleString() : '—'),
+      render: (order) =>
+        order.createdAt
+          ? new Date(String(order.createdAt)).toLocaleString()
+          : '—',
     },
   ]
 
@@ -40,7 +53,9 @@ const SupportPage = observer(() => {
       <section className={classNames('surface-border', styles.panel)}>
         <form onSubmit={handleLookup} className={styles.lookupForm}>
           <div>
-            <label className={styles.fieldLabel}>{t('form.fields.customer_id')}</label>
+            <label className={styles.fieldLabel}>
+              {t('form.fields.customer_id')}
+            </label>
             <input
               placeholder={t('form.placeholders.customer_id')}
               value={userId}
@@ -52,7 +67,11 @@ const SupportPage = observer(() => {
             {t('form.actions.load')}
           </button>
           {customer ? (
-            <button type="button" onClick={clearProfile} className={styles.secondaryButton}>
+            <button
+              type="button"
+              onClick={clearProfile}
+              className={styles.secondaryButton}
+            >
               {t('form.actions.clear')}
             </button>
           ) : null}
@@ -71,13 +90,16 @@ const SupportPage = observer(() => {
                 <strong>{t('identity.labels.id')}:</strong> {customer.user.id}
               </span>
               <span>
-                <strong>{t('identity.labels.email')}:</strong> {customer.user.email}
+                <strong>{t('identity.labels.email')}:</strong>{' '}
+                {customer.user.email}
               </span>
               <span>
-                <strong>{t('identity.labels.name')}:</strong> {customer.user.name ?? '—'}
+                <strong>{t('identity.labels.name')}:</strong>{' '}
+                {customer.user.name ?? '—'}
               </span>
               <span>
-                <strong>{t('identity.labels.role')}:</strong> {customer.user.role}
+                <strong>{t('identity.labels.role')}:</strong>{' '}
+                {customer.user.role}
               </span>
               <span className={classNames('badge', styles.badgeSummary)}>
                 {t('identity.summary', {
@@ -103,7 +125,10 @@ const SupportPage = observer(() => {
               {customer.addresses.length ? (
                 <ul className={styles.listReset}>
                   {customer.addresses.map((address) => (
-                    <li key={address.id} className={classNames('card', styles.addressItem)}>
+                    <li
+                      key={address.id}
+                      className={classNames('card', styles.addressItem)}
+                    >
                       <strong>{address.street}</strong>
                       <br />
                       {address.city}, {address.postalCode}
@@ -122,7 +147,10 @@ const SupportPage = observer(() => {
               {customer.wishlist?.products.length ? (
                 <ul className={styles.badgeList}>
                   {customer.wishlist.products.map((product) => (
-                    <li key={product.id} className={classNames('badge', styles.badgePill)}>
+                    <li
+                      key={product.id}
+                      className={classNames('badge', styles.badgePill)}
+                    >
                       {product.name}
                     </li>
                   ))}
@@ -137,17 +165,23 @@ const SupportPage = observer(() => {
               {customer.cart ? (
                 <ul className={styles.listReset}>
                   {customer.cart.items.map((item, index) => (
-                    <li key={`${item.product.id}-${index}`} className={classNames('card', styles.cartItem)}>
+                    <li
+                      key={`${item.product.id}-${index}`}
+                      className={classNames('card', styles.cartItem)}
+                    >
                       <div className={styles.cartItemContent}>
                         <span>{item.product.name}</span>
                         <span>
-                          {item.quantity} × ${Number(item.product.price).toFixed(2)}
+                          {item.quantity} ×{' '}
+                          {formatCurrency(Number(item.product.price))}
                         </span>
                       </div>
                     </li>
                   ))}
                   <li className={classNames('badge', styles.cartTotal)}>
-                    {t('cart.total', { total: customer.cart.total.toFixed(2) })}
+                    {t('cart.total', {
+                      total: formatCurrency(customer.cart.total),
+                    })}
                   </li>
                 </ul>
               ) : (
@@ -160,8 +194,13 @@ const SupportPage = observer(() => {
               {customer.reviews.length ? (
                 <ul className={styles.listReset}>
                   {customer.reviews.map((review) => (
-                    <li key={review.id} className={classNames('card', styles.reviewItem)}>
-                      <strong>{t('reviews.product_label', { id: review.productId })}</strong>
+                    <li
+                      key={review.id}
+                      className={classNames('card', styles.reviewItem)}
+                    >
+                      <strong>
+                        {t('reviews.product_label', { id: review.productId })}
+                      </strong>
                       <div className={styles.reviewMeta}>
                         {t('reviews.rating', { rating: review.rating })}
                       </div>

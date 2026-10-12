@@ -82,10 +82,16 @@
   padding: 0.55rem 1.1rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(56, 189, 248, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.18),
+    rgba(56, 189, 248, 0.2)
+  );
   color: #e0f2fe;
   font-weight: 600;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .primaryButton:disabled {
@@ -114,7 +120,7 @@
   padding: 2rem;
   border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: var(--radius-lg);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--surface);
   text-align: center;
 }
 
@@ -144,5 +150,9 @@
 
 .guardButtonPrimary {
   border-color: rgba(59, 130, 246, 0.5);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(56, 189, 248, 0.15));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(56, 189, 248, 0.15)
+  );
 }

@@ -100,5 +100,11 @@
       "update": "Product {{id}} updated.",
       "delete": "Product {{id}} removed."
     }
+  },
+  "pagination": {
+    "label": "Pages du catalogue",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {{page}}"
   }
 }

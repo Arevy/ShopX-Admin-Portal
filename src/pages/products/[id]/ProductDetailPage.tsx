@@ -1,5 +1,7 @@
 'use client'
 
+import { formatCurrency } from '@/lib/formatCurrency'
+
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -37,7 +39,8 @@ const readFileAsDataUrl = (file: File): Promise<string> =>
         reject(new Error('Unexpected file reader result.'))
       }
     }
-    reader.onerror = () => reject(reader.error ?? new Error('Failed to read file.'))
+    reader.onerror = () =>
+      reject(reader.error ?? new Error('Failed to read file.'))
     reader.readAsDataURL(file)
   })
 
@@ -121,22 +124,28 @@ const ProductDetailPage = observer(() => {
     }
   }, [imageState])
 
-  const handleFileChange = useCallback(async (file: File | null) => {
-    if (!file) {
-      setImageState({ file: null, base64: null, remove: false })
-      return
-    }
+  const handleFileChange = useCallback(
+    async (file: File | null) => {
+      if (!file) {
+        setImageState({ file: null, base64: null, remove: false })
+        return
+      }
 
-    try {
-      const base64 = await readFileAsDataUrl(file)
-      setImageState({ file, base64, remove: false })
-    } catch (error) {
-      setFeedback({
-        tone: 'negative',
-        message: getUserFriendlyMessage(error, tProducts('feedback.errors.image_load')),
-      })
-    }
-  }, [tProducts])
+      try {
+        const base64 = await readFileAsDataUrl(file)
+        setImageState({ file, base64, remove: false })
+      } catch (error) {
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(
+            error,
+            tProducts('feedback.errors.image_load'),
+          ),
+        })
+      }
+    },
+    [tProducts],
+  )
 
   const handleRemoveToggle = useCallback((checked: boolean) => {
     setImageState((prev) => ({
@@ -161,46 +170,55 @@ const ProductDetailPage = observer(() => {
     setFeedback(null)
   }, [product])
 
-  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!productId) {
-      return
-    }
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      if (!productId) {
+        return
+      }
 
-    if (!formState.name.trim()) {
-      setFeedback({ tone: 'negative', message: t('form.feedback.missing_name') })
-      return
-    }
+      if (!formState.name.trim()) {
+        setFeedback({
+          tone: 'negative',
+          message: t('form.feedback.missing_name'),
+        })
+        return
+      }
 
-    const priceValue = formState.price.trim()
-    const price = priceValue ? Number(priceValue) : undefined
-    if (priceValue && Number.isNaN(price)) {
-      setFeedback({ tone: 'negative', message: t('form.feedback.invalid_price') })
-      return
-    }
+      const priceValue = formState.price.trim()
+      const price = priceValue ? Number(priceValue) : undefined
+      if (priceValue && Number.isNaN(price)) {
+        setFeedback({
+          tone: 'negative',
+          message: t('form.feedback.invalid_price'),
+        })
+        return
+      }
 
-    setSaving(true)
-    setFeedback(null)
-    try {
-      await productStore.updateProduct(productId, {
-        name: formState.name.trim(),
-        price,
-        description: formState.description.trim() || undefined,
-        categoryId: formState.categoryId || undefined,
-        image: buildImagePayload(),
-        removeImage: imageState.remove || undefined,
-      })
-      setFeedback({ tone: 'positive', message: t('form.feedback.success') })
-      await productStore.loadProduct(productId)
-    } catch (error) {
-      setFeedback({
-        tone: 'negative',
-        message: getUserFriendlyMessage(error, t('form.feedback.error')),
-      })
-    } finally {
-      setSaving(false)
-    }
-  }, [productId, formState, imageState, productStore, buildImagePayload, t])
+      setSaving(true)
+      setFeedback(null)
+      try {
+        await productStore.updateProduct(productId, {
+          name: formState.name.trim(),
+          price,
+          description: formState.description.trim() || undefined,
+          categoryId: formState.categoryId || undefined,
+          image: buildImagePayload(),
+          removeImage: imageState.remove || undefined,
+        })
+        setFeedback({ tone: 'positive', message: t('form.feedback.success') })
+        await productStore.loadProduct(productId)
+      } catch (error) {
+        setFeedback({
+          tone: 'negative',
+          message: getUserFriendlyMessage(error, t('form.feedback.error')),
+        })
+      } finally {
+        setSaving(false)
+      }
+    },
+    [productId, formState, imageState, productStore, buildImagePayload, t],
+  )
 
   const handleDelete = useCallback(async () => {
     if (!productId) {
@@ -214,7 +232,10 @@ const ProductDetailPage = observer(() => {
     setDeleteFeedback(null)
     try {
       await productStore.deleteProduct(productId)
-      setDeleteFeedback({ tone: 'positive', message: t('actions.delete_success') })
+      setDeleteFeedback({
+        tone: 'positive',
+        message: t('actions.delete_success'),
+      })
       setTimeout(() => {
         router.replace('/products')
       }, 1200)
@@ -266,7 +287,8 @@ const ProductDetailPage = observer(() => {
     return null
   }
 
-  const categoryName = product.category?.name ?? tProducts('table.cells.uncategorised')
+  const categoryName =
+    product.category?.name ?? tProducts('table.cells.uncategorised')
 
   return (
     <div className={styles.page}>
@@ -276,13 +298,21 @@ const ProductDetailPage = observer(() => {
 
       <header className={styles.header}>
         <h1 className={styles.title}>{t('header.title')}</h1>
-        <p className={styles.subtitle}>{t('header.subtitle', { id: product.id })}</p>
+        <p className={styles.subtitle}>
+          {t('header.subtitle', { id: product.id })}
+        </p>
       </header>
 
       <section className={styles.metaGrid}>
-        <div className={styles.metaCard}>{t('meta.id', { id: product.id })}</div>
-        <div className={styles.metaCard}>{t('meta.price', { price: product.price.toFixed(2) })}</div>
-        <div className={styles.metaCard}>{t('meta.category', { category: categoryName })}</div>
+        <div className={styles.metaCard}>
+          {t('meta.id', { id: product.id })}
+        </div>
+        <div className={styles.metaCard}>
+          {t('meta.price', { price: formatCurrency(product.price) })}
+        </div>
+        <div className={styles.metaCard}>
+          {t('meta.category', { category: categoryName })}
+        </div>
       </section>
 
       <div className={styles.contentGrid}>
@@ -296,44 +326,68 @@ const ProductDetailPage = observer(() => {
               <span className={styles.fieldLabel}>{t('form.fields.name')}</span>
               <input
                 value={formState.name}
-                onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    name: event.target.value,
+                  }))
+                }
                 placeholder={t('form.fields.name_placeholder')}
                 disabled={saving}
               />
             </div>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('form.fields.price')}</span>
+              <span className={styles.fieldLabel}>
+                {t('form.fields.price')}
+              </span>
               <input
                 type="number"
                 min="0"
                 step="0.01"
                 value={formState.price}
-                onChange={(event) => setFormState((prev) => ({ ...prev, price: event.target.value }))}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    price: event.target.value,
+                  }))
+                }
                 placeholder="0.00"
                 disabled={saving}
               />
             </div>
             <div className={classNames(styles.fieldGroup, styles.fullWidth)}>
-              <span className={styles.fieldLabel}>{t('form.fields.description')}</span>
+              <span className={styles.fieldLabel}>
+                {t('form.fields.description')}
+              </span>
               <textarea
                 rows={4}
                 value={formState.description}
                 onChange={(event) =>
-                  setFormState((prev) => ({ ...prev, description: event.target.value }))
+                  setFormState((prev) => ({
+                    ...prev,
+                    description: event.target.value,
+                  }))
                 }
                 disabled={saving}
               />
             </div>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('form.fields.category')}</span>
+              <span className={styles.fieldLabel}>
+                {t('form.fields.category')}
+              </span>
               <select
                 value={formState.categoryId}
                 onChange={(event) =>
-                  setFormState((prev) => ({ ...prev, categoryId: event.target.value }))
+                  setFormState((prev) => ({
+                    ...prev,
+                    categoryId: event.target.value,
+                  }))
                 }
                 disabled={saving}
               >
-                <option value="">{t('form.fields.category_placeholder')}</option>
+                <option value="">
+                  {t('form.fields.category_placeholder')}
+                </option>
                 {categories.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -345,7 +399,9 @@ const ProductDetailPage = observer(() => {
             {feedback ? (
               <span
                 className={
-                  feedback.tone === 'positive' ? styles.feedbackSuccess : styles.feedbackError
+                  feedback.tone === 'positive'
+                    ? styles.feedbackSuccess
+                    : styles.feedbackError
                 }
               >
                 {feedback.message}
@@ -353,10 +409,19 @@ const ProductDetailPage = observer(() => {
             ) : null}
 
             <div className={classNames(styles.actions, styles.fullWidth)}>
-              <button type="submit" className={styles.primaryButton} disabled={saving}>
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={saving}
+              >
                 {saving ? t('form.actions.saving') : t('form.actions.save')}
               </button>
-              <button type="button" className={styles.secondaryButton} onClick={resetForm} disabled={saving}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={resetForm}
+                disabled={saving}
+              >
                 {t('form.actions.reset')}
               </button>
             </div>
@@ -374,7 +439,9 @@ const ProductDetailPage = observer(() => {
                 type="file"
                 accept="image/*"
                 disabled={saving || imageState.remove}
-                onChange={(event) => void handleFileChange(event.target.files?.[0] ?? null)}
+                onChange={(event) =>
+                  void handleFileChange(event.target.files?.[0] ?? null)
+                }
               />
               {imageState.base64 ? (
                 <ModularImage
@@ -412,7 +479,13 @@ const ProductDetailPage = observer(() => {
           </div>
         </section>
 
-        <section className={classNames('surface-border', styles.card, styles.dangerZone)}>
+        <section
+          className={classNames(
+            'surface-border',
+            styles.card,
+            styles.dangerZone,
+          )}
+        >
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>{t('actions.title')}</h2>
             <p className={styles.sectionSubtitle}>{t('actions.subtitle')}</p>
@@ -426,14 +499,20 @@ const ProductDetailPage = observer(() => {
             >
               {deleting ? t('form.actions.saving') : t('actions.delete')}
             </button>
-            <button type="button" className={styles.secondaryButton} onClick={handleOpenStorefront}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={handleOpenStorefront}
+            >
               {t('actions.open_storefront')}
             </button>
           </div>
           {deleteFeedback ? (
             <span
               className={
-                deleteFeedback.tone === 'positive' ? styles.feedbackSuccess : styles.feedbackError
+                deleteFeedback.tone === 'positive'
+                  ? styles.feedbackSuccess
+                  : styles.feedbackError
               }
             >
               {deleteFeedback.message}

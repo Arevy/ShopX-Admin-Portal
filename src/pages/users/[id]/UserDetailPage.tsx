@@ -1,5 +1,7 @@
 'use client'
 
+import { formatCurrency } from '@/lib/formatCurrency'
+
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -15,7 +17,13 @@ import { getUserFriendlyMessage } from '@/lib/getUserFriendlyMessage'
 import { TRANSLATION_NAMESPACE } from './Route'
 import styles from './UserDetailPage.module.scss'
 
-const STATUS_OPTIONS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as const
+const STATUS_OPTIONS = [
+  'PENDING',
+  'PROCESSING',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELLED',
+] as const
 const ROLE_OPTIONS = ['CUSTOMER', 'SUPPORT'] as const
 
 type Feedback = {
@@ -50,17 +58,21 @@ const UserDetailPage = observer(() => {
   const [profileForm, setProfileForm] = useState<{
     name: string
     email: string
-    role: typeof ROLE_OPTIONS[number]
+    role: (typeof ROLE_OPTIONS)[number]
   }>({ name: '', email: '', role: ROLE_OPTIONS[0] })
   const [profileFeedback, setProfileFeedback] = useState<Feedback>(null)
   const [profileSubmitting, setProfileSubmitting] = useState(false)
 
-  const [passwordForm, setPasswordForm] = useState({ password: '', confirm: '' })
+  const [passwordForm, setPasswordForm] = useState({
+    password: '',
+    confirm: '',
+  })
   const [passwordFeedback, setPasswordFeedback] = useState<Feedback>(null)
   const [passwordSubmitting, setPasswordSubmitting] = useState(false)
 
   const [sessionsFeedback, setSessionsFeedback] = useState<Feedback>(null)
-  const [impersonationFeedback, setImpersonationFeedback] = useState<Feedback>(null)
+  const [impersonationFeedback, setImpersonationFeedback] =
+    useState<Feedback>(null)
 
   const [orderDrafts, setOrderDrafts] = useState<Record<string, string>>({})
   const [orderPending, setOrderPending] = useState<Record<string, boolean>>({})
@@ -111,11 +123,18 @@ const UserDetailPage = observer(() => {
       setProfileFeedback(null)
 
       if (!profileForm.email.trim()) {
-        setProfileFeedback({ tone: 'negative', message: t('profile.feedback.email_required') })
+        setProfileFeedback({
+          tone: 'negative',
+          message: t('profile.feedback.email_required'),
+        })
         return
       }
 
-      const updates: { name?: string; email?: string; role?: typeof ROLE_OPTIONS[number] } = {}
+      const updates: {
+        name?: string
+        email?: string
+        role?: (typeof ROLE_OPTIONS)[number]
+      } = {}
 
       const trimmedName = profileForm.name.trim()
       const trimmedEmail = profileForm.email.trim()
@@ -133,14 +152,20 @@ const UserDetailPage = observer(() => {
       }
 
       if (!Object.keys(updates).length) {
-        setProfileFeedback({ tone: 'negative', message: t('profile.feedback.nothing_to_update') })
+        setProfileFeedback({
+          tone: 'negative',
+          message: t('profile.feedback.nothing_to_update'),
+        })
         return
       }
 
       setProfileSubmitting(true)
       try {
         await userStore.updateUser(userId, updates)
-        setProfileFeedback({ tone: 'positive', message: t('profile.feedback.success') })
+        setProfileFeedback({
+          tone: 'positive',
+          message: t('profile.feedback.success'),
+        })
         await supportStore.loadCustomerProfile(userId)
       } catch (error) {
         setProfileFeedback({
@@ -165,24 +190,36 @@ const UserDetailPage = observer(() => {
 
       const trimmed = passwordForm.password.trim()
       if (!trimmed) {
-        setPasswordFeedback({ tone: 'negative', message: t('password.feedback.missing') })
+        setPasswordFeedback({
+          tone: 'negative',
+          message: t('password.feedback.missing'),
+        })
         return
       }
 
       if (trimmed !== passwordForm.confirm.trim()) {
-        setPasswordFeedback({ tone: 'negative', message: t('password.feedback.mismatch') })
+        setPasswordFeedback({
+          tone: 'negative',
+          message: t('password.feedback.mismatch'),
+        })
         return
       }
 
       if (trimmed.length < 8) {
-        setPasswordFeedback({ tone: 'negative', message: t('password.feedback.length') })
+        setPasswordFeedback({
+          tone: 'negative',
+          message: t('password.feedback.length'),
+        })
         return
       }
 
       setPasswordSubmitting(true)
       try {
         await userStore.updateUser(userId, { password: trimmed })
-        setPasswordFeedback({ tone: 'positive', message: t('password.feedback.success') })
+        setPasswordFeedback({
+          tone: 'positive',
+          message: t('password.feedback.success'),
+        })
         setPasswordForm({ password: '', confirm: '' })
       } catch (error) {
         setPasswordFeedback({
@@ -242,12 +279,17 @@ const UserDetailPage = observer(() => {
       const revoked = await userStore.logoutUserSessions(userId)
       setSessionsFeedback({
         tone: 'positive',
-        message: revoked ? tUsers('feedback.success.sessions_revoked') : tUsers('feedback.info.no_sessions'),
+        message: revoked
+          ? tUsers('feedback.success.sessions_revoked')
+          : tUsers('feedback.info.no_sessions'),
       })
     } catch (error) {
       setSessionsFeedback({
         tone: 'negative',
-        message: getUserFriendlyMessage(error, tUsers('feedback.errors.sessions_revoke')),
+        message: getUserFriendlyMessage(
+          error,
+          tUsers('feedback.errors.sessions_revoke'),
+        ),
       })
     }
   }, [userId, userStore, tUsers])
@@ -266,11 +308,17 @@ const UserDetailPage = observer(() => {
       const baseUrl = getStorefrontUrl().replace(/\/$/, '')
       const target = `${baseUrl}/impersonate?token=${ticket.token}`
       window.open(target, '_blank', 'noopener')
-      setImpersonationFeedback({ tone: 'positive', message: tUsers('feedback.success.impersonation') })
+      setImpersonationFeedback({
+        tone: 'positive',
+        message: tUsers('feedback.success.impersonation'),
+      })
     } catch (error) {
       setImpersonationFeedback({
         tone: 'negative',
-        message: getUserFriendlyMessage(error, tUsers('feedback.errors.impersonation')),
+        message: getUserFriendlyMessage(
+          error,
+          tUsers('feedback.errors.impersonation'),
+        ),
       })
     }
   }, [userId, userStore, tUsers])
@@ -312,13 +360,25 @@ const UserDetailPage = observer(() => {
 
       <header className={styles.header}>
         <h1 className={styles.title}>{t('header.title')}</h1>
-        <p className={styles.subtitle}>{t('header.subtitle', { id: user?.id ?? userId })}</p>
+        <p className={styles.subtitle}>
+          {t('header.subtitle', { id: user?.id ?? userId })}
+        </p>
       </header>
 
       <section className={styles.metaGrid}>
-        <div className={styles.metaItem}>{t('meta.user_id', { id: user?.id ?? userId })}</div>
-        <div className={styles.metaItem}>{t('meta.email', { email: user?.email ?? '—' })}</div>
-        <div className={styles.metaItem}>{t('meta.role', { role: user ? tUsers(`roles.labels.${user.role.toLowerCase()}`) : '—' })}</div>
+        <div className={styles.metaItem}>
+          {t('meta.user_id', { id: user?.id ?? userId })}
+        </div>
+        <div className={styles.metaItem}>
+          {t('meta.email', { email: user?.email ?? '—' })}
+        </div>
+        <div className={styles.metaItem}>
+          {t('meta.role', {
+            role: user
+              ? tUsers(`roles.labels.${user.role.toLowerCase()}`)
+              : '—',
+          })}
+        </div>
       </section>
 
       <div className={styles.contentGrid}>
@@ -330,31 +390,50 @@ const UserDetailPage = observer(() => {
 
           <form className={styles.formGrid} onSubmit={handleProfileSubmit}>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('profile.form.name_label')}</span>
+              <span className={styles.fieldLabel}>
+                {t('profile.form.name_label')}
+              </span>
               <input
                 value={profileForm.name}
-                onChange={(event) => setProfileForm((prev) => ({ ...prev, name: event.target.value }))}
+                onChange={(event) =>
+                  setProfileForm((prev) => ({
+                    ...prev,
+                    name: event.target.value,
+                  }))
+                }
                 placeholder={t('profile.form.name_placeholder')}
                 disabled={profileSubmitting}
               />
             </div>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('profile.form.email_label')}</span>
+              <span className={styles.fieldLabel}>
+                {t('profile.form.email_label')}
+              </span>
               <input
                 type="email"
                 value={profileForm.email}
-                onChange={(event) => setProfileForm((prev) => ({ ...prev, email: event.target.value }))}
+                onChange={(event) =>
+                  setProfileForm((prev) => ({
+                    ...prev,
+                    email: event.target.value,
+                  }))
+                }
                 placeholder={t('profile.form.email_placeholder')}
                 disabled={profileSubmitting}
                 required
               />
             </div>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('profile.form.role_label')}</span>
+              <span className={styles.fieldLabel}>
+                {t('profile.form.role_label')}
+              </span>
               <select
                 value={profileForm.role}
                 onChange={(event) =>
-                  setProfileForm((prev) => ({ ...prev, role: event.target.value as typeof ROLE_OPTIONS[number] }))
+                  setProfileForm((prev) => ({
+                    ...prev,
+                    role: event.target.value as (typeof ROLE_OPTIONS)[number],
+                  }))
                 }
                 disabled={profileSubmitting}
               >
@@ -369,7 +448,9 @@ const UserDetailPage = observer(() => {
             {profileFeedback ? (
               <span
                 className={
-                  profileFeedback.tone === 'positive' ? styles.successMessage : styles.errorMessage
+                  profileFeedback.tone === 'positive'
+                    ? styles.successMessage
+                    : styles.errorMessage
                 }
               >
                 {profileFeedback.message}
@@ -377,8 +458,14 @@ const UserDetailPage = observer(() => {
             ) : null}
 
             <div className={styles.actions}>
-              <button type="submit" className={styles.primaryButton} disabled={profileSubmitting}>
-                {profileSubmitting ? t('profile.form.submitting') : t('profile.form.submit')}
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={profileSubmitting}
+              >
+                {profileSubmitting
+                  ? t('profile.form.submitting')
+                  : t('profile.form.submit')}
               </button>
             </div>
           </form>
@@ -387,29 +474,41 @@ const UserDetailPage = observer(() => {
         <section className={classNames('surface-border', styles.card)}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>{t('password.title')}</h2>
-            <p className={styles.sectionDescription}>{t('password.subtitle')}</p>
+            <p className={styles.sectionDescription}>
+              {t('password.subtitle')}
+            </p>
           </div>
 
           <form className={styles.formGrid} onSubmit={handlePasswordSubmit}>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('password.form.new_label')}</span>
+              <span className={styles.fieldLabel}>
+                {t('password.form.new_label')}
+              </span>
               <input
                 type="password"
                 value={passwordForm.password}
                 onChange={(event) =>
-                  setPasswordForm((prev) => ({ ...prev, password: event.target.value }))
+                  setPasswordForm((prev) => ({
+                    ...prev,
+                    password: event.target.value,
+                  }))
                 }
                 placeholder={t('password.form.new_placeholder')}
                 disabled={passwordSubmitting}
               />
             </div>
             <div className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>{t('password.form.confirm_label')}</span>
+              <span className={styles.fieldLabel}>
+                {t('password.form.confirm_label')}
+              </span>
               <input
                 type="password"
                 value={passwordForm.confirm}
                 onChange={(event) =>
-                  setPasswordForm((prev) => ({ ...prev, confirm: event.target.value }))
+                  setPasswordForm((prev) => ({
+                    ...prev,
+                    confirm: event.target.value,
+                  }))
                 }
                 placeholder={t('password.form.confirm_placeholder')}
                 disabled={passwordSubmitting}
@@ -419,7 +518,9 @@ const UserDetailPage = observer(() => {
             {passwordFeedback ? (
               <span
                 className={
-                  passwordFeedback.tone === 'positive' ? styles.successMessage : styles.errorMessage
+                  passwordFeedback.tone === 'positive'
+                    ? styles.successMessage
+                    : styles.errorMessage
                 }
               >
                 {passwordFeedback.message}
@@ -427,8 +528,14 @@ const UserDetailPage = observer(() => {
             ) : null}
 
             <div className={styles.actions}>
-              <button type="submit" className={styles.primaryButton} disabled={passwordSubmitting}>
-                {passwordSubmitting ? t('password.form.submitting') : t('password.form.submit')}
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={passwordSubmitting}
+              >
+                {passwordSubmitting
+                  ? t('password.form.submitting')
+                  : t('password.form.submit')}
               </button>
             </div>
           </form>
@@ -458,15 +565,27 @@ const UserDetailPage = observer(() => {
               orders.map((order) => (
                 <div key={order.id} className={styles.orderItem}>
                   <div className={styles.orderMeta}>
-                    <span className={styles.badge}>{t('orders.meta.id', { id: order.id })}</span>
-                    <span>{t('orders.meta.total', { total: order.total.toFixed(2) })}</span>
-                    <span>{t('orders.meta.created', { value: formatDateTime(order.createdAt) })}</span>
+                    <span className={styles.badge}>
+                      {t('orders.meta.id', { id: order.id })}
+                    </span>
+                    <span>
+                      {t('orders.meta.total', {
+                        total: formatCurrency(order.total),
+                      })}
+                    </span>
+                    <span>
+                      {t('orders.meta.created', {
+                        value: formatDateTime(order.createdAt),
+                      })}
+                    </span>
                   </div>
                   <div className={styles.orderActions}>
                     <select
                       className={styles.statusSelect}
                       value={orderDrafts[order.id] ?? order.status}
-                      onChange={(event) => handleOrderChange(order.id, event.target.value)}
+                      onChange={(event) =>
+                        handleOrderChange(order.id, event.target.value)
+                      }
                       disabled={orderPending[order.id]}
                     >
                       {statusOptions.map((status) => (
@@ -479,9 +598,14 @@ const UserDetailPage = observer(() => {
                       type="button"
                       className={styles.primaryButton}
                       onClick={() => void handleOrderSubmit(order.id)}
-                      disabled={orderPending[order.id] || (orderDrafts[order.id] ?? order.status) === order.status}
+                      disabled={
+                        orderPending[order.id] ||
+                        (orderDrafts[order.id] ?? order.status) === order.status
+                      }
                     >
-                      {orderPending[order.id] ? t('orders.actions.pending') : t('orders.actions.apply')}
+                      {orderPending[order.id]
+                        ? t('orders.actions.pending')
+                        : t('orders.actions.apply')}
                     </button>
                   </div>
                 </div>
@@ -493,7 +617,9 @@ const UserDetailPage = observer(() => {
         <section className={classNames('surface-border', styles.card)}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>{t('addresses.title')}</h2>
-            <p className={styles.sectionDescription}>{t('addresses.subtitle')}</p>
+            <p className={styles.sectionDescription}>
+              {t('addresses.subtitle')}
+            </p>
           </div>
           <div className={styles.list}>
             {addresses.length === 0 ? (
@@ -517,17 +643,27 @@ const UserDetailPage = observer(() => {
             <p className={styles.sectionDescription}>{t('actions.subtitle')}</p>
           </div>
           <div className={styles.actionsInline}>
-            <button type="button" className={styles.secondaryButton} onClick={handleForceLogout}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={handleForceLogout}
+            >
               {t('actions.force_logout')}
             </button>
-            <button type="button" className={styles.secondaryButton} onClick={handleImpersonate}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={handleImpersonate}
+            >
               {t('actions.impersonate')}
             </button>
           </div>
           {sessionsFeedback ? (
             <span
               className={
-                sessionsFeedback.tone === 'positive' ? styles.successMessage : styles.errorMessage
+                sessionsFeedback.tone === 'positive'
+                  ? styles.successMessage
+                  : styles.errorMessage
               }
             >
               {sessionsFeedback.message}
@@ -536,7 +672,9 @@ const UserDetailPage = observer(() => {
           {impersonationFeedback ? (
             <span
               className={
-                impersonationFeedback.tone === 'positive' ? styles.successMessage : styles.errorMessage
+                impersonationFeedback.tone === 'positive'
+                  ? styles.successMessage
+                  : styles.errorMessage
               }
             >
               {impersonationFeedback.message}

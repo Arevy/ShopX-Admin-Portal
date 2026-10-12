@@ -32,7 +32,7 @@
   border-radius: 10px;
   border: none;
   background: var(--accent);
-  color: #fff;
+  color: #101112;
   font-weight: 600;
   transition: background 120ms ease;
 }
@@ -99,7 +99,9 @@
   border: none;
   background: rgba(148, 163, 184, 0.2);
   color: var(--text-secondary);
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 
   &:hover {
     transform: translateY(-1px);
@@ -112,7 +114,9 @@
   border: none;
   background: var(--accent);
   color: #fff;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 
   &:hover {
     transform: translateY(-1px);

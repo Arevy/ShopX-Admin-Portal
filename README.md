@@ -40,9 +40,9 @@ cd ..
 node scripts/compose.mjs up
 ```
 
-The [workspace README](../README.md) covers containers and local configuration. `../scripts/` is not included in a standalone clone. Compose mounts `src/` and `public/` for live recompilation. Open `http://localhost:3000` or `http://admin.shopx.localhost`. To run `npm run dev` on the Mac instead, stop Compose's `admin` service first to free port 3000. The storefront uses port 3100.
+The [workspace README](../README.md) covers containers and local configuration. `../scripts/` is not included in a standalone clone. Compose mounts `src/`, `public/`, and `local/` for live recompilation. Open `http://localhost:3000` or `http://admin.shopx.localhost`. To run `npm run dev` on the Mac instead, stop Compose's `admin` service first to free port 3000. The storefront uses port 3100.
 
-On this Mac, the backend uses recovered **`oracle19 / ORCLCDB / AREVY`** and persistent Compose Redis at `redis:6379/1`. `clever_wilson` remains separate for the legacy workflow. Use a SUPPORT account in the active database. `../.local/admin-access.json` now selects the new general-store administrator in `AREVY`; the old test-database configuration was backed up privately. Sign in again after changing databases.
+On this Mac, the backend uses recovered **`oracle19 / ORCLCDB / AREVY`** and persistent Compose Redis at `redis:6379/1`. The retired `clever_wilson` container is no longer required; this stack uses Compose Redis. Use a SUPPORT account in the active database. `../.local/admin-access.json` now selects the new general-store administrator in `AREVY`; the old test-database configuration was backed up privately. Sign in again after changing databases.
 
 The backend documents the [SQL reset and its isolated tests](../e-commerce-backend/README.md#schema-and-sql-script). A demo reset deletes users too; it is not an access-recovery procedure. SQL corrections were tested in a temporary schema; existing `AREVY` accounts and business-table definitions were preserved.
 
@@ -51,6 +51,14 @@ The backend documents the [SQL reset and its isolated tests](../e-commerce-backe
 The backend owns the [general-store dataset and additive installer](../e-commerce-backend/docs/data-seeding.md). It adds persisted tech, home and lifestyle catalog/CMS content plus demonstration commerce scenarios. This portal consumes the configured API; it does not seed Oracle or substitute mock responses. A standalone deployment can use its own compatible backend and independent data.
 
 In this workspace, `../docs/local-accounts.private.md` contains the generated general-administrator and support-operator accounts, URLs and passwords. Both profiles have the existing `SUPPORT` role and the same permissions. `CUSTOMER` accounts belong in the storefront/RN account flows. A global administrator, platform owner and restricted staff roles are not yet implemented. Keep this private guide outside repository history; standalone clones must provision credentials through their own backend.
+
+## Catalog and visual identity
+
+The portal uses the same graphite surfaces and lime accents as the storefront and RN clients, through [global tokens](src/styles/globals.scss) and the shared application shell. The sidebar uses SVG icons; on narrow screens navigation becomes horizontally scrollable and tables retain their own horizontal scroll area. Product photos preserve the complete item on a white background.
+
+The product list provides previous/next pagination and resets to page one when filters change. Current product prices and monetary displays use the shared [EUR formatter](src/lib/formatCurrency.ts). The new catalog's reference prices include VAT; the backend owns their sources and verification dates. The importer preserves historical order/payment amounts without currency conversion, and changing their display symbol does not establish their original currency.
+
+Product name, image, description and price editing continue through the existing backend operations. The real-model import runs from the backend repository, separately from portal startup. Each independent platform owns its catalog and theme; no sibling source checkout is required at runtime.
 
 ## Configuration
 

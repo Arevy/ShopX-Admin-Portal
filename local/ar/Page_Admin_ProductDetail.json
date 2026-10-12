@@ -12,7 +12,7 @@
   },
   "meta": {
     "id": "Product ID: {{id}}",
-    "price": "Price: ${{price}}",
+    "price": "Price: {{price}}",
     "category": "Category: {{category}}"
   },
   "form": {

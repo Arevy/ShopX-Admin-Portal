@@ -1,5 +1,7 @@
 'use client'
 
+import { formatCurrency } from '@/lib/formatCurrency'
+
 import { observer } from 'mobx-react-lite'
 import classNames from 'classnames'
 import { MetricCard } from '@/components/MetricCard'
@@ -29,7 +31,7 @@ const DashboardPage = observer(() => {
       <section className="grid grid-columns-3">
         <MetricCard
           label={t('metrics.revenue.label')}
-          value={metrics ? `$${metrics.totalRevenue.toFixed(2)}` : '—'}
+          value={metrics ? formatCurrency(metrics.totalRevenue) : '—'}
           delta={t('metrics.revenue.delta')}
           tone="accent"
         />
@@ -52,27 +54,39 @@ const DashboardPage = observer(() => {
         />
         <MetricCard
           label={t('metrics.rating.label')}
-          value={metrics?.averageRating ? metrics.averageRating.toFixed(2) : 'N/A'}
+          value={
+            metrics?.averageRating ? metrics.averageRating.toFixed(2) : 'N/A'
+          }
           tone="accent"
         />
       </section>
 
       <section className={classNames('grid', styles.activityGrid)}>
         <div>
-          <h3 className={styles.sectionTitle}>{t('sections.latest_orders.title')}</h3>
+          <h3 className={styles.sectionTitle}>
+            {t('sections.latest_orders.title')}
+          </h3>
           <DataTable
             columns={[
-              { key: 'id', header: t('sections.latest_orders.table.columns.order') },
+              {
+                key: 'id',
+                header: t('sections.latest_orders.table.columns.order'),
+              },
               {
                 key: 'total',
                 header: t('sections.latest_orders.table.columns.total'),
-                render: (order) => `$${(order.total as number).toFixed(2)}`,
+                render: (order) => formatCurrency(order.total as number),
               },
-              { key: 'userId', header: t('sections.latest_orders.table.columns.customer') },
+              {
+                key: 'userId',
+                header: t('sections.latest_orders.table.columns.customer'),
+              },
               {
                 key: 'status',
                 header: t('sections.latest_orders.table.columns.status'),
-                render: (order) => <StatusBadge status={String(order.status)} />,
+                render: (order) => (
+                  <StatusBadge status={String(order.status)} />
+                ),
               },
               {
                 key: 'createdAt',
@@ -88,19 +102,31 @@ const DashboardPage = observer(() => {
           />
         </div>
         <div>
-          <h3 className={styles.sectionTitle}>{t('sections.top_customers.title')}</h3>
-          <div className={classNames('surface-border', styles.topCustomersCard)}>
+          <h3 className={styles.sectionTitle}>
+            {t('sections.top_customers.title')}
+          </h3>
+          <div
+            className={classNames('surface-border', styles.topCustomersCard)}
+          >
             {topCustomers.length === 0 ? (
-              <span className={styles.topCustomersPlaceholder}>{t('sections.top_customers.placeholder')}</span>
+              <span className={styles.topCustomersPlaceholder}>
+                {t('sections.top_customers.placeholder')}
+              </span>
             ) : (
               <ul className={styles.topCustomersList}>
                 {topCustomers.map((customer) => (
                   <li key={customer.id} className={styles.topCustomersItem}>
                     <div>
-                      <div className={styles.customerName}>{customer.name ?? customer.email}</div>
-                      <div className={styles.customerEmail}>{customer.email}</div>
+                      <div className={styles.customerName}>
+                        {customer.name ?? customer.email}
+                      </div>
+                      <div className={styles.customerEmail}>
+                        {customer.email}
+                      </div>
                     </div>
-                    <span className={classNames('badge', styles.customerRole)}>{customer.role}</span>
+                    <span className={classNames('badge', styles.customerRole)}>
+                      {customer.role}
+                    </span>
                   </li>
                 ))}
               </ul>

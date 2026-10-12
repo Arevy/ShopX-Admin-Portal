@@ -1,5 +1,7 @@
 'use client'
 
+import { formatCurrency } from '@/lib/formatCurrency'
+
 import { observer } from 'mobx-react-lite'
 import classNames from 'classnames'
 import { DataTable, type Column } from '@/components/DataTable'
@@ -45,7 +47,7 @@ const OrdersPage = observer(() => {
     {
       key: 'total',
       header: t('table.columns.total'),
-      render: (order) => `$${Number(order.total).toFixed(2)}`,
+      render: (order) => formatCurrency(Number(order.total)),
     },
     {
       key: 'status',
@@ -56,7 +58,9 @@ const OrdersPage = observer(() => {
       key: 'createdAt',
       header: t('table.columns.created_at'),
       render: (order) =>
-        order.createdAt ? new Date(String(order.createdAt)).toLocaleString() : '—',
+        order.createdAt
+          ? new Date(String(order.createdAt)).toLocaleString()
+          : '—',
     },
     {
       key: 'actions',
@@ -65,7 +69,9 @@ const OrdersPage = observer(() => {
         <select
           className={styles.statusDropdown}
           defaultValue={String(order.status)}
-          onChange={(event) => handleStatusChange(String(order.id), event.target.value)}
+          onChange={(event) =>
+            handleStatusChange(String(order.id), event.target.value)
+          }
           disabled={pending[String(order.id)]}
         >
           {statusOptions.map((status) => (
@@ -80,10 +86,14 @@ const OrdersPage = observer(() => {
 
   const activeFilterChips: string[] = []
   if (activeFilters.status) {
-    activeFilterChips.push(t('filters.summary.status', { value: activeFilters.status }))
+    activeFilterChips.push(
+      t('filters.summary.status', { value: activeFilters.status }),
+    )
   }
   if (activeFilters.userId) {
-    activeFilterChips.push(t('filters.summary.user', { value: activeFilters.userId }))
+    activeFilterChips.push(
+      t('filters.summary.user', { value: activeFilters.userId }),
+    )
   }
 
   return (
@@ -91,7 +101,9 @@ const OrdersPage = observer(() => {
       <section className={classNames('surface-border', styles.panel)}>
         <form onSubmit={handleFilter} className={styles.filterForm}>
           <div>
-            <label className={styles.fieldLabel}>{t('filters.fields.status.label')}</label>
+            <label className={styles.fieldLabel}>
+              {t('filters.fields.status.label')}
+            </label>
             <select
               className={styles.statusSelect}
               value={statusFilter}
@@ -106,7 +118,9 @@ const OrdersPage = observer(() => {
             </select>
           </div>
           <div>
-            <label className={styles.fieldLabel}>{t('filters.fields.user.label')}</label>
+            <label className={styles.fieldLabel}>
+              {t('filters.fields.user.label')}
+            </label>
             <input
               placeholder={t('filters.fields.user.placeholder')}
               value={userIdFilter}
@@ -166,7 +180,11 @@ const OrdersPage = observer(() => {
         </div>
         {feedback ? (
           <span
-            className={feedback.tone === 'positive' ? styles.feedbackPositive : styles.feedbackNegative}
+            className={
+              feedback.tone === 'positive'
+                ? styles.feedbackPositive
+                : styles.feedbackNegative
+            }
           >
             {feedback.message}
           </span>
