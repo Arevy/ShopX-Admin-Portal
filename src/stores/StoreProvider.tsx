@@ -1,33 +1,34 @@
-'use client'
+"use client";
 
-import { ReactNode, createContext, useContext, useRef } from 'react'
+import { ReactNode, createContext, useContext, useRef, useEffect } from "react";
 
-import { RootStore, createRootStore } from '@/stores/rootStore'
+import { RootStore, createRootStore } from "@/stores/rootStore";
 
-const RootStoreContext = createContext<RootStore | null>(null)
+const RootStoreContext = createContext<RootStore | null>(null);
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
-  const rootStoreRef = useRef<RootStore>()
+	const rootStoreRef = useRef<RootStore>();
 
-  if (!rootStoreRef.current) {
-    rootStoreRef.current = createRootStore()
-  }
+	if (!rootStoreRef.current) {
+		rootStoreRef.current = createRootStore();
+	}
+	useEffect(() => rootStoreRef.current!.platformStore.watch(), []);
 
-  return (
-    <RootStoreContext.Provider value={rootStoreRef.current}>
-      {children}
-    </RootStoreContext.Provider>
-  )
-}
+	return (
+		<RootStoreContext.Provider value={rootStoreRef.current}>
+			{children}
+		</RootStoreContext.Provider>
+	);
+};
 
 export const useRootStore = () => {
-  const rootStore = useContext(RootStoreContext)
-  if (!rootStore) {
-    throw new Error('useRootStore must be used within a StoreProvider')
-  }
+	const rootStore = useContext(RootStoreContext);
+	if (!rootStore) {
+		throw new Error("useRootStore must be used within a StoreProvider");
+	}
 
-  return rootStore
-}
+	return rootStore;
+};
 
-export const useRootContext = useRootStore
-export const useStore = useRootStore
+export const useRootContext = useRootStore;
+export const useStore = useRootStore;
