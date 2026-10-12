@@ -50,7 +50,7 @@ The backend documents the [SQL reset and its isolated tests](../e-commerce-backe
 
 The backend owns the [general-store dataset and additive installer](../e-commerce-backend/docs/data-seeding.md). It adds persisted tech, home and lifestyle catalog/CMS content plus demonstration commerce scenarios. This portal consumes the configured API; it does not seed Oracle or substitute mock responses. A standalone deployment can use its own compatible backend and independent data.
 
-In this workspace, `../docs/local-accounts.private.md` contains the generated general-administrator and support-operator accounts, URLs and passwords. Both profiles have the existing `SUPPORT` role and the same permissions. `CUSTOMER` accounts belong in the storefront/RN account flows. A global administrator, platform owner and restricted staff roles are not yet implemented. Keep this private guide outside repository history; standalone clones must provision credentials through their own backend.
+In this workspace, `../docs/local-accounts.private.md` contains the generated general-administrator and support-operator accounts, URLs and passwords. Both profiles have the existing `SUPPORT` role and the same permissions. `CUSTOMER` accounts belong in the storefront/RN account flows. Global administrators now belong to a separate control registry and console deployment; their bootstrap account is stored separately. Managed shop owners use the existing scoped `SUPPORT` role, while restricted commerce staff roles remain unimplemented. Keep private guides outside repository history; standalone clones must provision credentials through their own backend.
 
 ## Catalog and visual identity
 
@@ -120,7 +120,7 @@ Translations exist for **en, ro, fr, de, ar, he**, with RTL direction in languag
 
 Separate support/customer cookies allow admin and shopper sessions to coexist. [SupportSessionGuard](src/components/SupportSessionGuard.tsx) controls UI navigation. Data authorization is enforced in the backend through `customerSupport` and resolver checks; the mere presence of a cookie is not authorization.
 
-[middleware.ts](middleware.ts) still checks `sid`, not `support_sid`, and the inspected local Next.js build manifest had no active middleware. Older claims that middleware protects all routes are not verified behavior; this needs separate alignment.
+[src/middleware.page.ts](src/middleware.page.ts) is the active middleware, matching this project's custom page extensions. It restricts a control deployment to the global console and its API proxy. Tenant mode passes through to the existing UI guards and backend authorization. The old root [middleware.ts](middleware.ts) still checks `sid`, not `support_sid`, and is not the active implementation; it must not be relied on for tenant authentication.
 
 ## Data integration
 
@@ -186,8 +186,32 @@ Stop this repository's development server before `next build`: both use `.next`.
 - [src/components](src/components), [src/routes](src/routes): reusable UI and navigation metadata.
 - [src/i18n](src/i18n), [local](local), [src/styles](src/styles): translations and presentation.
 
-The Dockerfile uses Node 22 bookworm-slim. Compose selects `development` with `next dev`; `production` builds the app and starts Next CLI on 3000 without rebuilding at startup. Compose uses recovered `AREVY` and its own persistent Redis. The login page and public proxy queries were checked in Chrome at `admin.shopx.localhost`; SUPPORT login against the recovered database remains a separate check.
+The Dockerfile uses Node 22 bookworm-slim. Compose selects `development` with `next dev`; `production` builds the app and starts Next CLI on 3000 without rebuilding at startup. Compose uses recovered `AREVY` and its own persistent Redis. The October 12 catalog milestone verified authenticated catalog pagination against the recovered database; the factory milestone also verified owner login and product images in two independently provisioned store admins using Chrome.
 
 ## Remaining work
 
 SSO/MFA, granular merchandising/marketing roles, bulk catalog/order operations, live dashboard updates, and broader CMS/account/browser regression coverage remain possible next steps. Refund UI tests must wait for a real refund implementation. Add lint/type/build checks to CI where appropriate rather than assuming local checks already constitute a pipeline. No workspace license file is present; the older claim of an inherited monorepo license was not substantiated.
+
+## Optional global platform console
+
+This application has a separate control deployment at `/platforms`. Enable it on the server with:
+
+```dotenv
+SHOPX_ADMIN_MODE=control
+SHOPX_CONTROL_API_ORIGIN=http://control-api:4100
+SHOPX_CONTROL_ORIGIN=http://localhost:3200
+```
+
+The console uses the existing React/MobX/SCSS stack and the control API's own management session. A commerce `SUPPORT` login does not grant global rights. `/api/control/*` is disabled in ordinary tenant deployments, validates the exact mutation origin, and only proxies an allowlist of management routes. `/platforms` returns 404 without control mode.
+
+The local console provides invitation-only signup, sign-in, platform counts, creation preview/submission, service observations, access links, start/stop/restart and failed-operation retry. Global administrators manage all platforms and invitations; invited `PLATFORM_CREATOR` accounts can create and operate only their own platforms. Only a global administrator can recover an incomplete creation using the current approved release. Successful deployments cannot be silently moved to another release through that recovery action. Old observations become unknown; a stale green indicator is not an uptime guarantee.
+
+The authenticated setup form includes business name, address, store owner, default language, empty/demo starting content and all three brand colors with a preview. EUR and VAT-inclusive display are explicit supported constraints. Original-store data remains in that store; demos receive a separate content-only pack. **Account & access** contains invitations, account disabling and password changes. Invitation links expire after 24 hours and are consumed once; they must be delivered securely by the administrator. No email is sent automatically. See the control-plane [onboarding guide](../shopx-control-plane/docs/onboarding.md) in the integration workspace.
+
+Deploy the console separately from store administration. The local factory is loopback-only and does not implement production MFA/SSO, customer-domain onboarding or native app publication. Credentials are delivered through a private operator file, not displayed in the dashboard or committed here.
+
+## Managed store branding
+
+In ordinary tenant mode, optional server settings `SHOPX_PLATFORM_API_ORIGIN` and `SHOPX_PLATFORM_ID` enable a validated public configuration proxy. `PlatformStore` applies the business name and existing CSS theme tokens on focus/periodic refresh. The same API identity backs the store admin, storefront and configured mobile clients. Relative product photos use `/api/products/:id/image`; legacy absolute URLs remain supported.
+
+Without these settings, standalone support/admin behavior remains unchanged. The production Docker target handles an empty `public/` directory.
